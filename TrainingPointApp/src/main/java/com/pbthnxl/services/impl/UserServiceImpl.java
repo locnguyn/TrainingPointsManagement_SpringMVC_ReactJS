@@ -48,5 +48,15 @@ public class UserServiceImpl implements UserService {
     public int getIdByUsername(String username) {
         return this.userRepository.getIdByUsername(username);
     }
+
+    @Override
+    public void saveUser(User user) {
+        this.userRepository.saveUser(user);
+    }
+
+    @Override
+    public void updateUserRole(int userId, String role) {
+        this.userRepository.updateUserRole(userId, role);
+    }
     
 }

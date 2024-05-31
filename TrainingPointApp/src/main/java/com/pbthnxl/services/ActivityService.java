@@ -17,4 +17,5 @@ public interface ActivityService {
     Activity getActivityById(int id);
     void addOrUpdate(Activity activity);
     List<Activity> findFilteredActivities(Map<String, String> params);
+    void deleteActivity(int id);
 }

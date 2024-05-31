@@ -4,6 +4,13 @@
  */
 package com.pbthnxl.pojo;
 
+import com.pbthnxl.pojo.Article;
+import com.pbthnxl.pojo.Comment;
+import com.pbthnxl.pojo.Faculty;
+import com.pbthnxl.pojo.Interaction;
+import com.pbthnxl.pojo.Participant;
+import com.pbthnxl.pojo.ReportMissing;
+import com.pbthnxl.pojo.User;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -82,11 +89,9 @@ public class Activity implements Serializable {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private User userId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "activityId")
-    private Set<ReportMissing> reportMissingSet;
     @OneToMany(mappedBy = "activityId")
     private Set<Interaction> interactionSet;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "acitivityId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "activityId")
     private Set<ActivityParticipationType> activityParticipationTypeSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "activityId")
     private Set<Comment> commentSet;
@@ -175,15 +180,6 @@ public class Activity implements Serializable {
 
     public void setUserId(User userId) {
         this.userId = userId;
-    }
-
-    @XmlTransient
-    public Set<ReportMissing> getReportMissingSet() {
-        return reportMissingSet;
-    }
-
-    public void setReportMissingSet(Set<ReportMissing> reportMissingSet) {
-        this.reportMissingSet = reportMissingSet;
     }
 
     @XmlTransient

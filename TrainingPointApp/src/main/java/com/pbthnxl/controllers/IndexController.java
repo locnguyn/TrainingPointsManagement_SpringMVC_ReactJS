@@ -11,6 +11,7 @@ import com.pbthnxl.services.ActivityParticipationTypeService;
 import com.pbthnxl.services.ActivityService;
 import com.pbthnxl.services.ArticleService;
 import com.pbthnxl.services.FacultyService;
+import java.security.Principal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -44,17 +45,21 @@ public class IndexController {
     @Autowired
     private ArticleService articleService;
 
-//    @RequestMapping("/")
-//    public String index(Model model, @RequestParam Map<String, String> params) {
-//        model.addAttribute("activities", activityService.getActivities());
-//        return "index";
-//    }
+    @ModelAttribute
+    public void commonAttr(Model model, Principal principal) {
+        model.addAttribute("faculties", this.facultyService.getFaculties());
+    }
+    
     @GetMapping("/")
     public String index(Model model,
             @RequestParam Map<String, String> params) {
         model.addAttribute("activities", this.activityService.findFilteredActivities(params));
-        model.addAttribute("faculties", this.facultyService.getFaculties());
         model.addAttribute("articles", this.articleService.getArticles());
         return "index";
+    }
+    
+    @GetMapping("/stats")
+    public String stats(){
+        return "stats";
     }
 }

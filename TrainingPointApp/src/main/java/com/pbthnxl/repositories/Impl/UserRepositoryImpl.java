@@ -6,6 +6,7 @@ package com.pbthnxl.repositories.Impl;
 
 import com.pbthnxl.pojo.User;
 import com.pbthnxl.repositories.UserRepository;
+import java.util.List;
 import javax.persistence.Query;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +21,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public class UserRepositoryImpl implements UserRepository {
+
     @Autowired
     private LocalSessionFactoryBean factory;
-    
+
     @Override
     public User getUserByUsername(String username) {
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createQuery("FROM User WHERE username = :username");
         q.setParameter("username", username);
-        
-        return (User) q.getSingleResult();
+
+        List<User> results = q.getResultList();
+        if (!results.isEmpty()) {
+            return results.get(0);
+        } else {
+            return null; // hoặc throw một exception tùy vào yêu cầu của ứng dụng
+        }
     }
 
     @Override
@@ -37,8 +44,29 @@ public class UserRepositoryImpl implements UserRepository {
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createQuery("FROM User WHERE username = :username");
         q.setParameter("username", username);
-        
+
         return ((User) q.getSingleResult()).getId();
     }
+
+    @Override
+    public void saveUser(User user) {
+        Session s = this.factory.getObject().getCurrentSession();
+        if (user.getId() != null) {
+            s.update(user);
+        } else {
+            s.save(user);
+        }
+    }
     
+    @Override
+    public void updateUserRole(int userId, String role) {
+        Session s = this.factory.getObject().getCurrentSession();
+        User user = s.get(User.class, userId);
+        if (user != null) {
+            user.setUserRole(role);
+            s.update(user);
+            System.out.println("update role successfully______________________________________________________________________________________");
+        }
+    }
+
 }

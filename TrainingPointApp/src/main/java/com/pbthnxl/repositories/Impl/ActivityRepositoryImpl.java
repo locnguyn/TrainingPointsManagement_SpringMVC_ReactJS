@@ -71,6 +71,11 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         q.select(r);
 
         List<Predicate> predicates = new ArrayList<>();
+        
+        String kw = params.get("kw");
+        if (kw != null && !kw.isEmpty()) {
+            predicates.add(b.like(r.get("name"), String.format("%%%s%%", kw)));
+        }
 
         String facultyId = params.get("faculty");
         if (facultyId != null && !facultyId.isEmpty()) {
@@ -127,5 +132,14 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         }
 
         return query.getResultList();
+    }
+
+    @Override
+    public void deleteActivity(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        Activity activity = s.get(Activity.class, id);
+        if (activity != null) {
+            s.delete(activity);
+        }
     }
 }

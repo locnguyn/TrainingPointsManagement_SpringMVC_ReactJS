@@ -11,7 +11,7 @@ import com.pbthnxl.formatters.FacultyFormatter;
 import com.pbthnxl.formatters.ParticipantFormatter;
 import com.pbthnxl.formatters.ParticipationTypeFormatter;
 import com.pbthnxl.formatters.UserFormatter;
-import com.pbthnxl.validator.EndDateAfterStartDateValidator;
+import com.pbthnxl.validator.impl.EndDateAfterStartDateValidator;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -52,6 +52,7 @@ public class WebApplicationContextConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/javascript/**").addResourceLocations("/resources/javascript/");
+        registry.addResourceHandler("/css/**").addResourceLocations("/resources/css/");
     }
 //    @Bean
 //    public InternalResourceViewResolver internalResourceViewResolver(){

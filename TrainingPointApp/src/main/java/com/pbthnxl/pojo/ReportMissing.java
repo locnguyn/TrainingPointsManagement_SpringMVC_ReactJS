@@ -13,7 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -35,7 +34,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ReportMissing.findAll", query = "SELECT r FROM ReportMissing r"),
     @NamedQuery(name = "ReportMissing.findById", query = "SELECT r FROM ReportMissing r WHERE r.id = :id"),
     @NamedQuery(name = "ReportMissing.findByReportDate", query = "SELECT r FROM ReportMissing r WHERE r.reportDate = :reportDate"),
-    @NamedQuery(name = "ReportMissing.findByProof", query = "SELECT r FROM ReportMissing r WHERE r.proof = :proof")})
+    @NamedQuery(name = "ReportMissing.findByProof", query = "SELECT r FROM ReportMissing r WHERE r.proof = :proof"),
+    @NamedQuery(name = "ReportMissing.findByChecked", query = "SELECT r FROM ReportMissing r WHERE r.checked = :checked")})
 public class ReportMissing implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -54,12 +54,11 @@ public class ReportMissing implements Serializable {
     private String proof;
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "checked")
-    private byte[] checked;
-    @JoinColumn(name = "activity_id", referencedColumnName = "id")
+    private boolean checked;
+    @JoinColumn(name = "activity_participation_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Activity activityId;
+    private ActivityParticipationType activityParticipationTypeId;
     @JoinColumn(name = "student_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Student studentId;
@@ -74,7 +73,7 @@ public class ReportMissing implements Serializable {
         this.id = id;
     }
 
-    public ReportMissing(Integer id, String proof, byte[] checked) {
+    public ReportMissing(Integer id, String proof, boolean checked) {
         this.id = id;
         this.proof = proof;
         this.checked = checked;
@@ -104,20 +103,20 @@ public class ReportMissing implements Serializable {
         this.proof = proof;
     }
 
-    public byte[] getChecked() {
+    public boolean getChecked() {
         return checked;
     }
 
-    public void setChecked(byte[] checked) {
+    public void setChecked(boolean checked) {
         this.checked = checked;
     }
 
-    public Activity getActivityId() {
-        return activityId;
+    public ActivityParticipationType getActivityParticipationTypeId() {
+        return activityParticipationTypeId;
     }
 
-    public void setActivityId(Activity activityId) {
-        this.activityId = activityId;
+    public void setActivityParticipationTypeId(ActivityParticipationType activityParticipationTypeId) {
+        this.activityParticipationTypeId = activityParticipationTypeId;
     }
 
     public Student getStudentId() {

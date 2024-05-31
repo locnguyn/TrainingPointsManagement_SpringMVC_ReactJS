@@ -97,4 +97,10 @@ public class ActivityController {
         model.addAttribute("activitiesParticipationType", this.activityParticipationTypeService.getActivityParticipationTypesByActivityId(id));
         return "activitiesParticipationType";
     }
+    
+    @GetMapping("/delete-activity/{id}")
+    public String deleteActivity(@PathVariable("id") int id) {
+        this.activityService.deleteActivity(id);
+        return "redirect:/";
+    }
 }

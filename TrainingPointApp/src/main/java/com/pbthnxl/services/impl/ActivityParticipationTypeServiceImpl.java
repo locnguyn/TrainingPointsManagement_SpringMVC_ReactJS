@@ -39,5 +39,20 @@ public class ActivityParticipationTypeServiceImpl implements ActivityParticipati
     public List<ActivityParticipationType> getActivityParticipationTypesByActivityId(int activityId) {
         return this.activityParticipationTypeRepo.getActivityParticipationTypesByActivityId(activityId);
     }
+
+    @Override
+    public boolean existsByActivityIdAndParticipationTypeId(int activityId, int participationTypeId) {
+        return this.activityParticipationTypeRepo.existsByActivityIdAndParticipationTypeId(activityId, participationTypeId);
+    }
+
+    @Override
+    public ActivityParticipationType getActivityParticipationTypeByActivityIdAndParticipationTypeId(int activityId, int participationTypeId) {
+        return this.activityParticipationTypeRepo.getActivityParticipationTypeByActivityIdAndParticipationTypeId(activityId, participationTypeId);
+    }
+
+    @Override
+    public void deleteActivityParticipationType(int id) {
+        this.activityParticipationTypeRepo.deleteActivityParticipationType(id);
+    }
     
 }

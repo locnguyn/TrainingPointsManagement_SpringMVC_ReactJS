@@ -41,4 +41,9 @@ public class ActivityServiceImpl implements ActivityService {
     public List<Activity> findFilteredActivities(Map<String, String> params) {
         return activityRepo.findFilteredActivities(params);
     }
+
+    @Override
+    public void deleteActivity(int id) {
+        this.activityRepo.deleteActivity(id);
+    }
 }

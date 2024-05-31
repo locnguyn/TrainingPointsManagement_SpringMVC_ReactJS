@@ -13,7 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -33,7 +32,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Registration.findAll", query = "SELECT r FROM Registration r"),
     @NamedQuery(name = "Registration.findById", query = "SELECT r FROM Registration r WHERE r.id = :id"),
-    @NamedQuery(name = "Registration.findByRegistrationDate", query = "SELECT r FROM Registration r WHERE r.registrationDate = :registrationDate")})
+    @NamedQuery(name = "Registration.findByRegistrationDate", query = "SELECT r FROM Registration r WHERE r.registrationDate = :registrationDate"),
+    @NamedQuery(name = "Registration.findByParticipated", query = "SELECT r FROM Registration r WHERE r.participated = :participated")})
 public class Registration implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -47,9 +47,8 @@ public class Registration implements Serializable {
     private Date registrationDate;
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "participated")
-    private byte[] participated;
+    private boolean participated;
     @JoinColumn(name = "activity_participation_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ActivityParticipationType activityParticipationTypeId;
@@ -64,7 +63,7 @@ public class Registration implements Serializable {
         this.id = id;
     }
 
-    public Registration(Integer id, byte[] participated) {
+    public Registration(Integer id, boolean participated) {
         this.id = id;
         this.participated = participated;
     }
@@ -85,11 +84,11 @@ public class Registration implements Serializable {
         this.registrationDate = registrationDate;
     }
 
-    public byte[] getParticipated() {
+    public boolean getParticipated() {
         return participated;
     }
 
-    public void setParticipated(byte[] participated) {
+    public void setParticipated(boolean participated) {
         this.participated = participated;
     }
 

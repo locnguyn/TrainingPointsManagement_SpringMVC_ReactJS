@@ -25,4 +25,20 @@
         <put-attribute name="title" value="Danh sách hình thức tham gia hoạt động" />
         <put-attribute name="content" value="/WEB-INF/pages/activitiesParticipationType.jsp" />
     </definition>
+    <definition name="report-missing-list" extends="baseLayout">
+        <put-attribute name="title" value="Danh sách báo thiếu điểm" />
+        <put-attribute name="content" value="/WEB-INF/pages/reportMissing.jsp" />
+    </definition>
+    <definition name="assistants" extends="baseLayout">
+        <put-attribute name="title" value="Danh sách trợ lý sinh viên" />
+        <put-attribute name="content" value="/WEB-INF/pages/assistants.jsp" />
+    </definition>
+    <definition name="addAssistant" extends="baseLayout">
+        <put-attribute name="title" value="Thêm trợ lý sinh viên" />
+        <put-attribute name="content" value="/WEB-INF/pages/addAssistant.jsp" />
+    </definition>
+    <definition name="stats" extends="baseLayout">
+        <put-attribute name="title" value="Thống kê báo cáo" />
+        <put-attribute name="content" value="/WEB-INF/pages/stats.jsp" />
+    </definition>
 </tiles-definitions>

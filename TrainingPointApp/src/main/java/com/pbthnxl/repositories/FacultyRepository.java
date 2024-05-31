@@ -13,4 +13,5 @@ import java.util.List;
  */
 public interface FacultyRepository {
     List<Faculty> getFaculties();
+    Faculty getFacultyById(int id);
 }

@@ -38,16 +38,19 @@
                             <a class=" nav-link " href="<c:url value="/stats" />">Thống kê báo cáo</a>
                         </li>
                         <li class="nav-item">
-                            <a class=" nav-link " href="<c:url value="/activities-participation-type" />">Hình thức tham gia</a>
+                            <a class=" nav-link " href="<c:url value="/activity-participation-type/list" />">Hình thức tham gia</a>
                         </li>
                         <li class="nav-item">
-                            <a class=" nav-link " href="<c:url value="/add-activity-participation-type" />">Thêm hình thức tham gia</a>
+                            <a class=" nav-link " href="<c:url value="/activity-participation-type/add" />">Thêm hình thức tham gia</a>
                         </li>
                         <li class="nav-item">
-                            <a class=" nav-link " href="<c:url value="/stats" />">Duyệt báo thiếu</a>
+                            <a class=" nav-link " href="<c:url value="/report-missing/list" />">Duyệt báo thiếu</a>
                         </li>
                         <li class="nav-item">
-                            <a class=" nav-link " href="<c:url value="/stats" />">Hỗ trợ sinh viên</a>
+                            <a class=" nav-link " href="<c:url value="/assistant/list" />">Danh sách trợ lý</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class=" nav-link " href="<c:url value="/assistant/add" />">Thêm trợ lý</a>
                         </li>
                         <li class="nav-item">
                             <a class=" btn btn-danger" href="<c:url value="/logout" />">Đăng xuất 
