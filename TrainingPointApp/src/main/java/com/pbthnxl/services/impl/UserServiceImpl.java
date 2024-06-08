@@ -58,5 +58,10 @@ public class UserServiceImpl implements UserService {
     public void updateUserRole(int userId, String role) {
         this.userRepository.updateUserRole(userId, role);
     }
+
+    @Override
+    public boolean authUser(String username, String password) {
+        return this.userRepository.authUser(username, password);
+    }
     
 }

@@ -43,7 +43,8 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     public List<Activity> getActivities() {
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createNamedQuery("Activity.findAll");
-        return q.getResultList();
+        List<Activity> ac = q.getResultList();
+        return ac;
     }
 
     @Override

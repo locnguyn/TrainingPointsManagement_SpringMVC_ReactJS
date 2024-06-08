@@ -16,4 +16,5 @@ public interface UserService extends UserDetailsService {
     int getIdByUsername(String username);
     public void saveUser(User user);
     void updateUserRole(int userId, String role);
+    boolean authUser(String username, String password);
 }

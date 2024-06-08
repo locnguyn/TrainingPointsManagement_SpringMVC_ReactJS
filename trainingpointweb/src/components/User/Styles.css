@@ -1,0 +1,11 @@
+.custom-container{
+    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 20px ;
+    border-radius: 20px;
+    backdrop-filter: blur(45px);
+    box-shadow: 10px 10px 20px #babecc, -10px -10px 20px #ffffff;
+    background-color: transparent;
+    width: 70%;
+}

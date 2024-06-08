@@ -4,6 +4,7 @@
  */
 package com.pbthnxl.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pbthnxl.pojo.Article;
 import com.pbthnxl.pojo.Comment;
 import com.pbthnxl.pojo.Faculty;
@@ -79,21 +80,28 @@ public class Activity implements Serializable {
     private String location;
     @JoinColumn(name = "article_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @JsonIgnore
     private Article articleId;
     @JoinColumn(name = "faculty_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @JsonIgnore
     private Faculty facultyId;
     @JoinColumn(name = "participant_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @JsonIgnore
     private Participant participantId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @JsonIgnore
     private User userId;
     @OneToMany(mappedBy = "activityId")
+    @JsonIgnore
     private Set<Interaction> interactionSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "activityId")
+    @JsonIgnore
     private Set<ActivityParticipationType> activityParticipationTypeSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "activityId")
+    @JsonIgnore
     private Set<Comment> commentSet;
 
     public Activity() {

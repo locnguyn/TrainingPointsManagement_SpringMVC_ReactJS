@@ -1,0 +1,56 @@
+.Footer {
+  text-align: center;
+  margin-top: auto;
+  
+}
+
+/* Custom navbar styling for readability on transparent background */
+.custom-navbar {
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(45px);
+  box-shadow: 10px 10px 20px #babecc, -10px -10px 20px #ffffff;
+  background-color: transparent;
+  border-radius: 20px;
+  z-index: 10;
+}
+
+/* Navbar text color and hover effect */
+.custom-navbar .navbar-brand,
+.custom-navbar .nav-link,
+.custom-navbar .navbar-toggler {
+  color:black !important;
+}
+
+.custom-navbar .nav-link:hover {
+  color: red!important;
+}
+
+/* Button styling inside navbar for better visibility */
+.custom-navbar .btn-primary {
+  color: white;
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.custom-navbar .btn-success {
+  color: white;
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.custom-navbar .btn-light {
+  color: #000;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.custom-navbar .btn-light:hover {
+  background-color: #ffffff;
+}
+
+/* Adjust image inside navbar */
+.custom-navbar img {
+  border: 2px solid white;
+  border-radius: 50%;
+}

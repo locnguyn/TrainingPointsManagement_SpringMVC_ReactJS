@@ -1,8 +1,22 @@
 import axios from "axios"
-const BASE_URL = 'http://localhost:3000/';
+import cookie from "react-cookies";
+const BASE_URL = 'http://localhost:8080/TrainingPointApp/';
 
 export const endpoints = {
-    
+    'activites': "api/activities/",
+    'register': "api/register/",
+    'login': "api/login/",
+    'current-user': "api/current-user/",
+    'update-current-user': "api/current-user/"
+}
+
+export const authApi = () => {
+    return axios.create({
+        baseURL: BASE_URL,
+        headers: {
+            'Authorization': `${cookie.load("token")}`
+        }
+    });
 }
 
 export default axios.create({

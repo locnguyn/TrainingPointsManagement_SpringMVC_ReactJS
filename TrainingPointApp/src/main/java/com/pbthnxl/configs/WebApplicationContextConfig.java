@@ -12,6 +12,9 @@ import com.pbthnxl.formatters.ParticipantFormatter;
 import com.pbthnxl.formatters.ParticipationTypeFormatter;
 import com.pbthnxl.formatters.UserFormatter;
 import com.pbthnxl.validator.impl.EndDateAfterStartDateValidator;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.fileupload.FileUploadBase;
+import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -40,7 +43,8 @@ import org.springframework.web.servlet.view.JstlView;
     "com.pbthnxl.controllers",
     "com.pbthnxl.repositories",
     "com.pbthnxl.services",
-    "com.pbthnxl.validator"
+    "com.pbthnxl.validator",
+    "com.pbthnxl.components"
 })
 public class WebApplicationContextConfig implements WebMvcConfigurer {
 
@@ -85,10 +89,12 @@ public class WebApplicationContextConfig implements WebMvcConfigurer {
 
     @Bean
     public CommonsMultipartResolver multipartResolver() {
-        CommonsMultipartResolver resolver
-                = new CommonsMultipartResolver();
-        resolver.setDefaultEncoding("UTF-8");
-        return resolver;
+        return new CommonsMultipartResolver() {
+            @Override
+            public boolean isMultipart(HttpServletRequest request) {
+                return FileUploadBase.isMultipartContent(new ServletRequestContext(request));
+            }
+        };
     }
     
     

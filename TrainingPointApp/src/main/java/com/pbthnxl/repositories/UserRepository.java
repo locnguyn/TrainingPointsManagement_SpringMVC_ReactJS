@@ -15,4 +15,5 @@ public interface UserRepository {
     int getIdByUsername(String username);
     void saveUser(User user);
     void updateUserRole(int userId, String role);
+    boolean authUser(String username, String password);
 }

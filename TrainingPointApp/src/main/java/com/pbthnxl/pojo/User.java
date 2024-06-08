@@ -4,6 +4,7 @@
  */
 package com.pbthnxl.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -92,14 +93,19 @@ public class User implements Serializable {
     @Column(name = "user_role")
     private String userRole;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @JsonIgnore
     private Set<Activity> activitySet;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "userId")
+    @JsonIgnore
     private Student student;
     @OneToMany(mappedBy = "userId")
+    @JsonIgnore
     private Set<ReportMissing> reportMissingSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @JsonIgnore
     private Set<Interaction> interactionSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @JsonIgnore
     private Set<Comment> commentSet;
 
     public User() {
