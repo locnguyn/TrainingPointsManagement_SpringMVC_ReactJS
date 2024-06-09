@@ -95,10 +95,10 @@ public class ApiUserController {
         MediaType.APPLICATION_JSON_VALUE,
     })
     @CrossOrigin
-    public ResponseEntity<String> update(@RequestParam Map<String, String> params, @RequestPart(required = false) MultipartFile[] files, Principal p) {
+    public ResponseEntity<User> update(@RequestParam Map<String, String> params, @RequestPart(required = false) MultipartFile[] files, Principal p) {
         User user = this.userService.getUserByUsername(p.getName());
         if (user == null) {
-            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
         if (params.containsKey("password")) {
             user.setPassword(this.passwordEncoder.encode(params.get("password")));
@@ -122,7 +122,32 @@ public class ApiUserController {
 
         this.userService.saveUser(user);
 
-        return new ResponseEntity<>("User updated successfully", HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+    
+    @PatchMapping(path = "/current-user/change-password/", consumes = {
+        MediaType.MULTIPART_FORM_DATA_VALUE
+    })
+    @CrossOrigin
+    public ResponseEntity<String> changePassword(@RequestParam Map<String, String> params, Principal p){
+        User user = this.userService.getUserByUsername(p.getName());
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        
+        String oldPassword = "";
+        if (params.containsKey("old_password") && params.containsKey("new_password")){
+            oldPassword = params.get("old_password");
+            System.out.println(oldPassword);
+            System.out.println(user.getPassword());
+            if(this.passwordEncoder.matches(oldPassword, user.getPassword())){
+                 user.setPassword(this.passwordEncoder.encode(params.get("new_password")));
+                 this.userService.saveUser(user);
+                 return new ResponseEntity<>("Success", HttpStatus.OK);
+            }
+        } 
+        
+        return new ResponseEntity<>("Failed", HttpStatus.BAD_REQUEST);
     }
 
 }

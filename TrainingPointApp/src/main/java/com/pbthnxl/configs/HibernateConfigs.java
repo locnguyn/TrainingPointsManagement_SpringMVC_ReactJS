@@ -53,6 +53,7 @@ public class HibernateConfigs {
                 env.getProperty("hibernate.connection.username"));
         dataSource.setPassword(
                 env.getProperty("hibernate.connection.password"));
+        
         return dataSource;
     }
 

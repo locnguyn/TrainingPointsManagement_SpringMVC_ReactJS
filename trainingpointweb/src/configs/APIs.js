@@ -7,7 +7,8 @@ export const endpoints = {
     'register': "api/register/",
     'login': "api/login/",
     'current-user': "api/current-user/",
-    'update-current-user': "api/current-user/"
+    'update-current-user': "api/current-user/",
+    'change-password': "api/current-user/change-password/"
 }
 
 export const authApi = () => {

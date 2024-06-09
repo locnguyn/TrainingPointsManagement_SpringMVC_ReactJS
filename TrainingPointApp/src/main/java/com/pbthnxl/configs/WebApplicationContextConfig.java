@@ -89,12 +89,14 @@ public class WebApplicationContextConfig implements WebMvcConfigurer {
 
     @Bean
     public CommonsMultipartResolver multipartResolver() {
-        return new CommonsMultipartResolver() {
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver() {
             @Override
             public boolean isMultipart(HttpServletRequest request) {
                 return FileUploadBase.isMultipartContent(new ServletRequestContext(request));
             }
         };
+        resolver.setDefaultEncoding("UTF-8");
+        return resolver;
     }
     
     

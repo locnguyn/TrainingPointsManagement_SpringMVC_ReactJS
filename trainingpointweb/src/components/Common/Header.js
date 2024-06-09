@@ -64,7 +64,7 @@ const Header = () => {
                       className="me-2"
                       src={user.avatar}
                       style={{ maxWidth: '50px', maxHeight: '50px', objectFit: 'cover' }}
-                      thumbnail 
+                      rounded
                     />
                   </Link>
                   <Link onClick={Logout}>

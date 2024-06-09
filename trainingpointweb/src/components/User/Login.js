@@ -39,8 +39,8 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if(u){
-      nav('/');
+    if (u) {
+      nav("/");
     }
   }, [u, nav]);
 
@@ -56,9 +56,14 @@ const Login = () => {
         type: "login",
         payload: u.data,
       });
-      nav(location.state?.from?.pathname || '/');
+      nav(location.state?.from?.pathname || "/");
     } catch (ex) {
       console.error(ex);
+      if (ex.response.status === 400) {
+        alert("Sai tài khoản/mật khẩu");
+      } else {
+        alert("Lỗi hệ thống");
+      }
     }
   };
 

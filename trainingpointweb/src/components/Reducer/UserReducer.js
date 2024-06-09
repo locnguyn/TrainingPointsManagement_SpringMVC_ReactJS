@@ -8,6 +8,8 @@ const MyUserReducer = (current, action) => {
             cookie.remove("token");
             cookie.remove("user");
             return null;
+        case  "update_user":
+            return action.payload;
     }
     return current;
 }
