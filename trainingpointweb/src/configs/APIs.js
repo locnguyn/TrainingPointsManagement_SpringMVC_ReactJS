@@ -8,7 +8,8 @@ export const endpoints = {
     'login': "api/login/",
     'current-user': "api/current-user/",
     'update-current-user': "api/current-user/",
-    'change-password': "api/current-user/change-password/"
+    'change-password': "api/current-user/change-password/",
+    'activity-participation-type': "api/activity-participation-type/list/"
 }
 
 export const authApi = () => {

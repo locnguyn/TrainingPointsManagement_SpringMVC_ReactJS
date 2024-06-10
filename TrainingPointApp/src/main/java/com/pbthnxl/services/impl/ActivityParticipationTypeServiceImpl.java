@@ -4,10 +4,13 @@
  */
 package com.pbthnxl.services.impl;
 
+import com.pbthnxl.dto.ActivityParticipationTypeDTO;
+import com.pbthnxl.pojo.Activity;
 import com.pbthnxl.pojo.ActivityParticipationType;
 import com.pbthnxl.repositories.ActivityParticipationTypeRepository;
 import com.pbthnxl.services.ActivityParticipationTypeService;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +56,29 @@ public class ActivityParticipationTypeServiceImpl implements ActivityParticipati
     @Override
     public void deleteActivityParticipationType(int id) {
         this.activityParticipationTypeRepo.deleteActivityParticipationType(id);
+    }
+    
+    @Override
+    public List<ActivityParticipationTypeDTO> getActivityParticipationTypeDTOs() {
+        List<ActivityParticipationType> list = this.getActivityParticipationType();
+        return list.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    private ActivityParticipationTypeDTO convertToDTO(ActivityParticipationType type) {
+        ActivityParticipationTypeDTO dto = new ActivityParticipationTypeDTO();
+        Activity a = type.getActivityId();
+        dto.setId(type.getId());
+        dto.setPoint(type.getPoint());
+        dto.setActivityId(a.getId());
+        dto.setActivity(a.getName());
+        dto.setLocation(a.getLocation());
+        dto.setArticle(a.getArticleId().getName());
+        dto.setFaculty(a.getFacultyId().getName());
+        dto.setStartDateTime(a.getStartDateTime());
+        dto.setEndDateTime(a.getEndDate());
+        dto.setParticipant(a.getParticipantId().getName());
+        dto.setParticipationType(type.getParticipationTypeId().getName());
+        return dto;
     }
     
 }

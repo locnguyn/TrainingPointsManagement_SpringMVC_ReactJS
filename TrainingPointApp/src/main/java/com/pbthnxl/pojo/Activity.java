@@ -5,13 +5,6 @@
 package com.pbthnxl.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pbthnxl.pojo.Article;
-import com.pbthnxl.pojo.Comment;
-import com.pbthnxl.pojo.Faculty;
-import com.pbthnxl.pojo.Interaction;
-import com.pbthnxl.pojo.Participant;
-import com.pbthnxl.pojo.ReportMissing;
-import com.pbthnxl.pojo.User;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;

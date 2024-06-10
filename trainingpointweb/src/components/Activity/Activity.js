@@ -18,7 +18,7 @@ const Activity = () => {
   const location = useLocation();
   const user = useContext(MyUserContext);
   const loadActivity = async () => {
-      let res = await authApi().get(endpoints['activites']);
+      let res = await authApi().get(endpoints['activity-participation-type']);
       setActivites(res.data);
   };
 
@@ -38,7 +38,14 @@ const Activity = () => {
           <tr>
             <th>#</th>
             <th>Tên Hoạt Động</th>
-            <th colSpan={2}>Địa Điểm</th>
+            <th>Địa Điểm</th>
+            <th>Điều</th>
+            <th>Đối tượng</th>
+            <th>Hình thức</th>
+            <th>Điểm</th>
+            <th>Khoa</th>
+            <th>Ngày giờ bắt đầu</th>
+            <th>Ngày giờ kết thúc</th>
             <th></th>
           </tr>
         </thead>
@@ -46,18 +53,25 @@ const Activity = () => {
           {activites.map((a, index) => (
             <tr key={a.id}>
               <td>{index + 1}</td>
-              <td colSpan={2}>{a.name}</td>
-              <td >{a.location}</td>
+              <td>{a.activity}</td>
+              <td>{a.location}</td>
+              <td>{a.article}</td>
+              <td>{a.participant}</td>
+              <td>{a.participationType}</td>
+              <td>{a.point}</td>
+              <td>{a.faculty}</td>
+              <td>{a.startDateTime}</td>
+              <td>{a.endDateTime}</td>
               <td><Button variant="success">+</Button></td>
             </tr>
           ))}
-          
+
         </tbody>
       </Table>
             {/* <ul>
                 {activites.map(a => <li>
                     <h1>{a.id} - {a.name} - {a.location}</h1>
-                    
+
                 </li>)}
             </ul> */}
         </>

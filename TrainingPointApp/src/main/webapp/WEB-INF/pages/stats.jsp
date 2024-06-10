@@ -92,7 +92,9 @@
     const contextPath = '<%= request.getContextPath()%>';
     let classChart = null, facultyClassChart = null, classificationChart = null, facultyClassificationChart = null;
     function fetchAndDrawChart(url, chart, canvasId, label, tableId) {
-        return fetch(url)
+        return fetch(url, {
+            credentials: 'include'
+        })
                 .then(response => response.json())
                 .then(data => {
                     const labels = Object.keys(data);
@@ -118,14 +120,16 @@
 
     function updateFacultyCharts(facultyId) {
         if (facultyId != 0)
-            fetchAndDrawChart(contextPath + `/api/statistics/faculty/` + facultyId, classChart, 'classChart', 'Biểu đồ tổng điểm rèn luyện theo khoa', '#classTable')
+            fetchAndDrawChart(contextPath + `/statistics/faculty/` + facultyId, classChart, 'classChart', 'Biểu đồ tổng điểm rèn luyện theo khoa', '#classTable')
                     .then(newChart => classChart = newChart);
 
-        fetchAndDrawChart(contextPath + `/api/statistics/classification/` + facultyId, facultyClassificationChart, 'facultyClassificationChart', 'Biểu đồ xếp loại của khoa', '#facultyClassificationTable')
+        fetchAndDrawChart(contextPath + `/statistics/classification/` + facultyId, facultyClassificationChart, 'facultyClassificationChart', 'Biểu đồ xếp loại của khoa', '#facultyClassificationTable')
                 .then(newChart => facultyClassificationChart = newChart);
     }
     document.addEventListener('DOMContentLoaded', () => {
-        fetch(contextPath + `/api/statistics/faculty-class`)
+        fetch(contextPath + `/statistics/faculty-class`, {
+            credentials: 'include'
+        })
                 .then(response => response.json())
                 .then(data => {
                     const labels = Object.keys(data.facultyClassStats);
@@ -148,7 +152,7 @@
                         facultyClassChart.destroy();
                     facultyClassChart = drawChart('facultyClassChart', 'pie', labels, values, 'Biểu đồ tổng điểm rèn luyện các khoa toàn trường');
                 });
-        fetchAndDrawChart(contextPath + `/api/statistics/classification/0`, classificationChart, 'classificationChart', 'Biểu đồ xếp loại toàn trường', '#classificationTable')
+        fetchAndDrawChart(contextPath + `/statistics/classification/0`, classificationChart, 'classificationChart', 'Biểu đồ xếp loại toàn trường', '#classificationTable')
                 .then(newChart => classificationChart = newChart);
     });
 </script>

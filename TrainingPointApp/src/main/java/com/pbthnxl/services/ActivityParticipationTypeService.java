@@ -4,6 +4,7 @@
  */
 package com.pbthnxl.services;
 
+import com.pbthnxl.dto.ActivityParticipationTypeDTO;
 import com.pbthnxl.pojo.ActivityParticipationType;
 import java.util.List;
 
@@ -19,4 +20,5 @@ public interface ActivityParticipationTypeService {
     boolean existsByActivityIdAndParticipationTypeId(int activityId, int participationTypeId);
     ActivityParticipationType getActivityParticipationTypeByActivityIdAndParticipationTypeId(int activityId, int participationTypeId);
     void deleteActivityParticipationType(int id);
+    List<ActivityParticipationTypeDTO> getActivityParticipationTypeDTOs();
 }
