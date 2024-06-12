@@ -35,6 +35,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/current-user" element={<User />}/>
               <Route path="/change_password" element={<Password />} />
+              <Route path="/activity/:activityId" element={<ActivityDetails />} />
             </Routes>
             <Footer />
           </MyDispatcherContext.Provider>
