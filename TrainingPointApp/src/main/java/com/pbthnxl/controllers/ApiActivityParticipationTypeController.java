@@ -24,6 +24,7 @@ public class ApiActivityParticipationTypeController {
     @Autowired
     private ActivityParticipationTypeService activityParticipationTypeService;
     
+    
     @CrossOrigin
     @RequestMapping("/list/")
     public ResponseEntity<List<ActivityParticipationTypeDTO>> List(){

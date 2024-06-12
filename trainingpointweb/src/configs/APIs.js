@@ -3,13 +3,18 @@ import cookie from "react-cookies";
 const BASE_URL = 'http://localhost:8080/TrainingPointApp/';
 
 export const endpoints = {
-    'activites': "api/activities/",
+    'activity-list': "api/activity/list/",
+    'activity-registration': "api/activity/registration/",
+    'actitivty-report': "api/activity/report",
+    'activity-details': (activityId) => `/api/activity/${activityId}`,
+    'activity-add-comment': (activityId) => `/api/activity/${activityId}/add-comment/`,
+    'faculty-list': "api/common/faculty-list/",
+    'article-list': "api/common/article-list/",
     'register': "api/register/",
     'login': "api/login/",
     'current-user': "api/current-user/",
     'update-current-user': "api/current-user/",
     'change-password': "api/current-user/change-password/",
-    'activity-participation-type': "api/activity-participation-type/list/"
 }
 
 export const authApi = () => {

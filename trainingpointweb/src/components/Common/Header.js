@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from "react";
 import { Button, Container, Image, Nav, Navbar } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 import { MyDispatcherContext, MyUserContext } from "../../configs/Contexts";
 import "./Styles.css";
 
@@ -11,7 +11,7 @@ const Header = () => {
   const location = useLocation();
   // const u = useContext(MyUserContext);
   const [logout, setLogout] = useState(false);
-  
+
   const Logout = () => {
     try {
       dispatch({
@@ -20,20 +20,22 @@ const Header = () => {
       setLogout(true);
     } catch (ex) {
       console.error(ex);
-    } 
+    }
   };
-  useEffect(()=>{
-    if(logout){
-      nav('/');
+  useEffect(() => {
+    if (logout) {
+      nav("/");
       setLogout(false);
     }
   }, [logout, nav]);
-  
+
   return (
     <>
       <Navbar collapseOnSelect expand="lg" className="custom-navbar">
         <Container>
-          <Navbar.Brand href="#">Điểm Rèn Luyện</Navbar.Brand>
+          <Navbar.Brand>
+            <Link to="/" className="nav-link">Điểm Rèn Luyện</Link>
+          </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto">
@@ -63,8 +65,12 @@ const Header = () => {
                     <Image
                       className="me-2"
                       src={user.avatar}
-                      style={{ maxWidth: '50px', maxHeight: '50px', objectFit: 'cover' }}
-                      rounded
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        objectFit: "cover",
+                      }}
+                      roundedCircle
                     />
                   </Link>
                   <Link onClick={Logout}>

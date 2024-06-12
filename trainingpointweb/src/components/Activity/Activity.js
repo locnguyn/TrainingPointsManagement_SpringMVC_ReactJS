@@ -18,7 +18,7 @@ const Activity = () => {
   const location = useLocation();
   const user = useContext(MyUserContext);
   const loadActivity = async () => {
-      let res = await authApi().get(endpoints['activity-participation-type']);
+      let res = await authApi().get(endpoints['activity-list']);
       setActivites(res.data);
   };
 

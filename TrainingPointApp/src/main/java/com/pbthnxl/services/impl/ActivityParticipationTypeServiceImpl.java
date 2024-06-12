@@ -10,6 +10,7 @@ import com.pbthnxl.pojo.ActivityParticipationType;
 import com.pbthnxl.repositories.ActivityParticipationTypeRepository;
 import com.pbthnxl.services.ActivityParticipationTypeService;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,14 +70,6 @@ public class ActivityParticipationTypeServiceImpl implements ActivityParticipati
         Activity a = type.getActivityId();
         dto.setId(type.getId());
         dto.setPoint(type.getPoint());
-        dto.setActivityId(a.getId());
-        dto.setActivity(a.getName());
-        dto.setLocation(a.getLocation());
-        dto.setArticle(a.getArticleId().getName());
-        dto.setFaculty(a.getFacultyId().getName());
-        dto.setStartDateTime(a.getStartDateTime());
-        dto.setEndDateTime(a.getEndDate());
-        dto.setParticipant(a.getParticipantId().getName());
         dto.setParticipationType(type.getParticipationTypeId().getName());
         return dto;
     }

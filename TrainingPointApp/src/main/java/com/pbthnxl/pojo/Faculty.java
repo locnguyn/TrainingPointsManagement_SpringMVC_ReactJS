@@ -4,6 +4,7 @@
  */
 package com.pbthnxl.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -47,8 +48,10 @@ public class Faculty implements Serializable {
     @Column(name = "name")
     private String name;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "facultyId")
+    @JsonIgnore
     private Set<Activity> activitySet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "facultyId")
+    @JsonIgnore
     private Set<Student> studentSet;
 
     public Faculty() {

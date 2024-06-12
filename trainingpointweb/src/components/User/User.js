@@ -6,7 +6,6 @@ import { Link, useNavigate } from "react-router-dom";
 import MyUserReducer from "../Reducer/UserReducer";
 import cookie from "react-cookies";
 
-
 const User = () => {
   const [user, setUser] = useState({});
   const u = useContext(MyUserContext);
@@ -24,27 +23,23 @@ const User = () => {
   const updateInfo = async (e) => {
     e.preventDefault();
     let form = new FormData();
-    for (let key in user){
-      if (key != "confirm"){
-        form.append(key,  user[key]);
+    for (let key in user) {
+      if (key != "confirm") {
+        form.append(key, user[key]);
       }
     }
     if (avatar) form.append("files", avatar.current.files[0]);
     try {
-      let res = await authApi().patch(
-        endpoints["update-current-user"],
-        form,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      let res = await authApi().patch(endpoints["update-current-user"], form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       if (res.status === 200) {
         cookie.save("user", res.data);
         dispatch({
           type: "update_user",
-          payload: res.data
+          payload: res.data,
         });
         alert("Thành công");
       }
@@ -60,36 +55,56 @@ const User = () => {
 
   useEffect(() => {
     if (u) {
-      setFields([{
-        label: "Tên Đăng Nhập",
-        field: "username",
-        value: u.username,
-        type: "text",
-      },
-      {
-        label: "Họ",
-        field: "firstName",
-        value: u.firstName,
-        type: "text",
-      },
-      {
-        label: "Tên",
-        field: "lastName",
-        value: u.lastName,
-        type: "text",
-      },
-      {
-        label: "Email",
-        field: "email",
-        value: u.email,
-        type: "email",
-      },
-      {
-        label: "Số Điện Thoại",
-        field: "phone",
-        value: u.phoneNumber,
-        type: "tel",
-      },])
+      setFields([
+        {
+          label: "Tên Đăng Nhập",
+          field: "username",
+          value: u.username,
+          type: "text",
+        },
+        {
+          label: "Họ",
+          field: "firstName",
+          value: u.firstName,
+          type: "text",
+        },
+        {
+          label: "Tên",
+          field: "lastName",
+          value: u.lastName,
+          type: "text",
+        },
+        {
+          label: "Email",
+          field: "email",
+          value: u.email,
+          type: "email",
+        },
+        {
+          label: "Số Điện Thoại",
+          field: "phone",
+          value: u.phoneNumber,
+          type: "tel",
+        },
+        {
+          label: "Mã Số Sinh Viên",
+          field: "studentCode",
+          value: u.studentCode,
+          type: "text",
+        },
+        {
+          label: "Lớp",
+          field: "className",
+          value: u.className,
+          type: "text",
+        },
+        {
+          label: "Khoa",
+          field: "facultyName",
+          value: u.facultyName,
+          type: "text",
+        },
+      ]);
     } else {
       nav("/");
     }
@@ -105,28 +120,21 @@ const User = () => {
               onChange={(e) => Change(e, f.field)}
               type={f.type}
               defaultValue={f.value}
-              disabled={f.field === "username"}
+              disabled={["username", "className", "studentCode", "facultyName"].includes(f.field)}
             />
           </Form.Group>
         ))}
         <Form.Group className="mb-3" controlId="avatar">
           {/* <Form.Label>Avatar</Form.Label> */}
           <Image src={u?.avatar} width="100" className="mb-3" rounded />
-          <Form.Control
-            type="file"
-            accept = ".jpg,.png"
-            ref={avatar}
-          />
+          <Form.Control type="file" accept=".jpg,.png" ref={avatar} />
         </Form.Group>
         <Link to="/change_password">
-        <Button
-          variant="primary"
-          className="mb-3"
-        >
-          Đổi Mật Khẩu
-        </Button>
+          <Button variant="primary" className="mb-3">
+            Đổi Mật Khẩu
+          </Button>
         </Link>
-        
+
         <Button variant="success" className="mb-3 ms-3" type="submit">
           Cập Nhật
         </Button>

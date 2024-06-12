@@ -4,6 +4,7 @@
  */
 package com.pbthnxl.services.impl;
 
+import com.pbthnxl.dto.StudentUserDTO;
 import com.pbthnxl.pojo.User;
 import com.pbthnxl.repositories.UserRepository;
 import com.pbthnxl.services.UserService;
@@ -63,5 +64,26 @@ public class UserServiceImpl implements UserService {
     public boolean authUser(String username, String password) {
         return this.userRepository.authUser(username, password);
     }
+
+    @Override
+    public StudentUserDTO getUserByUsernameDTO(String username) {
+        return this.convertToDTO(this.userRepository.getUserByUsername(username));
+    }
+    
+    private StudentUserDTO convertToDTO(User u){
+        StudentUserDTO dto = new StudentUserDTO();
+        
+        dto.setFirstName(u.getFirstName());
+        dto.setLastName(u.getLastName());
+        dto.setEmail(u.getEmail());
+        dto.setUsername(u.getUsername());
+        dto.setAvatar(u.getAvatar());
+        dto.setPhoneNumber(u.getPhoneNumber());
+        dto.setStudentCode(u.getStudent().getStudentCode());
+        dto.setClassName(u.getStudent().getClassId().getName());
+        dto.setFacultyName(u.getStudent().getFacultyId().getName());
+        return dto;
+    }
+            
     
 }

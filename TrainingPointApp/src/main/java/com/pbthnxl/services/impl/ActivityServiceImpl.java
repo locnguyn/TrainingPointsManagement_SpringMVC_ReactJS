@@ -4,12 +4,20 @@
  */
 package com.pbthnxl.services.impl;
 
+import com.pbthnxl.dto.ActivityDTO;
+import com.pbthnxl.dto.ActivityParticipationTypeDTO;
+import com.pbthnxl.dto.CommentDTO;
 import com.pbthnxl.pojo.Activity;
+import com.pbthnxl.pojo.ActivityParticipationType;
+import com.pbthnxl.pojo.Comment;
+import com.pbthnxl.repositories.ActivityParticipationTypeRepository;
 import com.pbthnxl.repositories.ActivityRepository;
+import com.pbthnxl.repositories.CommentRepository;
 import com.pbthnxl.services.ActivityService;
-import java.util.Date;
+import com.pbthnxl.services.CommentService;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +29,12 @@ import org.springframework.stereotype.Service;
 public class ActivityServiceImpl implements ActivityService {
     @Autowired
     ActivityRepository activityRepo;
+    @Autowired
+    ActivityParticipationTypeRepository acPartTypeRepo;
+    @Autowired
+    private CommentRepository commentRepo;
+    @Autowired
+    private CommentService commentService;
 
     @Override
     public List<Activity> getActivities() {
@@ -45,5 +59,47 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public void deleteActivity(int id) {
         this.activityRepo.deleteActivity(id);
+    }
+
+    @Override
+    public List<ActivityDTO> findFilteredActivitiesDTO(Map<String, String> params) {
+            List<Activity> list = this.activityRepo.findFilteredActivities(params);
+            return list.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    private ActivityDTO convertToDTO(Activity a) {
+        ActivityDTO dto = new ActivityDTO();
+        
+        dto.setId(a.getId());
+        dto.setName(a.getName());
+        dto.setLocation(a.getLocation());
+        dto.setArticle(a.getArticleId().getName());
+        dto.setFaculty(a.getFacultyId().getName());
+        dto.setStartDateTime(a.getStartDateTime());
+        dto.setEndDateTime(a.getEndDate());
+        dto.setParticipant(a.getParticipantId().getName());
+        return dto;
+    }
+
+    @Override
+    public ActivityDTO getActivityByIdDTO(int id) {
+        Activity a = this.getActivityById(id);
+        
+        ActivityDTO dto = this.convertToDTO(a);
+        
+        dto.setComments(this.commentRepo.getCommentsByActivityId(id).stream().map(c -> this.commentService.convertToDTO(c)).collect(Collectors.toSet()));
+        dto.setActivityParticipationTypes(this.acPartTypeRepo.getActivityParticipationTypesByActivityId(id).stream().map(this::convertToDTO).collect(Collectors.toSet()));
+        
+        return dto;
+    }
+    
+    
+    private ActivityParticipationTypeDTO convertToDTO(ActivityParticipationType type) {
+        ActivityParticipationTypeDTO dto = new ActivityParticipationTypeDTO();
+        Activity a = type.getActivityId();
+        dto.setId(type.getId());
+        dto.setPoint(type.getPoint());
+        dto.setParticipationType(type.getParticipationTypeId().getName());
+        return dto;
     }
 }

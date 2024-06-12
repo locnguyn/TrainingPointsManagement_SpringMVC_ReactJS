@@ -15,6 +15,7 @@ import cookie from 'react-cookies'
 import User from "./components/User/User";
 import Report from "./components/Activity/ReportMissing";
 import Password from "./components/User/Password";
+import ActivityDetails from "./components/Activity/ActivityDetails";
 
 function App() {
   const [user, dispatch] = useReducer(MyUserReducer, cookie.load("user") || null);
@@ -26,10 +27,11 @@ function App() {
             <Header />
             {/* <Spinner /> */}
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/activity" element={<Activity />} />
-              <Route path="/report_missing" element={<Report />} />
-              <Route path="/register" element={<Register />} />
+              <Route path="/" element={<Home />}/>
+              <Route path="/activity" element={<Activity/>}/>
+              <Route path="/report_missing" element={<Report/>}/>
+              <Route path="/activity/:activityId" element={<ActivityDetails/>}/>
+              <Route path="/register" element={<Register />}/>
               <Route path="/login" element={<Login />} />
               <Route path="/current-user" element={<User />}/>
               <Route path="/change_password" element={<Password />} />

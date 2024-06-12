@@ -5,8 +5,13 @@
 package com.pbthnxl.controllers;
 
 import com.pbthnxl.components.JwtService;
+import com.pbthnxl.dto.StudentUserDTO;
+import com.pbthnxl.pojo.Student;
 import com.pbthnxl.pojo.User;
+import com.pbthnxl.services.ClassService;
 import com.pbthnxl.services.CloudinaryService;
+import com.pbthnxl.services.FacultyService;
+import com.pbthnxl.services.StudentService;
 import com.pbthnxl.services.UserService;
 import java.security.Principal;
 import java.util.Map;
@@ -44,6 +49,12 @@ public class ApiUserController {
     private JwtService jwtService;
     @Autowired
     private CloudinaryService cloudinary;
+    @Autowired
+    private ClassService classService;
+    @Autowired
+    private FacultyService facultyService;
+    @Autowired
+    private StudentService studentService;
 
     @PostMapping(path = "/register/", consumes = {
         MediaType.APPLICATION_JSON_VALUE,
@@ -54,6 +65,7 @@ public class ApiUserController {
     public void create(@RequestParam Map<String, String> params, @RequestPart MultipartFile[] files) {
         String avatarUrl = "";
 
+        // Create user
         User user = new User();
         user.setFirstName(params.get("firstName"));
         user.setLastName(params.get("lastName"));
@@ -68,6 +80,18 @@ public class ApiUserController {
             user.setAvatar(avatarUrl);
         }
 
+        
+        
+        // Create student
+        
+        Student student = new Student();
+        student.setStudentCode(params.get("studentCode"));
+        student.setClassId(classService.getClassById(Integer.parseInt(params.get("studentId"))));
+        student.setFacultyId(facultyService.getFacultyById(Integer.parseInt(params.get("facultyId"))));
+        student.setUserId(user);
+        
+        this.studentService.saveStudent(student);
+        
         this.userService.saveUser(user);
     }
 
@@ -85,8 +109,8 @@ public class ApiUserController {
 
     @GetMapping(path = "/current-user/", produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin
-    public ResponseEntity<User> getCurrentUser(Principal p) {
-        User u = this.userService.getUserByUsername(p.getName());
+    public ResponseEntity<StudentUserDTO> getCurrentUser(Principal p) {
+        StudentUserDTO u = this.userService.getUserByUsernameDTO(p.getName());
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
 
@@ -95,7 +119,7 @@ public class ApiUserController {
         MediaType.APPLICATION_JSON_VALUE,
     })
     @CrossOrigin
-    public ResponseEntity<User> update(@RequestParam Map<String, String> params, @RequestPart(required = false) MultipartFile[] files, Principal p) {
+    public ResponseEntity<StudentUserDTO> update(@RequestParam Map<String, String> params, @RequestPart(required = false) MultipartFile[] files, Principal p) {
         User user = this.userService.getUserByUsername(p.getName());
         if (user == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -109,9 +133,6 @@ public class ApiUserController {
         if (params.containsKey("lastName")) {
             user.setLastName(params.get("lastName"));
         }
-        if (params.containsKey("email")) {
-            user.setEmail(params.get("email"));
-        }
         if (params.containsKey("phone")) {
             user.setPhoneNumber(params.get("phone"));
         }
@@ -122,7 +143,7 @@ public class ApiUserController {
 
         this.userService.saveUser(user);
 
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return new ResponseEntity<>(this.userService.getUserByUsernameDTO(user.getUsername()), HttpStatus.OK);
     }
     
     @PatchMapping(path = "/current-user/change-password/", consumes = {
@@ -138,8 +159,6 @@ public class ApiUserController {
         String oldPassword = "";
         if (params.containsKey("old_password") && params.containsKey("new_password")){
             oldPassword = params.get("old_password");
-            System.out.println(oldPassword);
-            System.out.println(user.getPassword());
             if(this.passwordEncoder.matches(oldPassword, user.getPassword())){
                  user.setPassword(this.passwordEncoder.encode(params.get("new_password")));
                  this.userService.saveUser(user);
