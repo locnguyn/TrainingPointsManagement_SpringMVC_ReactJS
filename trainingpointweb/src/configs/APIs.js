@@ -8,6 +8,7 @@ export const endpoints = {
     'actitivty-report': "api/activity/report",
     'activity-details': (activityId) => `/api/activity/${activityId}`,
     'activity-add-comment': (activityId) => `/api/activity/${activityId}/add-comment/`,
+    'activity-like': (activityId) => `/api/activity/${activityId}/like/`,
     'faculty-list': "api/common/faculty-list/",
     'article-list': "api/common/article-list/",
     'register': "api/register/",
@@ -15,6 +16,9 @@ export const endpoints = {
     'current-user': "api/current-user/",
     'update-current-user': "api/current-user/",
     'change-password': "api/current-user/change-password/",
+    'delete-comment': (commentId) => `api/comment/${commentId}`,
+    'update-comment': (commentId) => `api/comment/${commentId}`,
+    'like-comment': (commentId) => `api/comment/${commentId}/like/`
 }
 
 export const authApi = () => {

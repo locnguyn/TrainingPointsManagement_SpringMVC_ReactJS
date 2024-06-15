@@ -44,6 +44,7 @@ import com.pbthnxl.validator.EndDateAfterStartDate;
     @NamedQuery(name = "Activity.findByName", query = "SELECT a FROM Activity a WHERE a.name = :name"),
     @NamedQuery(name = "Activity.findByStartDateTime", query = "SELECT a FROM Activity a WHERE a.startDateTime = :startDateTime"),
     @NamedQuery(name = "Activity.findByEndDate", query = "SELECT a FROM Activity a WHERE a.endDate = :endDate"),
+    @NamedQuery(name = "Activity.countInteractions", query = "SELECT COUNT(i) FROM Interaction i WHERE i.activityId.id = :activityId"),
     @NamedQuery(name = "Activity.findByLocation", query = "SELECT a FROM Activity a WHERE a.location = :location")})
 public class Activity implements Serializable {
 

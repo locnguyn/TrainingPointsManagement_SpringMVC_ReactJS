@@ -21,33 +21,62 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional
-public class CommentRepositoryImpl implements CommentRepository{
+public class CommentRepositoryImpl implements CommentRepository {
+
     @Autowired
     private LocalSessionFactoryBean factory;
-    
+
     @Override
     public List<Comment> getCommentsByActivityId(int activityId) {
         Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createNamedQuery("Comment.findByActivityId");
+        Query q = s.createNamedQuery("Comment.findByActivityId", Comment.class);
         q.setParameter("activityId", activityId);
-        
+
         return q.getResultList();
     }
 
     @Override
-    public void save(Comment comment) {
+    public void saveOrUpdate(Comment comment) {
         Session s = this.factory.getObject().getCurrentSession();
-        s.save(comment);
+        s.saveOrUpdate(comment);
     }
 
     @Override
     public void delete(int id) {
         Session s = this.factory.getObject().getCurrentSession();
         Comment c = s.get(Comment.class, id);
-        
-        if(c != null){
+
+        if (c != null) {
             s.delete(c);
         }
     }
-    
+
+    @Override
+    public Comment getCommentById(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+
+        return s.get(Comment.class, id);
+    }
+
+    @Override
+    public int countLikes(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        org.hibernate.query.Query<Long> query = session.createNamedQuery("Comment.countInteractions", Long.class);
+        query.setParameter("commentId", id);
+
+        Long count = query.getSingleResult();
+        return count != null ? count.intValue() : 0;
+    }
+
+    @Override
+    public boolean isUserLikedComment(Integer commentId, String username) {
+        Session s = this.factory.getObject().getCurrentSession();
+        String query = "SELECT COUNT(i) FROM Interaction i WHERE i.commentId.id = :commentId AND i.userId.username = :username";
+        Long count = s.createQuery(query, Long.class)
+                .setParameter("commentId", commentId)
+                .setParameter("username", username)
+                .getSingleResult();
+        return count > 0;
+    }
+
 }

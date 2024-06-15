@@ -17,6 +17,8 @@ public class CommentDTO {
     private String name;
     private String avatar;
     private Integer userId;
+    private int likes;
+    private boolean liked;
 
     /**
      * @return the id
@@ -100,5 +102,33 @@ public class CommentDTO {
      */
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    /**
+     * @return the likes
+     */
+    public int getLikes() {
+        return likes;
+    }
+
+    /**
+     * @param likes the likes to set
+     */
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    /**
+     * @return the liked
+     */
+    public boolean isLiked() {
+        return liked;
+    }
+
+    /**
+     * @param liked the liked to set
+     */
+    public void setLiked(boolean liked) {
+        this.liked = liked;
     }
 }

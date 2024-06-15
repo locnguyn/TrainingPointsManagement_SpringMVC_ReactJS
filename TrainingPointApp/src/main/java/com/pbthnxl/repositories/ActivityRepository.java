@@ -19,4 +19,6 @@ public interface ActivityRepository {
     void addOrUpdate(Activity activity);
     List<Activity> findFilteredActivities(Map<String, String> params);
     void deleteActivity(int id);
+    int countLikes(int activityId);
+    boolean isUserLikedActivity(Integer activityId, String username);
 }

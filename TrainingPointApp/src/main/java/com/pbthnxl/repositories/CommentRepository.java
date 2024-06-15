@@ -12,9 +12,10 @@ import java.util.List;
  * @author hieu
  */
 public interface CommentRepository {
-
     List<Comment> getCommentsByActivityId(int activityId);
-    void save(Comment comment);
+    void saveOrUpdate(Comment comment);
     void delete(int id);
-
+    Comment getCommentById(int id);
+    int countLikes(int id);
+    boolean isUserLikedComment(Integer commentId, String username);
 }

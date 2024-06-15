@@ -28,8 +28,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void save(Comment comment) {
-        this.commentRepo.save(comment);
+    public void saveOrUpdate(Comment comment) {
+        this.commentRepo.saveOrUpdate(comment);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDTO convertToDTO(Comment c) {
+    public CommentDTO convertToDTO(Comment c, String username) {
         CommentDTO dto = new CommentDTO();
         
         dto.setId(c.getId());
@@ -47,8 +47,25 @@ public class CommentServiceImpl implements CommentService {
         dto.setCreatedAt(c.getCreatedAt());
         dto.setName(c.getUserId().getLastName() + " " + c.getUserId().getFirstName());
         dto.setAvatar(c.getUserId().getAvatar());
+        dto.setLikes(this.commentRepo.countLikes(c.getId()));
+        dto.setLiked(this.commentRepo.isUserLikedComment(c.getId(), username));
         
         return dto;
+    }
+
+    @Override
+    public Comment getCommentById(int id) {
+        return this.commentRepo.getCommentById(id);
+    }
+
+    @Override
+    public int countLikes(int id) {
+        return this.commentRepo.countLikes(id);
+    }
+
+    @Override
+    public boolean isUserLikedComment(Integer commentId, String username) {
+        return this.commentRepo.isUserLikedComment(commentId, username);
     }
     
 }

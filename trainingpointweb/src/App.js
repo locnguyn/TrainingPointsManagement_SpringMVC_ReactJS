@@ -16,6 +16,8 @@ import User from "./components/User/User";
 import Report from "./components/Activity/ReportMissing";
 import Password from "./components/User/Password";
 import ActivityDetails from "./components/Activity/ActivityDetails";
+import { Toaster } from "react-hot-toast";
+import Chatbox from "./components/Chatbox/Chatbox";
 
 function App() {
   const [user, dispatch] = useReducer(MyUserReducer, cookie.load("user") || null);
@@ -41,6 +43,8 @@ function App() {
           </MyDispatcherContext.Provider>
         </MyUserContext.Provider>
       </BrowserRouter>
+      <div><Toaster position="bottom-right"/></div>
+      <Chatbox />
     </Container>
   );
 }

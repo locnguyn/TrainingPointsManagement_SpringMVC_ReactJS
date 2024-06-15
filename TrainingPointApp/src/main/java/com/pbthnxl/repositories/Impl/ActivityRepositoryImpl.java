@@ -72,7 +72,7 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         q.select(r);
 
         List<Predicate> predicates = new ArrayList<>();
-        
+
         String kw = params.get("kw");
         if (kw != null && !kw.isEmpty()) {
             predicates.add(b.like(r.get("name"), String.format("%%%s%%", kw)));
@@ -142,5 +142,26 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         if (activity != null) {
             s.delete(activity);
         }
+    }
+
+    @Override
+    public int countLikes(int activityId) {
+        Session session = this.factory.getObject().getCurrentSession();
+        org.hibernate.query.Query<Long> query = session.createNamedQuery("Activity.countInteractions", Long.class);
+        query.setParameter("activityId", activityId);
+
+        Long count = query.getSingleResult();
+        return count != null ? count.intValue() : 0;
+    }
+
+    @Override
+    public boolean isUserLikedActivity(Integer activityId, String username) {
+        Session s = this.factory.getObject().getCurrentSession();
+        String query = "SELECT COUNT(i) FROM Interaction i WHERE i.activityId.id = :activityId AND i.userId.username = :username";
+        Long count = s.createQuery(query, Long.class)
+                .setParameter("activityId", activityId)
+                .setParameter("username", username)
+                .getSingleResult();
+        return count > 0;
     }
 }

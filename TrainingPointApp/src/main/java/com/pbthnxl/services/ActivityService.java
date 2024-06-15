@@ -20,5 +20,7 @@ public interface ActivityService {
     List<Activity> findFilteredActivities(Map<String, String> params);
     List<ActivityDTO> findFilteredActivitiesDTO(Map<String, String> params);
     void deleteActivity(int id);
-    ActivityDTO getActivityByIdDTO(int id);
+    ActivityDTO getActivityByIdDTO(int id, String username);
+    int countLikes(int activityId);
+    boolean isUserLikedActivity(Integer activityId, String username);
 }

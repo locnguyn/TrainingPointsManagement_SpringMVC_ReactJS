@@ -38,7 +38,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Comment.findAll", query = "SELECT c FROM Comment c"),
     @NamedQuery(name = "Comment.findById", query = "SELECT c FROM Comment c WHERE c.id = :id"),
-    @NamedQuery(name = "Comment.findByActivityId", query = "SELECT c FROM Comment c WHERE c.activityId.id = :activityId"),
+    @NamedQuery(name = "Comment.countInteractions", query = "SELECT COUNT(i) FROM Interaction i WHERE i.commentId.id = :commentId"),
+    @NamedQuery(name = "Comment.findByActivityId", query = "SELECT c FROM Comment c WHERE c.activityId.id = :activityId ORDER BY id DESC"),
     @NamedQuery(name = "Comment.findByCreatedAt", query = "SELECT c FROM Comment c WHERE c.createdAt = :createdAt")})
 
 public class Comment implements Serializable {

@@ -9,6 +9,7 @@ package com.pbthnxl.dto;
  * @author hieu
  */
 public class StudentUserDTO {
+    private Integer userId;
     private String firstName;
     private String lastName;
     private String phoneNumber;
@@ -18,6 +19,7 @@ public class StudentUserDTO {
     private String studentCode;
     private String className;
     private String facultyName;
+    private String role;
 
     /**
      * @return the firstName
@@ -143,6 +145,34 @@ public class StudentUserDTO {
      */
     public void setFacultyName(String facultyName) {
         this.facultyName = facultyName;
+    }
+
+    /**
+     * @return the userId
+     */
+    public Integer getUserId() {
+        return userId;
+    }
+
+    /**
+     * @param userId the userId to set
+     */
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    /**
+     * @return the role
+     */
+    public String getRole() {
+        return role;
+    }
+
+    /**
+     * @param role the role to set
+     */
+    public void setRole(String role) {
+        this.role = role;
     }
     
 }

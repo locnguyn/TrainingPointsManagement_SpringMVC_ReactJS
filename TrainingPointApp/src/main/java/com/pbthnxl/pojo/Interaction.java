@@ -31,6 +31,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Interaction.findAll", query = "SELECT i FROM Interaction i"),
     @NamedQuery(name = "Interaction.findById", query = "SELECT i FROM Interaction i WHERE i.id = :id"),
+    @NamedQuery(name = "Interaction.findByUserIdAndActivityId", query = "SELECT i FROM Interaction i WHERE i.userId.id = :userId AND i.activityId.id = :activityId"),
+    @NamedQuery(name = "Interaction.findByUserIdAndCommentId", query = "SELECT i FROM Interaction i WHERE i.userId.id = :userId AND i.commentId.id = :commentId"),
     @NamedQuery(name = "Interaction.findByCreatedAt", query = "SELECT i FROM Interaction i WHERE i.createdAt = :createdAt")})
 public class Interaction implements Serializable {
 

@@ -73,6 +73,7 @@ public class UserServiceImpl implements UserService {
     private StudentUserDTO convertToDTO(User u){
         StudentUserDTO dto = new StudentUserDTO();
         
+        dto.setUserId(u.getId());
         dto.setFirstName(u.getFirstName());
         dto.setLastName(u.getLastName());
         dto.setEmail(u.getEmail());
@@ -82,6 +83,7 @@ public class UserServiceImpl implements UserService {
         dto.setStudentCode(u.getStudent().getStudentCode());
         dto.setClassName(u.getStudent().getClassId().getName());
         dto.setFacultyName(u.getStudent().getFacultyId().getName());
+        dto.setRole(u.getUserRole());
         return dto;
     }
             

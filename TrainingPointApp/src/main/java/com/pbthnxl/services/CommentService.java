@@ -15,7 +15,10 @@ import java.util.List;
  */
 public interface CommentService {
     List<Comment> getCommentsByActivityId(int activityId);
-    void save(Comment comment);
+    void saveOrUpdate(Comment comment);
     void delete(int id);
-    CommentDTO convertToDTO(Comment c);
+    CommentDTO convertToDTO(Comment c, String username);
+    Comment getCommentById(int id);
+    int countLikes(int id);
+    boolean isUserLikedComment(Integer commentId, String username);
 }

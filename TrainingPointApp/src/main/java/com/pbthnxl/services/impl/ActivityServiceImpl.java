@@ -82,14 +82,15 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ActivityDTO getActivityByIdDTO(int id) {
+    public ActivityDTO getActivityByIdDTO(int id, String username) {
         Activity a = this.getActivityById(id);
         
         ActivityDTO dto = this.convertToDTO(a);
         
-        dto.setComments(this.commentRepo.getCommentsByActivityId(id).stream().map(c -> this.commentService.convertToDTO(c)).collect(Collectors.toSet()));
+        dto.setComments(this.commentRepo.getCommentsByActivityId(id).stream().map(c -> this.commentService.convertToDTO(c, username)).collect(Collectors.toSet()));
         dto.setActivityParticipationTypes(this.acPartTypeRepo.getActivityParticipationTypesByActivityId(id).stream().map(this::convertToDTO).collect(Collectors.toSet()));
-        
+        dto.setLikes(this.countLikes(id));
+        dto.setLiked(this.isUserLikedActivity(id, username));
         return dto;
     }
     
@@ -101,5 +102,15 @@ public class ActivityServiceImpl implements ActivityService {
         dto.setPoint(type.getPoint());
         dto.setParticipationType(type.getParticipationTypeId().getName());
         return dto;
+    }
+
+    @Override
+    public int countLikes(int activityId) {
+        return this.activityRepo.countLikes(activityId);
+    }
+
+    @Override
+    public boolean isUserLikedActivity(Integer activityId, String username) {
+        return this.activityRepo.isUserLikedActivity(activityId, username);
     }
 }
