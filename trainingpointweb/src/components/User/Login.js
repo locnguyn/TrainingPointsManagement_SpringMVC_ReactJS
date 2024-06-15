@@ -95,17 +95,17 @@ const Login = () => {
 
   }
 
-  useEffect(() => {
-    window.addEventListener('beforeunload', async () => {
-      const user = auth.currentUser;
-      if (user) {
-        await setDoc(doc(db, "users", user.uid), {
-          status: "offline",
-          lastActive: Timestamp.now()
-        }, { merge: true });
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   window.addEventListener('beforeunload', async () => {
+  //     const user = auth.currentUser;
+  //     if (user) {
+  //       await setDoc(doc(db, "users", user.uid), {
+  //         status: "offline",
+  //         lastActive: Timestamp.now()
+  //       }, { merge: true });
+  //     }
+  //   });
+  // }, []);
 
   const login = async (e) => {
     e.preventDefault();
@@ -114,25 +114,19 @@ const Login = () => {
       let res = await APIs.post(endpoints["login"], { ...user });
       cookie.save("token", res.data);
       let u = await authApi().get(endpoints["current-user"]);
-      cookie.save("user", u.data);
+      let r = await authApi().get(endpoints["user-registration"]);
+      cookie.save("user", {
+        "userInfo": u.data,
+        "userRegistration": r.data
+      });
       dispatch({
         type: "login",
-        payload: u.data,
-      });
-      try {
-        await handleRegister(u.data.email, user.password, u.data.role);
-      } catch (e) {
-        console.log(e);
-        // try {
-        // await handleLoginFirebase(u.data.email, user.password);
-        // } catch (e) { }
-        // if (e.code === "auth/invalid-credential") {
-        //   try {
-        //   } catch (e) {
-        //     console.error(e);
-        //   }
-        // }
-      }
+        payload: {
+            resData: u.data,
+            regData: r.data
+        }
+    });
+
       nav(location.state?.from?.pathname || "/");
     } catch (ex) {
       console.error(ex);

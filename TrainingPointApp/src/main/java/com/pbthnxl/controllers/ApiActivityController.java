@@ -70,9 +70,11 @@ public class ApiActivityController {
 
     // dang ky hoat dong
     @CrossOrigin
-    @PostMapping("/registration/")
+    @PostMapping(path = "/registration/", consumes = {
+        MediaType.APPLICATION_JSON_VALUE
+    })
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@RequestParam Map<String, String> params, Principal p) {
+    public void create(@RequestBody Map<String, String> params, Principal p) {
         Registration r = new Registration();
 
         r.setStudentId(this.userSerivce.getUserByUsername(p.getName()).getStudent());
@@ -103,9 +105,11 @@ public class ApiActivityController {
         c.setContent(params.get("content"));
         c.setCreatedAt(new Date());
 
+
         this.coService.saveOrUpdate(c);
 
         return new ResponseEntity<>(this.coService.convertToDTO(c, p.getName()), HttpStatus.CREATED);
+
     }
 
     @CrossOrigin

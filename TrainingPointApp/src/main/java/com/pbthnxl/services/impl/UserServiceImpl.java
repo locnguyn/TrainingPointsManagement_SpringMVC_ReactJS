@@ -86,6 +86,11 @@ public class UserServiceImpl implements UserService {
         dto.setRole(u.getUserRole());
         return dto;
     }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return this.userRepository.getUserByEmail(email);
+    }
             
     
 }

@@ -93,7 +93,7 @@ const Comment = ({ comment, handleUpdate, handleDelete }) => {
                                 {cmt.content}
                             </div>
                         </div>
-                        {cmt.userId === user.userId ? (
+                        {cmt.userId === user.userInfo.userId ? (
                             <>
                                 <div className='align-self-center' style={{ color: "light-gray" }} role='button' onClick={toggleMenu} ref={svgRef}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-three-dots ms-1" viewBox="0 0 16 16">

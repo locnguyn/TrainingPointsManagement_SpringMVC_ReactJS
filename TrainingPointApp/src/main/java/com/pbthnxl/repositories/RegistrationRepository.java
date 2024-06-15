@@ -18,4 +18,8 @@ public interface RegistrationRepository {
     void processCSV(MultipartFile file, int activityParticipationTypeId);
     List<Registration> getRegistrations();
     List<Registration> getRegistrationsByFacultyId(int facultyId);
+    List<Registration> findRegistrationsByStudentId(int id);
+    Registration findRegistrationById(int id);
+    Registration findRegistrationOwner(int studentId, int registrationId);
+    void delete(int id);
 }

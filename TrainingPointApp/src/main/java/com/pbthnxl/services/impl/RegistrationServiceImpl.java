@@ -4,9 +4,16 @@
  */
 package com.pbthnxl.services.impl;
 
+import com.pbthnxl.dto.RegistrationDTO;
 import com.pbthnxl.pojo.Registration;
+import com.pbthnxl.repositories.ActivityParticipationTypeRepository;
+import com.pbthnxl.repositories.ActivityRepository;
 import com.pbthnxl.repositories.RegistrationRepository;
+import com.pbthnxl.repositories.StudentRepository;
+import com.pbthnxl.services.ActivityService;
 import com.pbthnxl.services.RegistrationService;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,8 +24,17 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
+
     @Autowired
     private RegistrationRepository registrationRepository;
+    @Autowired
+    private StudentRepository studentRepo;
+    @Autowired
+    private ActivityRepository activityRepo;
+    @Autowired
+    private ActivityParticipationTypeRepository acPartTypeRepo;
+    @Autowired
+    private ActivityService activityService;
 
     @Override
     public void save(Registration registration) {
@@ -34,5 +50,48 @@ public class RegistrationServiceImpl implements RegistrationService {
     public void processCSV(MultipartFile file, int activityParticipationTypeId) {
         this.registrationRepository.processCSV(file, activityParticipationTypeId);
     }
-    
+
+    @Override
+    public List<Registration> findRegistrationsByStudentId(int id) {
+        return this.registrationRepository.findRegistrationsByStudentId(id);
+    }
+
+    @Override
+    public List<RegistrationDTO> findRegistrationsByStudentIdDTO(int id) {
+        List<Registration> list = this.registrationRepository.findRegistrationsByStudentId(id);
+
+        return list.stream().map(this::convertToDTO).collect(Collectors.toList());
+
+    }
+
+    private RegistrationDTO convertToDTO(Registration r) {
+        RegistrationDTO dto = new RegistrationDTO();
+
+        dto.setId(r.getId());
+        dto.setAcPartTypeId(r.getActivityParticipationTypeId().getId());
+        dto.setCreatedAt(r.getRegistrationDate());
+        dto.setParticipationTypeName(r.getActivityParticipationTypeId().getParticipationTypeId().getName());
+        dto.setParticipated(r.getParticipated());
+        dto.setPoint(r.getActivityParticipationTypeId().getPoint());
+//        dto.setActivity(this.acPartTypeRepo.getActivityParticipationTypeById(r.getActivityParticipationTypeId()));
+        dto.setActivity(this.activityService.convertToRegistrationActivityDTO(r.getActivityParticipationTypeId().getActivityId()));
+        
+        return dto;
+    }
+
+    @Override
+    public Registration findRegistrationById(int id) {
+        return this.registrationRepository.findRegistrationById(id);
+    }
+
+    @Override
+    public void delete(int id) {
+        this.registrationRepository.delete(id);
+    }
+
+    @Override
+    public Registration findRegistrationOwner(int studentId, int registrationId) {
+        return this.registrationRepository.findRegistrationOwner(studentId, registrationId);
+    }
+
 }

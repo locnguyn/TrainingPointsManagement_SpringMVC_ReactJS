@@ -1,11 +1,13 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import APIs, { authApi, endpoints } from "../../configs/APIs";
-import { Button, Form, Image, Table } from "react-bootstrap";
-import { MyUserContext } from "../../configs/Contexts";
+
 import CommentList from "./CommentList";
 import InputForm from "../Common/InputForm";
 import toast from 'react-hot-toast';
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import APIs, { authApi, endpoints } from "../../configs/APIs";
+import { Button, Form, Image, Table } from "react-bootstrap";
+import { MyDispatcherContext, MyUserContext } from "../../configs/Contexts";
+import cookie from "react-cookies";
 
 const ActivityDetails = () => {
   const [activity, setActivity] = useState({});
@@ -13,6 +15,9 @@ const ActivityDetails = () => {
   const { activityId } = useParams();
   const [comment, setComment] = useState("");
   const user = useContext(MyUserContext);
+  const dispatch = useContext(MyDispatcherContext);
+  const location = useLocation();
+  const nav = useNavigate();
 
   const loadActivity = async () => {
     try {
@@ -34,6 +39,7 @@ const ActivityDetails = () => {
         setComments([...comments, res.data]);
         setComment("");
       }
+      console.log(activity);
     } catch (ex) {
       console.error(ex);
     }
@@ -77,10 +83,40 @@ const ActivityDetails = () => {
       console.error(err);
     }
   };
+  const activityRegistration = async (e, acPartTypeId) => {
+    e.preventDefault();
+      try{
+        console.log({acPartTypeId: acPartTypeId});
+        let res = await authApi().post(endpoints["activity-registration"], {acPartTypeId: acPartTypeId});
+
+        if(res.status === 201){
+          let r = await authApi().get(endpoints['user-registration']);
+          dispatch({
+            type: "update_user",
+            payload: {
+              resData: user.userInfo,
+              regData: r.data
+            }
+          });
+          cookie.save("user", {
+            ...user,
+            "userRegistration": r.data
+          })
+          alert("success");
+        }
+      } catch(ex){
+        console.error(ex);
+      }
+  }
 
   useEffect(() => {
-    loadActivity();
-  }, []);
+    if(user === null){
+      nav('/login', {state: {from: location}});
+    }
+    else{
+      loadActivity();
+    }
+  }, [user, nav, location]);
 
   const likeOrUnlike = async () => {
     try {
@@ -100,7 +136,13 @@ const ActivityDetails = () => {
   return (
     <>
       <h1 className="text-center mt-3">Chi Tiết Hoạt Động</h1>
-      <Table striped bordered hover className="activity-details">
+      <Table
+        responsive="sm"
+        striped
+        bordered
+        hover
+        className="activity-details"
+      >
         <tbody>
           <tr>
             <td>
@@ -140,25 +182,44 @@ const ActivityDetails = () => {
           </tr>
           <tr>
             <td>
-              <strong>Điều khoản</strong>
+              <strong>Điều</strong>
             </td>
             <td>{activity.article}</td>
           </tr>
-          {activity.activityParticipationTypes && <>
-            <tr>
-              <td rowSpan={activity.activityParticipationTypes.length + 1}>
-                <strong>Loại tham gia</strong>
-              </td>
-            </tr>
-            {activity.activityParticipationTypes.slice(0).map((type) => (
-              <tr key={type.id}>
-                <td>
-                  {type.participationType} - {type.point} điểm
-                </td>
-              </tr>
-            ))}
-          </>
-          }
+        </tbody>
+      </Table>
+
+      <Table
+        responsive="sm"
+        striped
+        bordered
+        hover
+        className="activity-details"
+      >
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Loại Tham Gia</th>
+            <th>Điểm</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {activity.activityParticipationTypes &&
+            activity.activityParticipationTypes.length > 0 && (
+              <>
+                {activity.activityParticipationTypes.map((type, index) => (
+                  <tr key={type.id}>
+                    <td>{index + 1}</td>
+                    <td>{type.participationType}</td>
+                    <td>{type.point}</td>
+                    <td>
+                        <Button onClick={(e) => activityRegistration(e, type.id)} disabled={user?.userRegistration.map(reg => reg.acPartTypeId).includes(type.id)}>+</Button>
+                    </td>
+                  </tr>
+                ))}
+              </>
+            )}
         </tbody>
       </Table>
 
@@ -187,7 +248,6 @@ const ActivityDetails = () => {
             </svg> Thích</>}
           </button>
         </div>
-      </div>
 
       <div className="mt-4">
         <h3>Bình luận</h3>
@@ -195,13 +255,14 @@ const ActivityDetails = () => {
       </div>
       <div className="d-flex mb-3">
         <Image
-          src={user.avatar}
+          src={user.userInfo.avatar}
           width="30"
           height="30"
           className="me-2"
           roundedCircle
         />
-        <InputForm onChange={setComment} handleSubmit={addComment} placeholder={"Bình luận với vai trò " + user.lastName + " " + user.firstName} />
+        <InputForm onChange={setComment} handleSubmit={addComment} placeholder={"Bình luận với vai trò " + user.userInfo.lastName + " " + user.userInfo.firstName} />
+      </div>
       </div>
     </>
   );

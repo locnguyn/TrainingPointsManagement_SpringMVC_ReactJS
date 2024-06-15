@@ -12,6 +12,7 @@ import com.pbthnxl.pojo.User;
  */
 public interface UserRepository {
     User getUserByUsername(String username);
+    User getUserByEmail(String email);
     int getIdByUsername(String username);
     void saveUser(User user);
     void updateUserRole(int userId, String role);

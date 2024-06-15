@@ -7,6 +7,7 @@ package com.pbthnxl.services.impl;
 import com.pbthnxl.dto.ActivityDTO;
 import com.pbthnxl.dto.ActivityParticipationTypeDTO;
 import com.pbthnxl.dto.CommentDTO;
+import com.pbthnxl.dto.RegistrationActivityDTO;
 import com.pbthnxl.pojo.Activity;
 import com.pbthnxl.pojo.ActivityParticipationType;
 import com.pbthnxl.pojo.Comment;
@@ -105,6 +106,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+
     public int countLikes(int activityId) {
         return this.activityRepo.countLikes(activityId);
     }
@@ -112,5 +114,22 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public boolean isUserLikedActivity(Integer activityId, String username) {
         return this.activityRepo.isUserLikedActivity(activityId, username);
+    }
+
+    @Override
+    public RegistrationActivityDTO convertToRegistrationActivityDTO(Activity a) {
+        RegistrationActivityDTO dto = new RegistrationActivityDTO();
+        
+        dto.setActivityId(a.getId());
+        dto.setName(a.getName());
+        dto.setParticipant(a.getParticipantId().getName());
+        dto.setStartDateTime(a.getStartDateTime());
+        dto.setEndDateTime(a.getEndDate());
+        dto.setLocation(a.getLocation());
+        dto.setFaculty(a.getFacultyId().getName());
+        dto.setArticle(a.getArticleId().getName());
+        
+        return dto;
+
     }
 }

@@ -18,6 +18,7 @@ import Password from "./components/User/Password";
 import ActivityDetails from "./components/Activity/ActivityDetails";
 import { Toaster } from "react-hot-toast";
 import Chatbox from "./components/Chatbox/Chatbox";
+import Verify from "./components/User/Verify";
 
 function App() {
   const [user, dispatch] = useReducer(MyUserReducer, cookie.load("user") || null);
@@ -33,6 +34,7 @@ function App() {
               <Route path="/activity" element={<Activity/>}/>
               <Route path="/report_missing" element={<Report/>}/>
               <Route path="/activity/:activityId" element={<ActivityDetails/>}/>
+              <Route path="/verify" element={<Verify />}/>
               <Route path="/register" element={<Register />}/>
               <Route path="/login" element={<Login />} />
               <Route path="/current-user" element={<User />}/>

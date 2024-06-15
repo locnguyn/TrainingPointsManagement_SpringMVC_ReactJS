@@ -4,7 +4,9 @@
  */
 package com.pbthnxl.services;
 
+import com.pbthnxl.dto.RegistrationDTO;
 import com.pbthnxl.pojo.Registration;
+import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -15,4 +17,9 @@ public interface RegistrationService {
     void save(Registration registration);
     boolean existsByStudentIdAndActivityParticipationTypeId(Integer studentId, int activityParticipationTypeId);
     void processCSV(MultipartFile file, int activityParticipationTypeId);
+    List<Registration> findRegistrationsByStudentId(int id);
+    List<RegistrationDTO> findRegistrationsByStudentIdDTO(int id);
+    Registration findRegistrationById(int id);
+    Registration findRegistrationOwner(int studentId, int registrationId);
+    void delete(int id);
 }

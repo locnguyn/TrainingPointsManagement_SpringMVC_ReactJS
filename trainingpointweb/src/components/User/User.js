@@ -36,11 +36,18 @@ const User = () => {
         },
       });
       if (res.status === 200) {
-        cookie.save("user", res.data);
+        cookie.save("user", {
+          ...u,
+          userInfo: res.data,
+        });
         dispatch({
           type: "update_user",
-          payload: res.data,
+          payload: {
+            resData: res.data,
+            regData: u.userRegistration,
+          },
         });
+        console.log(u);
         alert("Thành công");
       }
     } catch (ex) {
@@ -59,49 +66,49 @@ const User = () => {
         {
           label: "Tên Đăng Nhập",
           field: "username",
-          value: u.username,
+          value: u.userInfo.username,
           type: "text",
         },
         {
           label: "Họ",
           field: "firstName",
-          value: u.firstName,
+          value: u.userInfo.firstName,
           type: "text",
         },
         {
           label: "Tên",
           field: "lastName",
-          value: u.lastName,
+          value: u.userInfo.lastName,
           type: "text",
         },
         {
           label: "Email",
           field: "email",
-          value: u.email,
+          value: u.userInfo.email,
           type: "email",
         },
         {
           label: "Số Điện Thoại",
           field: "phone",
-          value: u.phoneNumber,
+          value: u.userInfo.phoneNumber,
           type: "tel",
         },
         {
           label: "Mã Số Sinh Viên",
           field: "studentCode",
-          value: u.studentCode,
+          value: u.userInfo.studentCode,
           type: "text",
         },
         {
           label: "Lớp",
           field: "className",
-          value: u.className,
+          value: u.userInfo.className,
           type: "text",
         },
         {
           label: "Khoa",
           field: "facultyName",
-          value: u.facultyName,
+          value: u.userInfo.facultyName,
           type: "text",
         },
       ]);
@@ -120,14 +127,24 @@ const User = () => {
               onChange={(e) => Change(e, f.field)}
               type={f.type}
               defaultValue={f.value}
-              disabled={["username", "className", "studentCode", "facultyName"].includes(f.field)}
+              disabled={[
+                "username",
+                "className",
+                "studentCode",
+                "facultyName",
+              ].includes(f.field)}
             />
           </Form.Group>
         ))}
         <Form.Group className="mb-3" controlId="avatar">
           {/* <Form.Label>Avatar</Form.Label> */}
-          <Image src={u?.avatar} width="100" className="mb-3" rounded />
-          <Form.Control type="file" accept=".jpg,.png" ref={avatar} />
+          <Image
+            src={u?.userInfo.avatar}
+            width="100"
+            className="mb-3"
+            rounded
+          />
+          <Form.Control type="file" accept=".jpg,.png,.jpeg" ref={avatar} />
         </Form.Group>
         <Link to="/change_password">
           <Button variant="primary" className="mb-3">

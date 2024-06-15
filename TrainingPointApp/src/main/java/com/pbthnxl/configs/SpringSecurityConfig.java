@@ -36,6 +36,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth)
@@ -62,4 +63,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
         http.csrf().disable();
     }
+    
+    
 }

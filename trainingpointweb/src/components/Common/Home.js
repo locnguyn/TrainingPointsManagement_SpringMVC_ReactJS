@@ -31,6 +31,7 @@ const Home = () => {
     setActivities(res.data);
     setFaculty(fac.data);
     setArticle(art.data);
+
   };
 
   const updateFilter = (key, value) => {

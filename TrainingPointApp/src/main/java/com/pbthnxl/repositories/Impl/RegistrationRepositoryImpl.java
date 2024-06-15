@@ -117,4 +117,43 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
         return query.getResultList();
     }
 
+    @Override
+    public List<Registration> findRegistrationsByStudentId(int id) {
+         Session s = factory.getObject().getCurrentSession();
+         Query q = s.createNamedQuery("Registration.findByStudentId");
+         q.setParameter("studentId", id);
+         
+         return q.getResultList();
+    }
+
+    @Override
+    public Registration findRegistrationById(int id) {
+        Session s = factory.getObject().getCurrentSession();
+        
+        return s.get(Registration.class, id);
+    }
+
+    @Override
+    public void delete(int id) {
+        Session s = factory.getObject().getCurrentSession();
+        
+        Registration r = s.get(Registration.class, id);
+        if(r != null){
+            s.delete(r);
+        }
+    }
+
+    @Override
+    public Registration findRegistrationOwner(int studentId, int registrationId) {
+        Session s = factory.getObject().getCurrentSession();
+        
+        Query<Registration> q = s.createQuery("SELECT r FROM Registration r " +
+                                "WHERE r.id = :registrationId AND r.studentId.id = :studentId", Registration.class);
+        
+        q.setParameter("studentId", studentId);
+        q.setParameter("registrationId", registrationId);
+        
+        return q.getSingleResult();
+    }
+
 }

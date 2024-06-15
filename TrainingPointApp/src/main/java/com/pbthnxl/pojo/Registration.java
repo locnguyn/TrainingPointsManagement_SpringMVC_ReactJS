@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Registration.findAll", query = "SELECT r FROM Registration r"),
     @NamedQuery(name = "Registration.findById", query = "SELECT r FROM Registration r WHERE r.id = :id"),
     @NamedQuery(name = "Registration.findByRegistrationDate", query = "SELECT r FROM Registration r WHERE r.registrationDate = :registrationDate"),
+    @NamedQuery(name = "Registration.findByStudentId", query = "SELECT r FROM Registration r WHERE r.studentId.id = :studentId"),
     @NamedQuery(name = "Registration.findByParticipated", query = "SELECT r FROM Registration r WHERE r.participated = :participated")})
 public class Registration implements Serializable {
 

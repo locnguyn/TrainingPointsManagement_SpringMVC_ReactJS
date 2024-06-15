@@ -14,6 +14,7 @@ const Header = () => {
 
   const Logout = () => {
     try {
+      nav("/");
       dispatch({
         type: "logout",
       });
@@ -21,10 +22,10 @@ const Header = () => {
     } catch (ex) {
       console.error(ex);
     }
+    
   };
   useEffect(() => {
     if (logout) {
-      nav("/");
       setLogout(false);
     }
   }, [logout, nav]);
@@ -64,7 +65,7 @@ const Header = () => {
                   <Link to="/current-user">
                     <Image
                       className="me-2"
-                      src={user.avatar}
+                      src={user.userInfo.avatar}
                       style={{
                         width: "40px",
                         height: "40px",

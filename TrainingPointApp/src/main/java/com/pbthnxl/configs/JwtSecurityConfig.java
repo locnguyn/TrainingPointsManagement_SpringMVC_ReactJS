@@ -30,12 +30,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(basePackages = {
     "com.pbthnxl.controllers",
     "com.pbthnxl.repositories",
-    "com.pbthnxl.services", 
+    "com.pbthnxl.services",
     "com.pbthnxl.components"
 })
 @Order(1)
 public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
-    
+
     @Bean
     public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() throws Exception {
         JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter = new JwtAuthenticationTokenFilter();
@@ -64,6 +64,7 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().ignoringAntMatchers("/api/**");
         http.authorizeRequests().antMatchers("/api/login/").permitAll();
         http.authorizeRequests().antMatchers("/api/activity/list/").permitAll();
+        http.authorizeRequests().antMatchers("/api/otp/***/").permitAll();
         http.authorizeRequests().antMatchers("/api/activity/{id}").permitAll();
         http.authorizeRequests().antMatchers("/api/activity/***").access("hasRole('ROLE_ASSISTANT') or hasRole('ROLE_USER')");
         http.authorizeRequests().antMatchers("/api/register/").permitAll();

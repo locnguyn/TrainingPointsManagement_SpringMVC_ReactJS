@@ -42,9 +42,17 @@ const Register = () => {
       type: "password",
       label: "Xác nhận mật khẩu",
     },
+    {
+      field: "studentCode",
+      type: "text",
+      label: "Mã số sinh viên",
+    },
   ];
 
   const [user, setUser] = useState({});
+  const [step, setStep] = useState(1);
+  const [classes, setClasses] = useState({});
+  const [faculties, setFaculties] = useState({});
   const avatar = useRef();
   const nav = useNavigate();
   const u = useContext(MyUserContext);
@@ -53,6 +61,17 @@ const Register = () => {
       return { ...current, [field]: event.target.value };
     });
   };
+
+  const Load = async () => {
+    let f = await APIs.get(endpoints["faculty-list"]);
+    let c = await APIs.get(endpoints["class-list"]);
+    setFaculties(f.data);
+    setClasses(c.data);
+    console.log(1);
+  };
+  useEffect(() => {
+    Load();
+  }, []);
 
   useEffect(() => {
     if (u) {
@@ -97,6 +116,37 @@ const Register = () => {
             />
           </Form.Group>
         ))}
+        {classes && classes.length > 0 && (
+          <>
+            <Form.Group className="mb-3">
+              <Form.Label>Lớp</Form.Label>
+              <Form.Select defaultValue="" required>
+                <option value="" disabled hidden>
+                  Lớp
+                </option>
+                {classes.map((c) => (
+                  <option value={c.id}>{c.name}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </>
+        )}
+        {faculties && faculties.length > 0 && (
+          <>
+            <Form.Group className="mb-3">
+              <Form.Label>Khoa</Form.Label>
+              <Form.Select defaultValue="" required>
+                <option value="" disabled hidden>
+                  Khoa
+                </option>
+                {faculties.map((f) => (
+                  <option value={f.id}>{f.name}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </>
+        )}
+
         <Form.Group className="mb-3" controlId="avatar">
           <Form.Control type="file" accept=".jpg,.png" ref={avatar} />
         </Form.Group>

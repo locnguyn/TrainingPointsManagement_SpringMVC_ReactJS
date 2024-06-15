@@ -5,6 +5,7 @@
 package com.pbthnxl.services;
 
 import com.pbthnxl.dto.ActivityDTO;
+import com.pbthnxl.dto.RegistrationActivityDTO;
 import com.pbthnxl.pojo.Activity;
 import java.util.List;
 import java.util.Map;
@@ -23,4 +24,5 @@ public interface ActivityService {
     ActivityDTO getActivityByIdDTO(int id, String username);
     int countLikes(int activityId);
     boolean isUserLikedActivity(Integer activityId, String username);
+    RegistrationActivityDTO convertToRegistrationActivityDTO(Activity a);
 }

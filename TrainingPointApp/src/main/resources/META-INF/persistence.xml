@@ -16,6 +16,7 @@
     <class>com.pbthnxl.pojo.Class</class>
     <class>com.pbthnxl.pojo.Activity</class>
     <class>com.pbthnxl.pojo.ActivityParticipationType</class>
+    <class>com.pbthnxl.pojo.Otp</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/trainingpointdb?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
