@@ -135,6 +135,8 @@ const ActivityDetails = () => {
 
   return (
     <>
+    {user !== null &&
+    <>
       <h1 className="text-center mt-3">Chi Tiết Hoạt Động</h1>
       <Table
         responsive="sm"
@@ -264,6 +266,9 @@ const ActivityDetails = () => {
         <InputForm onChange={setComment} handleSubmit={addComment} placeholder={"Bình luận với vai trò " + user.userInfo.lastName + " " + user.userInfo.firstName} />
       </div>
       </div>
+    </>
+    }
+      
     </>
   );
 };

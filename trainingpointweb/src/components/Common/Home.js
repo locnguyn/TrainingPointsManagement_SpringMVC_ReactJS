@@ -9,7 +9,12 @@ import {
   DropdownButton,
   DropdownItem,
 } from "react-bootstrap";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import "./Styles.css";
 import { MyUserContext } from "../../configs/Contexts";
 import APIs, { authApi, endpoints } from "../../configs/APIs";
@@ -31,7 +36,6 @@ const Home = () => {
     setActivities(res.data);
     setFaculty(fac.data);
     setArticle(art.data);
-
   };
 
   const updateFilter = (key, value) => {
@@ -42,7 +46,6 @@ const Home = () => {
     }
     setSearchParams(searchParams);
   };
-
 
   useEffect(() => {
     let filters = Object.fromEntries([...searchParams]);
@@ -73,14 +76,17 @@ const Home = () => {
           </div>
         </Col>
       </Row>
-      <Dropdown className="d-inline mx-2">
+      <Dropdown className="d-inline mx-2" autoClose="inside">
         <Dropdown.Toggle variant="success">Khoa</Dropdown.Toggle>
         <Dropdown.Menu>
-          <Dropdown.Item onClick={() => updateFilter('faculty', 'all')}>
+          <Dropdown.Item onClick={() => updateFilter("faculty", "all")}>
             Tất cả
           </Dropdown.Item>
           {faculty.map((f) => (
-            <Dropdown.Item key={f.id} onClick={() => updateFilter('faculty', f.id)}>
+            <Dropdown.Item
+              key={f.id}
+              onClick={() => updateFilter("faculty", f.id)}
+            >
               {f.name}
             </Dropdown.Item>
           ))}
@@ -89,11 +95,14 @@ const Home = () => {
       <Dropdown className="d-inline mx-2">
         <Dropdown.Toggle variant="success">Điều</Dropdown.Toggle>
         <Dropdown.Menu>
-          <Dropdown.Item onClick={() => updateFilter('article', 'all')}>
+          <Dropdown.Item onClick={() => updateFilter("article", "all")}>
             Tất cả
           </Dropdown.Item>
           {article.map((a) => (
-            <Dropdown.Item key={a.id} onClick={() => updateFilter('article', a.id)}>
+            <Dropdown.Item
+              key={a.id}
+              onClick={() => updateFilter("article", a.id)}
+            >
               {a.name}
             </Dropdown.Item>
           ))}
@@ -102,20 +111,21 @@ const Home = () => {
       <Dropdown className="d-inline mx-2">
         <Dropdown.Toggle variant="success">Thời Gian</Dropdown.Toggle>
         <Dropdown.Menu>
-          <Dropdown.Item onClick={() => updateFilter('filterType', 'all')}>
+          <Dropdown.Item onClick={() => updateFilter("filterType", "all")}>
             Tất cả
           </Dropdown.Item>
-          <Dropdown.Item onClick={() => updateFilter('filterType', 'day')}>
+          <Dropdown.Item onClick={() => updateFilter("filterType", "day")}>
             Ngày hiện tại
           </Dropdown.Item>
-          <Dropdown.Item onClick={() => updateFilter('filterType', 'week')}>
+          <Dropdown.Item onClick={() => updateFilter("filterType", "week")}>
             Tuần hiện tại
           </Dropdown.Item>
-          <Dropdown.Item onClick={() => updateFilter('filterType', 'month')}>
+          <Dropdown.Item onClick={() => updateFilter("filterType", "month")}>
             Tháng hiện tại
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
+      
       <Table responsive="sm" striped bordered hover className="p-3a m-3">
         <thead>
           <tr>
@@ -132,7 +142,11 @@ const Home = () => {
         </thead>
         <tbody>
           {activities.map((a, index) => (
-            <tr key={a.id} onClick={() => nav(`/activity/${a.id}`)} style={{ cursor: 'pointer' }}>
+            <tr
+              key={a.id}
+              onClick={() => nav(`/activity/${a.id}`)}
+              style={{ cursor: "pointer" }}
+            >
               <td>{index + 1}</td>
               <td>{a.name}</td>
               <td>{a.location}</td>
@@ -142,10 +156,16 @@ const Home = () => {
               <td>{a.startDateTime}</td>
               <td>{a.endDateTime}</td>
               <td>
-              <Button variant="danger">Thích</Button>
+                <Button variant="danger">Thích</Button>
               </td>
               <td>
-                <Button variant="success" size="sm" onClick={() => nav(`/activity/${a.id}`)}>Chi Tiết</Button>
+                <Button
+                  variant="success"
+                  size="sm"
+                  onClick={() => nav(`/activity/${a.id}`)}
+                >
+                  Chi Tiết
+                </Button>
               </td>
             </tr>
           ))}
