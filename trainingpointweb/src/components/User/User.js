@@ -5,6 +5,7 @@ import { MyDispatcherContext, MyUserContext } from "../../configs/Contexts";
 import { Link, useNavigate } from "react-router-dom";
 import MyUserReducer from "../Reducer/UserReducer";
 import cookie from "react-cookies";
+import toast from "react-hot-toast";
 
 const User = () => {
   const [user, setUser] = useState({});
@@ -30,11 +31,15 @@ const User = () => {
     }
     if (avatar) form.append("files", avatar.current.files[0]);
     try {
-      let res = await authApi().patch(endpoints["update-current-user"], form, {
+      let res = await toast.promise(authApi().patch(endpoints["update-current-user"], form, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      });
+      }), {loading: "Đang cập nhật", success: "Cập nhật thành công", error: (ex) =>{
+        if(ex.response.status === 400){
+          return "Nhập sai";
+        } else return "Lỗi hệ thống"
+      }});
       if (res.status === 200) {
         cookie.save("user", {
           ...u,
@@ -47,16 +52,9 @@ const User = () => {
             regData: u.userRegistration,
           },
         });
-        console.log(u);
-        alert("Thành công");
       }
     } catch (ex) {
       console.error(ex);
-      if (ex.response.status === 400) {
-        alert("Nhập Sai");
-      } else {
-        alert("Lỗi hệ thống");
-      }
     }
   };
 
@@ -129,6 +127,7 @@ const User = () => {
               defaultValue={f.value}
               disabled={[
                 "username",
+                "email",
                 "className",
                 "studentCode",
                 "facultyName",

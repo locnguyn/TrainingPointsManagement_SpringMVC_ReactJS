@@ -14,6 +14,7 @@ const RemainingField = () => {
                     value={user[f.field] || ""}
                     type={f.type}
                     placeholder={f.label}
+                    required
                     readOnly={f.field === 'email' || f.field === 'studentCode'}
                 />
             </Form.Group>
@@ -24,7 +25,7 @@ const RemainingField = () => {
                 <Form.Select
                     defaultValue=""
                     required
-                    onChange={(e) => Change(e, 'class')}
+                    onChange={(e) => Change(e, 'classId')}
                 >
                     <option value="" disabled hidden>
                         Lớp
@@ -43,7 +44,7 @@ const RemainingField = () => {
                 <Form.Select
                     defaultValue=""
                     required
-                    onChange={(e) => Change(e, 'faculty')}
+                    onChange={(e) => Change(e, 'facultyId')}
                 >
                     <option value="" disabled hidden>
                         Khoa
@@ -58,7 +59,7 @@ const RemainingField = () => {
         )}
 
         <Form.Group className="mb-3" controlId="avatar">
-            <Form.Control type="file" accept=".jpg,.png" ref={avatar} />
+            <Form.Control type="file" accept=".jpg,.png,.jpeg" ref={avatar} required />
         </Form.Group>
         <Form.Group className="mb-3">
             <Button type="submit" value="primary">

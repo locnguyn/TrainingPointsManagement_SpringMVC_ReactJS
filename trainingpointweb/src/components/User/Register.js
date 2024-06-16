@@ -105,6 +105,8 @@ const Register = () => {
     }
 
     try {
+      console.log(user);
+      console.log(form);
       const res = await APIs.post(endpoints["register"], form, {
         headers: {
           "Content-Type": "multipart/form-data",

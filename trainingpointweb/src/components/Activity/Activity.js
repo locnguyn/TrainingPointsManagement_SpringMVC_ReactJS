@@ -7,6 +7,8 @@ import "./styles.css";
 import { authApi, endpoints } from "../../configs/APIs";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MyDispatcherContext, MyUserContext } from "../../configs/Contexts";
+import { FaMinusCircle } from "react-icons/fa";
+import toast from "react-hot-toast";
 const Activity = () => {
   const user = useContext(MyUserContext);
   const [activites, setActivites] = useState(user ? user.userRegistration: []);
@@ -18,17 +20,14 @@ const Activity = () => {
     e.preventDefault();
 
     try{
-      let res = await authApi().delete(endpoints['registration-delete'](registrationId));
+      let res = await toast.promise(authApi().delete(endpoints['registration-delete'](registrationId)),{
+        loading: "Loading", success: "Xóa thành công", error: "Thất bại"
+      });
 
       if(res.status === 200){
-        alert("Success");
-        console.log(user);
         setActivites((preActivities) =>
           preActivities.filter((a) => a.id != registrationId)
         );
-        
-        
-        console.log(user);
       }
     }catch(ex){
       console.error(ex);
@@ -51,7 +50,6 @@ const Activity = () => {
     if (user === null){
       nav('/login', {state: {from: location}});
     }
-    console.log(user);
   }, [user?.userInfo, nav, location]);
   return (
     <>
@@ -86,7 +84,7 @@ const Activity = () => {
               <td>{a.activity.faculty}</td>
               <td>{a.activity.startDateTime}</td>
               <td>{a.activity.endDateTime}</td>
-              <td><Button variant="danger" onClick={(e) => delRegistration(e, a.id)}>x</Button></td>
+              <td align="middle"><Button variant="danger" onClick={(e) => delRegistration(e, a.id)} responsive size="sm">Xóa</Button></td>
             </tr>
           ))}
         </tbody>

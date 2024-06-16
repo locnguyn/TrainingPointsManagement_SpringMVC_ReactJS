@@ -137,7 +137,6 @@ const Home = () => {
             <th>Khoa</th>
             <th>Ngày giờ bắt đầu</th>
             <th>Ngày giờ kết thúc</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -155,18 +154,6 @@ const Home = () => {
               <td>{a.faculty}</td>
               <td>{a.startDateTime}</td>
               <td>{a.endDateTime}</td>
-              <td>
-                <Button variant="danger">Thích</Button>
-              </td>
-              <td>
-                <Button
-                  variant="success"
-                  size="sm"
-                  onClick={() => nav(`/activity/${a.id}`)}
-                >
-                  Chi Tiết
-                </Button>
-              </td>
             </tr>
           ))}
         </tbody>

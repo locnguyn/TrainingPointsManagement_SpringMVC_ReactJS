@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -62,6 +63,7 @@ public class ApiUserController {
     })
     @CrossOrigin
     @ResponseStatus(HttpStatus.CREATED)
+    @Transactional
     public void create(@RequestParam Map<String, String> params, @RequestPart MultipartFile[] files) {
         String avatarUrl = "";
 
@@ -79,18 +81,20 @@ public class ApiUserController {
             avatarUrl = this.cloudinary.uploadFile(files[0]);
             user.setAvatar(avatarUrl);
         }
+        this.userService.saveUser(user);
         
         // Create student
         
         Student student = new Student();
         student.setStudentCode(params.get("studentCode"));
-        student.setClassId(classService.getClassById(Integer.parseInt(params.get("studentId"))));
+        student.setClassId(classService.getClassById(Integer.parseInt(params.get("classId"))));
         student.setFacultyId(facultyService.getFacultyById(Integer.parseInt(params.get("facultyId"))));
         student.setUserId(user);
         
+        
         this.studentService.saveStudent(student);
         
-        this.userService.saveUser(user);
+        
     }
 
     @PostMapping("/login/")

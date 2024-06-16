@@ -29,6 +29,7 @@ const Verify = ({ onSubmit = () => { }, setStep = () => { }, label, placeholder,
 
             if (res.status === 201) {
               onSubmit({ "email": email, "studentCode": email.substring(0, 10) });
+              setEmail("");
               setStep(2);
             }
           }
