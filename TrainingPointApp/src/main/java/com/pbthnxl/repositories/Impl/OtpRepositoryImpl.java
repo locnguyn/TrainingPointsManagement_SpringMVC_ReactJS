@@ -48,9 +48,6 @@ public class OtpRepositoryImpl implements OtpRepository{
         } else{
             return results.get(0);
         }
-
-//        return (Otp)q.getSingleResult();
-        
     }
     
 }
