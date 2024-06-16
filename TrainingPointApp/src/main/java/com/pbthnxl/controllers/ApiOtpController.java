@@ -68,7 +68,7 @@ public class ApiOtpController {
 
     @CrossOrigin
     @GetMapping(path = "/verify/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, String>> verifyOtp(@RequestBody Map<String, String> params) {
+    public ResponseEntity<Map<String, String>> verifyOtp(@RequestParam Map<String, String> params) {
         Map<String, String> response = new HashMap<>();
 
         Otp otp = this.otpService.findByEmail(params.get("email"));
@@ -79,7 +79,7 @@ public class ApiOtpController {
 
         if (params.containsKey("otp")) {
             String OTP = params.get("otp");
-            if (this.otpService.isOtpExpired(otp)) {
+            if (!this.otpService.isOtpExpired(otp)) {
                 response.put("message", "Otp expired");
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else if (this.passwordEncoder.matches(OTP, otp.getOneTimePassword())) {

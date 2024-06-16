@@ -112,6 +112,7 @@ const Register = () => {
             value={user[f.field]}
             type={f.type}
             placeholder={f.label}
+            readOnly={f.field === 'email' || f.field === 'studentCode'}
           />
         </Form.Group>
       ))}
@@ -161,9 +162,9 @@ const Register = () => {
     console.log(user);
     switch (step) {
       case 1:
-        return <Verify onSubmit={setUser} setStep={setStep} label="Email" placeholder="Email" endpoint="https://3e93-171-243-49-117.ngrok-free.app/TrainingPointApp/api/otp/create/" type="email"/>;
+        return <Verify onSubmit={setUser} setStep={setStep} label="Email" placeholder="Email" type="email"/>;
       case 2:
-        return <Verify setStep={setStep} label={`Nhập mã OTP đã được gửi về email ${user["email"]}`} placeholder="Nhập OTP..." endpoint="https://3e93-171-243-49-117.ngrok-free.app/TrainingPointApp/api/otp/verify/" type="text" user={user}/>;
+        return <Verify setStep={setStep} label={`Nhập mã OTP đã được gửi về email ${user["email"]}`} placeholder="Nhập OTP..." type="text" user={user}/>;
       case 3:
         return <RemainingField />;
     }

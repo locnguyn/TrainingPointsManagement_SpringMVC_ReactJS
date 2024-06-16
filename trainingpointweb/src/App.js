@@ -19,6 +19,7 @@ import ActivityDetails from "./components/Activity/ActivityDetails";
 import { Toaster } from "react-hot-toast";
 import Chatbox from "./components/Chatbox/Chatbox";
 import Verify from "./components/User/Verify";
+import DismissableToast from "./components/Common/Toast";
 
 function App() {
   const [user, dispatch] = useReducer(MyUserReducer, cookie.load("user") || null);
@@ -30,14 +31,14 @@ function App() {
             <Header />
             {/* <Spinner /> */}
             <Routes>
-              <Route path="/" element={<Home />}/>
-              <Route path="/activity" element={<Activity/>}/>
-              <Route path="/report_missing" element={<Report/>}/>
-              <Route path="/activity/:activityId" element={<ActivityDetails/>}/>
-              <Route path="/verify" element={<Verify />}/>
-              <Route path="/register" element={<Register />}/>
+              <Route path="/" element={<Home />} />
+              <Route path="/activity" element={<Activity />} />
+              <Route path="/report_missing" element={<Report />} />
+              <Route path="/activity/:activityId" element={<ActivityDetails />} />
+              <Route path="/verify" element={<Verify />} />
+              <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/current-user" element={<User />}/>
+              <Route path="/current-user" element={<User />} />
               <Route path="/change_password" element={<Password />} />
               <Route path="/activity/:activityId" element={<ActivityDetails />} />
             </Routes>
@@ -45,7 +46,16 @@ function App() {
           </MyDispatcherContext.Provider>
         </MyUserContext.Provider>
       </BrowserRouter>
-      <div><Toaster position="bottom-right"/></div>
+      {/* <div>
+        <Toaster position="top-right" toastOptions={{
+          style: {
+            fontSize: "18px",
+            boxShadow: "0 8px 12px rgba(0, 0, 0, 0.2)",
+            borderRadius: "50%"
+          }
+        }} />
+      </div> */}
+      <DismissableToast />
       <Chatbox />
     </Container>
   );

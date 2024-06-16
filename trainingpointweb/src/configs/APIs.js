@@ -21,7 +21,9 @@ export const endpoints = {
     'change-password': "api/current-user/change-password/",
     'delete-comment': (commentId) => `api/comment/${commentId}`,
     'update-comment': (commentId) => `api/comment/${commentId}`,
-    'like-comment': (commentId) => `api/comment/${commentId}/like/`
+    'like-comment': (commentId) => `api/comment/${commentId}/like/`,
+    'create-otp': '/api/otp/create/',
+    'verify-otp': "/api/otp/verify/"
 }
 
 export const authApi = () => {
