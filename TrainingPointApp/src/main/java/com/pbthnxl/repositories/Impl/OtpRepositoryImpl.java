@@ -28,19 +28,10 @@ public class OtpRepositoryImpl implements OtpRepository{
         Session s = factory.getObject().getCurrentSession();
         
         if(otp.getId() != null){
-            System.err.println(otp.getId());
-            System.err.println("update");
             s.update(otp);
         } else{
-            System.err.println("save");
-            System.err.println(otp.getId());
             s.save(otp);
         }
-    }
-
-    @Override
-    public void clearOtp(String email) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
@@ -51,14 +42,14 @@ public class OtpRepositoryImpl implements OtpRepository{
         
         q.setParameter("email", email);
         
-//        List<Otp> results = q.getResultList();
-//        if(results.isEmpty()){
-//            return null;
-//        } else{
-//            return results.get(0);
-//        }
+        List<Otp> results = q.getResultList();
+        if(results.isEmpty()){
+            return null;
+        } else{
+            return results.get(0);
+        }
 
-        return (Otp)q.getSingleResult();
+//        return (Otp)q.getSingleResult();
         
     }
     

@@ -18,4 +18,5 @@ public interface OtpService {
     void generateOTP(User user, String email);
     void sendOTPEmail(String email, String OTP) throws UnsupportedEncodingException, MessagingException;
     void clearOTP(Otp otp);
+    Boolean isOtpExpired(Otp otp);
 }

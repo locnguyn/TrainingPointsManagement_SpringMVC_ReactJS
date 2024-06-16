@@ -13,5 +13,4 @@ import com.pbthnxl.pojo.Otp;
 public interface OtpRepository {
     Otp findByEmail(String email);
     void save(Otp otp);
-    void clearOtp(String email);
 }

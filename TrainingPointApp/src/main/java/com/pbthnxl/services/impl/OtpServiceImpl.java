@@ -40,6 +40,7 @@ public class OtpServiceImpl implements OtpService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private Environment env;
+    private static final long OTP_VALID_DURATION = 5 * 60 * 1000;
 
     @Override
     public void generateOTP(User user, String email) {
@@ -77,7 +78,7 @@ public class OtpServiceImpl implements OtpService {
         String subject = "Here's your One Time Password (OTP) - Expire in 5 minutes!";
         String content = "<p>Hello " + email + "</p>"
                 + "<p>For security reason, you're required to use the following "
-                + "One Time Password to login:</p>"
+                + "One Time Password to register:</p>"
                 + "<p><b>" + OTP + "</b></p>"
                 + "<br>"
                 + "<p>Note: this OTP is set to expire in 5 minutes.</p>";
@@ -132,6 +133,18 @@ public class OtpServiceImpl implements OtpService {
         mailSender.send(preparator);
 
         return "Mail Sent Successfully.";
+    }
+
+    @Override
+    public Boolean isOtpExpired(Otp otp) {
+        long currentTimeInMillis = System.currentTimeMillis();
+        long otpRequestedTimeInMillis = otp.getOtpRequestedTime().getTime();
+        
+        if(otpRequestedTimeInMillis + OTP_VALID_DURATION < currentTimeInMillis)
+            //OTP expires
+            return false;
+        
+        return true;
     }
 
 }

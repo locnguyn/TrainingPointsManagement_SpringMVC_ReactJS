@@ -36,47 +36,50 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/otp")
 public class ApiOtpController {
+
     @Autowired
     private OtpService otpService;
     @Autowired
     private UserService userService;
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
-    
+
     @CrossOrigin
     @PostMapping("/create/")
-    public ResponseEntity<String> sendEmailOtp(@RequestParam Map<String, String> params){
-        
+    public ResponseEntity<String> sendEmailOtp(@RequestParam Map<String, String> params) {
+
         User user = this.userService.getUserByEmail(params.get("email"));
-        
-        if (user != null){
+
+        if (user != null) {
             return new ResponseEntity<>("Email Exists", HttpStatus.BAD_REQUEST);
         }
-        
+
         this.otpService.generateOTP(user, params.get("email"));
-        
-        
+
         return new ResponseEntity<>("Success", HttpStatus.CREATED);
     }
-    
+
     @CrossOrigin
     @GetMapping("/verify/")
-    public ResponseEntity<String> verifyOtp(@RequestParam Map<String, String> params){
+    public ResponseEntity<String> verifyOtp(@RequestParam Map<String, String> params) {
         Otp otp = this.otpService.findByEmail(params.get("email"));
-        if(otp == null){
+        if (otp == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-        
+
         String OTP = "";
-        if(params.containsKey("otp")){
+        if (params.containsKey("otp")) {
             OTP = params.get("otp");
-            if(this.passwordEncoder.matches(OTP, otp.getOneTimePassword())){
-                return new ResponseEntity<>("Verified", HttpStatus.OK);
-            }
+            if (this.otpService.isOtpExpired(otp)) {
+                //OTP not expire
+                if (this.passwordEncoder.matches(OTP, otp.getOneTimePassword())) {
+                    return new ResponseEntity<>("Verified", HttpStatus.OK);
+                } else return new ResponseEntity<>("Otp not match", HttpStatus.OK); 
+            } else return new ResponseEntity<>("Otp expires", HttpStatus.OK); 
+
         }
-        
+
         return new ResponseEntity<>("Failed", HttpStatus.BAD_REQUEST);
     }
-    
+
 }

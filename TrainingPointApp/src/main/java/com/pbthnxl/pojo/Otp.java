@@ -36,8 +36,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Otp.findByEmail", query = "SELECT o FROM Otp o WHERE o.email = :email")})
 public class Otp implements Serializable {
     
-    private static final long OTP_VALID_DURATION = 5 * 60 * 1000;
-    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -92,22 +90,6 @@ public class Otp implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-    
-    public boolean isOTPRequired() {
-        if (this.getOneTimePassword() == null) {
-            return false;
-        }
-         
-        long currentTimeInMillis = System.currentTimeMillis();
-        long otpRequestedTimeInMillis = this.otpRequestedTime.getTime();
-         
-        if (otpRequestedTimeInMillis + OTP_VALID_DURATION < currentTimeInMillis) {
-            // OTP expires
-            return false;
-        }
-         
-        return true;
     }
 
     @Override
