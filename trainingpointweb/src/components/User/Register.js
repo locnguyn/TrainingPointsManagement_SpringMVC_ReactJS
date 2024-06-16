@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { MyUserContext, RegisterContext } from "../../configs/Contexts";
 import Verify from "./Verify";
 import RemainingField from "./RemainingField";
+import toast from "react-hot-toast";
 
 const Register = () => {
   const fields = [
@@ -81,7 +82,6 @@ const Register = () => {
   };
 
   useEffect(() => {
-      console.log('loading');
     Load();
   }, []);
 
@@ -107,10 +107,14 @@ const Register = () => {
     try {
       console.log(user);
       console.log(form);
-      const res = await APIs.post(endpoints["register"], form, {
+      const res = await toast.promise(APIs.post(endpoints["register"], form, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+      }), {
+        success: "Đăng ký thành công",
+        loading: "Đang xử lý...",
+        error: "Tên đăng nhập đã tồn tại!"
       });
       if (res.status === 201) nav("/login");
     } catch (ex) {

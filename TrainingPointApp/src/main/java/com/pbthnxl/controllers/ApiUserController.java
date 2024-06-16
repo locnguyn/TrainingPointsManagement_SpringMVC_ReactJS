@@ -83,6 +83,8 @@ public class ApiUserController {
         }
         this.userService.saveUser(user);
         
+        
+        this.userService.saveUser(user);
         // Create student
         
         Student student = new Student();
@@ -93,8 +95,6 @@ public class ApiUserController {
         
         
         this.studentService.saveStudent(student);
-        
-        
     }
 
     @PostMapping("/login/")
