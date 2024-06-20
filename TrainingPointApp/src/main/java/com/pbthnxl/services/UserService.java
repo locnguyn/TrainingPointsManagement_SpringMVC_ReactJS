@@ -4,8 +4,10 @@
  */
 package com.pbthnxl.services;
 
+import com.pbthnxl.dto.AssistantDTO;
 import com.pbthnxl.dto.StudentUserDTO;
 import com.pbthnxl.pojo.User;
+import java.util.List;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
@@ -20,4 +22,5 @@ public interface UserService extends UserDetailsService {
     void updateUserRole(int userId, String role);
     boolean authUser(String username, String password);
     StudentUserDTO getUserByUsernameDTO(String username);
+    List<AssistantDTO> getAssistantsDTO();
 }

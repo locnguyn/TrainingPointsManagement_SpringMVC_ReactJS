@@ -11,7 +11,6 @@ import javax.persistence.Query;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +38,7 @@ public class UserRepositoryImpl implements UserRepository {
         if (!results.isEmpty()) {
             return results.get(0);
         } else {
-            return null; // hoặc throw một exception tùy vào yêu cầu của ứng dụng
+            return null;
         }
     }
 
@@ -69,7 +68,6 @@ public class UserRepositoryImpl implements UserRepository {
         if (user != null) {
             user.setUserRole(role);
             s.update(user);
-            System.out.println("update role successfully______________________________________________________________________________________");
         }
     }
 
@@ -85,13 +83,23 @@ public class UserRepositoryImpl implements UserRepository {
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createNamedQuery("User.findByEmail");
         q.setParameter("email", email);
-        
+
         List<User> results = q.getResultList();
         if (!results.isEmpty()) {
             return results.get(0);
         } else {
             return null;
         }
+    }
+
+    @Override
+    public List<User> getAssistantList() {
+        Session s = this.factory.getObject().getCurrentSession();
+        Query q = s.createNamedQuery("User.findByUserRole");
+        q.setParameter("userRole", "ROLE_ASSISTANT");
+
+        List<User> results = q.getResultList();
+        return results;
     }
 
 }

@@ -5,6 +5,7 @@
 package com.pbthnxl.controllers;
 
 import com.pbthnxl.components.JwtService;
+import com.pbthnxl.dto.AssistantDTO;
 import com.pbthnxl.dto.StudentUserDTO;
 import com.pbthnxl.pojo.Student;
 import com.pbthnxl.pojo.User;
@@ -14,6 +15,7 @@ import com.pbthnxl.services.FacultyService;
 import com.pbthnxl.services.StudentService;
 import com.pbthnxl.services.UserService;
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,9 +64,8 @@ public class ApiUserController {
         MediaType.MULTIPART_FORM_DATA_VALUE
     })
     @CrossOrigin
-    @ResponseStatus(HttpStatus.CREATED)
     @Transactional
-    public void create(@RequestParam Map<String, String> params, @RequestPart MultipartFile[] files) {
+    public ResponseEntity<String> create(@RequestParam Map<String, String> params, @RequestPart MultipartFile[] files) {
         String avatarUrl = "";
 
         // Create user
@@ -95,6 +96,7 @@ public class ApiUserController {
         
         
         this.studentService.saveStudent(student);
+        return new ResponseEntity<>(user.getAvatar(), HttpStatus.CREATED);
     }
 
     @PostMapping("/login/")
@@ -173,5 +175,10 @@ public class ApiUserController {
         
         return new ResponseEntity<>("Failed", HttpStatus.BAD_REQUEST);
     }
-
+    
+    @GetMapping("/assistant-list/")
+    @CrossOrigin
+    public ResponseEntity<List<AssistantDTO>> assistantList(){
+        return new ResponseEntity<>(this.userService.getAssistantsDTO(), HttpStatus.OK);
+    }
 }

@@ -3,25 +3,27 @@ import { IoSend } from "react-icons/io5";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import EmojiPicker from 'emoji-picker-react';
 
-const InputForm = ({ handleSubmit, value = '', placeholder, onChange = () => { }, autoFocus = false, onBlur = () => { } }) => {
+const InputForm = ({ handleSubmit, value = '', placeholder, autoFocus = false, onBlur = () => { } }) => {
     const [inputValue, setInputValue] = useState(value);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showButton, setShowButton] = useState(false);
     const emojiRef = useRef(null);
     const emojiPickerRef = useRef(null);
     const inputRef = useRef(null);
+    const buttonRef = useRef(null);
     const MAX_ROW = 3;
 
     const handleClickOutside = (event) => {
-        if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
-            setShowEmojiPicker(false);
+        if (
+            (emojiRef.current && emojiRef.current.contains(event.target)) ||
+            (emojiPickerRef.current && emojiPickerRef.current.contains(event.target)) ||
+            (buttonRef.current && buttonRef.current.contains(event.target))
+        ) {
+            return;
         }
-        if (emojiRef.current && !emojiRef.current.contains(event.target)
-            // && emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)
-            && inputRef.current && !inputRef.current.contains(event.target)) {
-            // handleSubmit();
-            // onBlur();
-        }
+
+        // setShowEmojiPicker(false);
+        // setShowButton(false);
     };
 
     useEffect(() => {
@@ -40,13 +42,10 @@ const InputForm = ({ handleSubmit, value = '', placeholder, onChange = () => { }
             el.rows = 1;
         }
         setInputValue(el.value);
-        console.log(el.value);
-        onChange(el.value);
     };
 
     const handleEmojiClick = (emojiObject, event) => {
         setInputValue(prevContent => prevContent + emojiObject.emoji);
-        onChange(prevContent => prevContent + emojiObject.emoji);
     };
 
     function isScrollable(el) {
@@ -55,20 +54,21 @@ const InputForm = ({ handleSubmit, value = '', placeholder, onChange = () => { }
 
     return (
         <>
-            <div className='d-flex flex-column' style={{width: "100%", alignItems: 'center', borderRadius: '16px', backgroundColor: 'rgb(237, 237, 237)', padding: '5px', position: 'relative' }}>
+            <div className='d-flex flex-column' style={{ width: "100%", alignItems: 'center', borderRadius: '16px', backgroundColor: 'rgb(237, 237, 237)', padding: '5px', position: 'relative' }}>
                 <textarea
                     id='my-textarea'
                     type="text"
                     value={inputValue}
                     onChange={handleChange}
+                    onBlur={handleClickOutside}
                     onFocus={() => setShowButton(true)}
                     onKeyDown={(e) => {
-                        if(e.key === 'Enter' && inputValue !== "" && !e.shiftKey) {
+                        if (e.key === 'Enter' && inputValue !== "" && !e.shiftKey) {
                             e.preventDefault();
                             e.target.value = "";
                             e.target.rows = 1;
+                            handleSubmit(inputValue);
                             setInputValue("");
-                            handleSubmit();
                         }
                     }}
                     placeholder={placeholder ? placeholder : 'Nhập...'}
@@ -94,7 +94,7 @@ const InputForm = ({ handleSubmit, value = '', placeholder, onChange = () => { }
                         </span>
                         <button
                             onClick={() => {
-                                handleSubmit();
+                                handleSubmit(inputValue);
                                 setInputValue('');
                             }}
                             style={{
@@ -106,7 +106,7 @@ const InputForm = ({ handleSubmit, value = '', placeholder, onChange = () => { }
                             disabled={inputValue === ""}
                             className={inputValue !== "" ? "text-primary" : ""}
                         >
-                            <div>
+                            <div ref={buttonRef}>
                                 <IoSend />
                             </div>
                         </button>
@@ -114,7 +114,7 @@ const InputForm = ({ handleSubmit, value = '', placeholder, onChange = () => { }
                 <div style={{ position: 'absolute', zIndex: 1, top: '-600%' }}>
                     {showEmojiPicker && (
                         <div ref={emojiPickerRef} >
-                            <EmojiPicker onEmojiClick={handleEmojiClick}/>
+                            <EmojiPicker onEmojiClick={handleEmojiClick} />
                         </div>
                     )}
                 </div>

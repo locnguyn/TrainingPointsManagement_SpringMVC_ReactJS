@@ -6,6 +6,7 @@ import { MyUserContext, RegisterContext } from "../../configs/Contexts";
 import Verify from "./Verify";
 import RemainingField from "./RemainingField";
 import toast from "react-hot-toast";
+import { handleRegisterFirebase } from "../../configs/firebase";
 
 const Register = () => {
   const fields = [
@@ -105,8 +106,6 @@ const Register = () => {
     }
 
     try {
-      console.log(user);
-      console.log(form);
       const res = await toast.promise(APIs.post(endpoints["register"], form, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -116,7 +115,10 @@ const Register = () => {
         loading: "Đang xử lý...",
         error: "Tên đăng nhập đã tồn tại!"
       });
-      if (res.status === 201) nav("/login");
+      if (res.status === 201) {
+        handleRegisterFirebase(user["email"], user["password"], "ROLE_USER", user["firstName"], user["lastName"], res.data);
+        nav("/login")
+      };
     } catch (ex) {
       console.error("Registration failed", ex);
     }

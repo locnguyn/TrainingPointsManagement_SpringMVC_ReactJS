@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { MyDispatcherContext, MyUserContext } from "../../configs/Contexts";
 import "./Styles.css";
+import { auth, setOffline, signOut } from "../../configs/firebase";
 
 const Header = () => {
   const user = useContext(MyUserContext);
@@ -18,11 +19,13 @@ const Header = () => {
       dispatch({
         type: "logout",
       });
+      signOut(auth);
+      setOffline();
       setLogout(true);
     } catch (ex) {
       console.error(ex);
     }
-    
+
   };
   useEffect(() => {
     if (logout) {
@@ -65,7 +68,7 @@ const Header = () => {
                   <Link to="/current-user">
                     <Image
                       className="me-2"
-                      src={user.userInfo.avatar}
+                      src={user.userInfo.avatar || "https://i0.wp.com/www.repol.copl.ulaval.ca/wp-content/uploads/2019/01/default-user-icon.jpg?ssl=1"}
                       style={{
                         width: "40px",
                         height: "40px",

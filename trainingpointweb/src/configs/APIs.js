@@ -23,7 +23,8 @@ export const endpoints = {
     'update-comment': (commentId) => `api/comment/${commentId}`,
     'like-comment': (commentId) => `api/comment/${commentId}/like/`,
     'create-otp': '/api/otp/create/',
-    'verify-otp': "/api/otp/verify/"
+    'verify-otp': "/api/otp/verify/",
+    'assistant-list': "/api/assistant-list/"
 }
 
 export const authApi = () => {

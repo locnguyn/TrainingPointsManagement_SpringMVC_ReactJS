@@ -20,7 +20,6 @@ const Menu = ({ onEdit, onDelete }) => (
 const Comment = ({ comment, handleUpdate, handleDelete }) => {
     const [showMenu, setShowMenu] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [editContent, setEditContent] = useState(comment.content);
     const [cmt, setCmt] = useState(comment);
     const user = useContext(MyUserContext);
     const svgRef = useRef(null);
@@ -53,8 +52,8 @@ const Comment = ({ comment, handleUpdate, handleDelete }) => {
     };
 
 
-    const handleUpdateComment = () => {
-        handleUpdate(cmt.id, editContent);
+    const handleUpdateComment = (content) => {
+        handleUpdate(cmt.id, content);
         setIsEditing(false);
     };
 
@@ -121,7 +120,7 @@ const Comment = ({ comment, handleUpdate, handleDelete }) => {
                         </small></div>
                             : <></>}
                     </div>
-                </div> : <InputForm value={cmt.content} autoFocus={true} onChange={setEditContent} handleSubmit={handleUpdateComment} onBlur={()=>setIsEditing(false)} />}
+                </div> : <InputForm value={cmt.content} autoFocus={true} handleSubmit={handleUpdateComment} onBlur={()=>setIsEditing(false)} />}
             </div>
         </li>
     );

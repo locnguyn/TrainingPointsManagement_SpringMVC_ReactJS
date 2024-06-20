@@ -5,6 +5,7 @@ import { MyDispatcherContext, MyUserContext } from "../../configs/Contexts";
 import { authApi, endpoints } from "../../configs/APIs";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { updatePasswordFirebase } from "../../configs/firebase";
 
 const Password = () => {
   const u = useContext(MyUserContext);
@@ -46,6 +47,7 @@ const Password = () => {
         },
       });
       if (res.status === 200) {
+        await updatePasswordFirebase(user.new_password);
         toast.success("Cập nhật thành công");
         dispatch({
           type: "logout",

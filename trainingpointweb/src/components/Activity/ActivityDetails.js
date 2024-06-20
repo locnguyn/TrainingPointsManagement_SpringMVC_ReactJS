@@ -14,7 +14,7 @@ const ActivityDetails = () => {
   const [activity, setActivity] = useState({});
   const [comments, setComments] = useState([]);
   const { activityId } = useParams();
-  const [comment, setComment] = useState("");
+  // const [comment, setComment] = useState("");
   const user = useContext(MyUserContext);
   const dispatch = useContext(MyDispatcherContext);
   const location = useLocation();
@@ -30,7 +30,8 @@ const ActivityDetails = () => {
     }
   };
 
-  const addComment = async () => {
+  const addComment = async (comment) => {
+    console.log(comment);
     try {
       let res = await authApi().post(
         endpoints["activity-add-comment"](activityId),
@@ -38,7 +39,6 @@ const ActivityDetails = () => {
       );
       if (res.status === 201) {
         setComments([...comments, res.data]);
-        setComment("");
       }
     } catch (ex) {
       console.error(ex);
@@ -79,7 +79,7 @@ const ActivityDetails = () => {
         );
       }
     } catch (err) {
-      alert("Lỗi khi cập nhật comment!");
+      toast.error("Lỗi khi cập nhật comment!");
       console.error(err);
     }
   };
@@ -125,6 +125,7 @@ const ActivityDetails = () => {
   }, [user, nav, location]);
 
   const likeOrUnlike = async () => {
+    console.log(user);
     try {
       const res = await authApi().post(endpoints["activity-like"](activityId));
       if (res.status === 200) {
@@ -331,7 +332,7 @@ const ActivityDetails = () => {
                 roundedCircle
               />
               <InputForm
-                onChange={setComment}
+                // onChange={setComment}
                 handleSubmit={addComment}
                 placeholder={
                   "Bình luận với vai trò " +

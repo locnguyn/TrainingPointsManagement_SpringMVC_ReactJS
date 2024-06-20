@@ -30,7 +30,7 @@ public class ReportMissingRepositoryImpl implements ReportMissingRepository {
 
     @Autowired
     private LocalSessionFactoryBean factory;
-    
+
     @Autowired
     private UserRepository userRepo;
 
@@ -52,22 +52,37 @@ public class ReportMissingRepositoryImpl implements ReportMissingRepository {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String username = userDetails.getUsername();
 
-            // Assuming you have a method to get User by username
             User currentUser = userRepo.getUserByUsername(username);
 
             reportMissing.setUserId(currentUser);
 
-            Registration registration = new Registration();
-            registration.setStudentId(reportMissing.getStudentId());
-            registration.setActivityParticipationTypeId(reportMissing.getActivityParticipationTypeId());
-            registration.setRegistrationDate(reportMissing.getReportDate());
-            registration.setParticipated(true);
-
-            session.save(registration);
+            Registration existingRegistration = findExistingRegistration(session, reportMissing);
+            if (existingRegistration != null) {
+                existingRegistration.setStudentId(reportMissing.getStudentId());
+                existingRegistration.setActivityParticipationTypeId(reportMissing.getActivityParticipationTypeId());
+                existingRegistration.setRegistrationDate(reportMissing.getReportDate());
+                existingRegistration.setParticipated(true);
+                session.update(existingRegistration);
+            } else {
+                Registration registration = new Registration();
+                registration.setStudentId(reportMissing.getStudentId());
+                registration.setActivityParticipationTypeId(reportMissing.getActivityParticipationTypeId());
+                registration.setRegistrationDate(reportMissing.getReportDate());
+                registration.setParticipated(true);
+                session.save(registration);
+            }
 
             reportMissing.setChecked(true);
             session.update(reportMissing);
         }
+    }
+
+    private Registration findExistingRegistration(Session session, ReportMissing reportMissing) {
+        String hql = "FROM Registration WHERE studentId = :studentId AND activityParticipationTypeId = :activityParticipationTypeId";
+        Query query = session.createQuery(hql);
+        query.setParameter("studentId", reportMissing.getStudentId());
+        query.setParameter("activityParticipationTypeId", reportMissing.getActivityParticipationTypeId());
+        return (Registration) query.getSingleResult();
     }
 
     @Override
@@ -80,7 +95,6 @@ public class ReportMissingRepositoryImpl implements ReportMissingRepository {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String username = userDetails.getUsername();
 
-            // Assuming you have a method to get User by username
             User currentUser = userRepo.getUserByUsername(username);
 
             reportMissing.setUserId(currentUser);

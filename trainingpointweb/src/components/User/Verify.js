@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import toast from "react-hot-toast";
 import APIs, { endpoints } from "../../configs/APIs";
-import { IoClose } from "react-icons/io5";
-import Toast, { ShowErrorToast } from "../Common/Toast";
 
 const Verify = ({ onSubmit = () => { }, setStep = () => { }, label, placeholder, type, user }) => {
   const [email, setEmail] = useState("");

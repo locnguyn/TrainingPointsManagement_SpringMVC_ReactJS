@@ -4,12 +4,15 @@
  */
 package com.pbthnxl.services.impl;
 
+import com.pbthnxl.dto.AssistantDTO;
 import com.pbthnxl.dto.StudentUserDTO;
 import com.pbthnxl.pojo.User;
 import com.pbthnxl.repositories.UserRepository;
 import com.pbthnxl.services.UserService;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -90,6 +93,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByEmail(String email) {
         return this.userRepository.getUserByEmail(email);
+    }
+    
+    private AssistantDTO convertToAssistantDTO(User assistant){
+        AssistantDTO dto = new AssistantDTO();
+        dto.setFirstName(assistant.getFirstName());
+        dto.setLastName(assistant.getLastName());
+        dto.setAvatar(assistant.getAvatar());
+        dto.setEmail(assistant.getEmail());
+        
+        return dto;
+    }
+
+    @Override
+    public List<AssistantDTO> getAssistantsDTO() {
+        return this.userRepository.getAssistantList().stream().map(this::convertToAssistantDTO).collect(Collectors.toList());
     }
             
     
