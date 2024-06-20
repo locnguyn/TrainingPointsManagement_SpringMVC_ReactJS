@@ -4,7 +4,7 @@ const BASE_URL = 'http://localhost:8080/TrainingPointApp/';
 
 export const endpoints = {
     'activity-list': "api/activity/list/",
-    'activity-registration': "api/activity/registration/",
+    'create-registration': "api/registration/create/",
     'actitivty-report': "api/activity/report",
     'activity-details': (activityId) => `/api/activity/${activityId}`,
     'activity-add-comment': (activityId) => `/api/activity/${activityId}/add-comment/`,
@@ -14,6 +14,7 @@ export const endpoints = {
     'faculty-list': "api/common/faculty-list/",
     'article-list': "api/common/article-list/",
     'class-list': "api/common/class-list/",
+    'semester-list': "api/common/semester-list",
     'register': "api/register/",
     'login': "api/login/",
     'current-user': "api/current-user/",
@@ -24,7 +25,9 @@ export const endpoints = {
     'like-comment': (commentId) => `api/comment/${commentId}/like/`,
     'create-otp': '/api/otp/create/',
     'verify-otp': "/api/otp/verify/",
-    'assistant-list': "/api/assistant-list/"
+    'assistant-list': "/api/assistant-list/",
+    'create-report': "api/report/create/",
+    'user-report': "/api/report/student-reports/"
 }
 
 export const authApi = () => {

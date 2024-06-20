@@ -17,6 +17,9 @@ import Password from "./components/User/Password";
 import ActivityDetails from "./components/Activity/ActivityDetails";
 import Verify from "./components/User/Verify";
 import DismissableToast from "./components/Common/Toast";
+import MyReportReducer from "./components/Reducer/MyReportReducer";
+import MyActivityReducer from "./components/Reducer/MyActivityReducer";
+import Stats from "./components/Stats/Stats";
 import { auth, encodeEmail, setOffline, updateUserData } from "./configs/firebase";
 import ChatboxList from "./components/ChatboxList/ChatboxList";
 import './App.css';
@@ -25,6 +28,8 @@ const UPDATE_INTERVAL_MS = 10000;
 
 function App() {
   const [user, dispatch] = useReducer(MyUserReducer, cookie.load("user") || null);
+  const [userReport, dispatchReport] = useReducer(MyReportReducer, JSON.parse(localStorage.getItem("userReports")) || null);
+  const [userActivity, dispatchActivity] = useReducer(MyActivityReducer, JSON.parse(localStorage.getItem("userActivities")) || null);
   const lastUpdateRef = useRef(Date.now());
 
   useEffect(() => {
@@ -57,24 +62,24 @@ function App() {
       document.removeEventListener('visibilitychange', updateUserStatus);
     };
   }, []);
-
   return (
     <Container className="App">
       <BrowserRouter>
-        <MyUserContext.Provider value={user}>
-          <MyDispatcherContext.Provider value={dispatch}>
+        <MyUserContext.Provider value={{user, userReport, userActivity}}>
+          <MyDispatcherContext.Provider value={{dispatch, dispatchReport, dispatchActivity}}>
             <Header />
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/activity" element={<Activity />} />
-              <Route path="/report_missing" element={<Report />} />
+              <Route path="/report-missing" element={<Report />} />
               <Route path="/activity/:activityId" element={<ActivityDetails />} />
               <Route path="/verify" element={<Verify />} />
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/current-user" element={<User />} />
-              <Route path="/change_password" element={<Password />} />
+              <Route path="/change-password" element={<Password />} />
               <Route path="/activity/:activityId" element={<ActivityDetails />} />
+              <Route path="/stats" element={<Stats />} />
             </Routes>
             <Footer />
             {user && <ChatboxList />}

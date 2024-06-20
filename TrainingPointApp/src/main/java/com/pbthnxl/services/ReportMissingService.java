@@ -4,6 +4,7 @@
  */
 package com.pbthnxl.services;
 
+import com.pbthnxl.dto.ReportMissingDTO;
 import com.pbthnxl.pojo.ReportMissing;
 import java.util.List;
 
@@ -13,6 +14,10 @@ import java.util.List;
  */
 public interface ReportMissingService {
     List<ReportMissing> getReportMissings();
+    List<ReportMissingDTO> getStudentReportMissings(int studentId);
     void confirmReportMissingById(int id);
     void rejectReportMissingById(int id);
+    void save(ReportMissing r);
+    ReportMissingDTO convertToDTO(ReportMissing r);
+    ReportMissing findByStudentIdAndActivityParticipationTypeId(int studentId, int activityParticipationTypeId);
 }

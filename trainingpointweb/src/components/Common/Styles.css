@@ -26,7 +26,6 @@
   color: red!important;
 }
 
-/* Button styling inside navbar for better visibility */
 .custom-navbar .btn-primary {
   color: white;
   background-color: #007bff;
@@ -49,7 +48,6 @@
   background-color: #ffffff;
 }
 
-/* Adjust image inside navbar */
 .custom-navbar img {
   border: 2px solid white;
   border-radius: 50%;

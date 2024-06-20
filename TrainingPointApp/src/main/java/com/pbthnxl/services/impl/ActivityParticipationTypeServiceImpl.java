@@ -9,6 +9,7 @@ import com.pbthnxl.pojo.Activity;
 import com.pbthnxl.pojo.ActivityParticipationType;
 import com.pbthnxl.repositories.ActivityParticipationTypeRepository;
 import com.pbthnxl.services.ActivityParticipationTypeService;
+import com.pbthnxl.services.ActivityService;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,7 +23,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class ActivityParticipationTypeServiceImpl implements ActivityParticipationTypeService {
     @Autowired
-    ActivityParticipationTypeRepository activityParticipationTypeRepo;
+    private ActivityParticipationTypeRepository activityParticipationTypeRepo;
+    @Autowired
+    private ActivityService acService;
     
     @Override
     public List<ActivityParticipationType> getActivityParticipationType() {
@@ -62,15 +65,20 @@ public class ActivityParticipationTypeServiceImpl implements ActivityParticipati
     @Override
     public List<ActivityParticipationTypeDTO> getActivityParticipationTypeDTOs() {
         List<ActivityParticipationType> list = this.getActivityParticipationType();
-        return list.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return list.stream().map((f) -> convertToDTO(f, false)).collect(Collectors.toList());
     }
 
-    private ActivityParticipationTypeDTO convertToDTO(ActivityParticipationType type) {
+    @Override
+    public ActivityParticipationTypeDTO convertToDTO(ActivityParticipationType type, Boolean isGetReport) {
         ActivityParticipationTypeDTO dto = new ActivityParticipationTypeDTO();
         Activity a = type.getActivityId();
         dto.setId(type.getId());
         dto.setPoint(type.getPoint());
         dto.setParticipationType(type.getParticipationTypeId().getName());
+        
+        if(isGetReport){
+            dto.setActivity(this.acService.convertToRegistrationActivityDTO(type.getActivityId()));
+        }
         return dto;
     }
     

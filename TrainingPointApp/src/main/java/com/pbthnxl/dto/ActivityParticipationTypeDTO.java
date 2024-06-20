@@ -18,6 +18,7 @@ public class ActivityParticipationTypeDTO {
     private Integer id;
     private int point;
     private String participationType;
+    private RegistrationActivityDTO activity;
 
     /**
      * @return the id
@@ -59,6 +60,20 @@ public class ActivityParticipationTypeDTO {
      */
     public void setParticipationType(String participationType) {
         this.participationType = participationType;
+    }
+
+    /**
+     * @return the activity
+     */
+    public RegistrationActivityDTO getActivity() {
+        return activity;
+    }
+
+    /**
+     * @param activity the activity to set
+     */
+    public void setActivity(RegistrationActivityDTO activity) {
+        this.activity = activity;
     }
 
 }

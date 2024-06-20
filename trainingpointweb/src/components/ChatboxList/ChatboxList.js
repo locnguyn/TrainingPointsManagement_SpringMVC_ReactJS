@@ -16,17 +16,17 @@ const ChatboxList = () => {
     const [openChatboxes, setOpenChatboxes] = useState([]);
     const [showChatboxes, setShowChatboxes] = useState(false);
     const [isInputExpanded, setIsInputExpanded] = useState(false);
-    const user = useContext(MyUserContext);
+    const {user} = useContext(MyUserContext);
     const inputRef = useRef(null);
 
 
     useEffect(() => {
         const initializeListeners = async () => {
             // Example of fetching assistant list asynchronously
-            const unsubscribe = getAssistantList(setUsers, user.userInfo.email);
+            const unsubscribe = getAssistantList(setUsers, user.email);
 
             // Set up notification listener
-            const unsubscribeNotiListen = listenNewNotifications(user.userInfo.email, (notification) => {
+            const unsubscribeNotiListen = listenNewNotifications(user.email, (notification) => {
                 console.log('New notification:', notification);
                 // Handle notification, e.g., open chatbox if needed
                 openChatBox(notification.email);
@@ -50,8 +50,8 @@ const ChatboxList = () => {
     }
 
     const toggleChatbox = async (id) => {
-        await startChat(user.userInfo.email, id);
-        readMessage(user.userInfo.email, id);
+        await startChat(user.email, id);
+        readMessage(user.email, id);
         if (users.find(a => a.email === id))
             setOpenChatboxes((prevOpenChatboxes) => {
                 if (prevOpenChatboxes.includes(id)) {
@@ -66,8 +66,8 @@ const ChatboxList = () => {
         try {
             const userInfo = await getUserInfoByEmail(id);
             if (userInfo) {
-                await startChat(user.userInfo.email, id);
-                readMessage(user.userInfo.email, id);
+                await startChat(user.email, id);
+                readMessage(user.email, id);
                 setUsers((prevUsers) => {
                     // Add user if not already in the list
                     if (!prevUsers.find(user => user.email === id)) {
@@ -116,7 +116,7 @@ const ChatboxList = () => {
             </div>
             <div className="chatbox-thumbnail-list">
                 {users && users.length > 0 && users.map((u, index) => {
-                    if (u.email !== user.userInfo.email) {
+                    if (u.email !== user.email) {
                         return (<div
                             key={index}
                             className={`chatbox-thumbnail ${showChatboxes ? 'open' : ''}`}

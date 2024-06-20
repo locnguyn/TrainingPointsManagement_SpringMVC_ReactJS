@@ -11,7 +11,7 @@ import { authApi, endpoints } from '../../configs/APIs';
 moment.locale('vi');
 
 const Menu = ({ onEdit, onDelete }) => (
-    <div className="dropdown-menu show">
+    <div className=" dropdown-menu comment-dropdown-menu show">
         <button className="dropdown-item" onClick={onEdit}>Chỉnh sửa</button>
         <button className="dropdown-item" onClick={onDelete}>Xóa</button>
     </div>
@@ -21,7 +21,7 @@ const Comment = ({ comment, handleUpdate, handleDelete }) => {
     const [showMenu, setShowMenu] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [cmt, setCmt] = useState(comment);
-    const user = useContext(MyUserContext);
+    const {user} = useContext(MyUserContext);
     const svgRef = useRef(null);
     const menuRef = useRef(null);
 
@@ -92,7 +92,7 @@ const Comment = ({ comment, handleUpdate, handleDelete }) => {
                                 {cmt.content}
                             </div>
                         </div>
-                        {cmt.userId === user.userInfo.userId ? (
+                        {cmt.userId === user.userId ? (
                             <>
                                 <div className='align-self-center' style={{ color: "light-gray" }} role='button' onClick={toggleMenu} ref={svgRef}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-three-dots ms-1" viewBox="0 0 16 16">

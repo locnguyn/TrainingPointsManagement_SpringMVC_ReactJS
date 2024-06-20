@@ -6,9 +6,11 @@ package com.pbthnxl.repositories.Impl;
 
 import com.pbthnxl.pojo.ActivityParticipationType;
 import com.pbthnxl.pojo.Registration;
+import com.pbthnxl.pojo.ReportMissing;
 import com.pbthnxl.pojo.Student;
 import com.pbthnxl.repositories.ActivityParticipationTypeRepository;
 import com.pbthnxl.repositories.RegistrationRepository;
+import com.pbthnxl.repositories.ReportMissingRepository;
 import com.pbthnxl.repositories.StudentRepository;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.NoResultException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.hibernate.Session;
@@ -44,23 +47,15 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
 
     @Autowired
     private ActivityParticipationTypeRepository activityParticipationTypeRepository;
+    
+    @Autowired
+    private ReportMissingRepository reportRepo;
 
     @Override
     public void save(Registration registration) {
         Session s = factory.getObject().getCurrentSession();
-        s.save(registration);
-    }
-
-    @Override
-    public boolean existsByStudentIdAndActivityParticipationTypeId(Integer studentId, int activityParticipationTypeId) {
-        Session s = factory.getObject().getCurrentSession();
-        Query<Long> query = s.createQuery(
-                "SELECT COUNT(r) FROM Registration r WHERE r.studentId.id = :studentId AND r.activityParticipationTypeId.id = :activityParticipationTypeId",
-                Long.class
-        );
-        query.setParameter("studentId", studentId);
-        query.setParameter("activityParticipationTypeId", activityParticipationTypeId);
-        return query.getSingleResult() > 0;
+        
+        s.saveOrUpdate(registration);
     }
 
     @Override
@@ -75,15 +70,28 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
                     Student student = studentRepository.findByStudentCode(studentCode);
 
                     if (student != null) {
+                        Registration registration = this.findByStudentIdAndActivityParticipationTypeId(student.getId(), activityParticipationTypeId);
+                        
+                        ReportMissing report = this.reportRepo.findByStudentIdAndActivityParticipationTypeId(student.getId(), activityParticipationTypeId);
+                        
                         // Kiểm tra xem đã tồn tại registration cho student và activityParticipationType này chưa
-                        if (!this.existsByStudentIdAndActivityParticipationTypeId(student.getId(), activityParticipationTypeId)) {
-                            Registration registration = new Registration();
+                        if(report != null){
+                            report.setChecked(true);
+                            
+                            this.reportRepo.save(report);
+                        }
+                        if (registration == null) {
+                            registration = new Registration();
                             registration.setRegistrationDate(currentDate);
                             registration.setParticipated(true);
                             registration.setActivityParticipationTypeId(this.activityParticipationTypeRepository.getActivityParticipationTypeById(activityParticipationTypeId));
                             registration.setStudentId(student);
                             this.save(registration);
                             System.out.println(registration + "____________________________________");
+                        } else{
+                            registration.setParticipated(true);
+                            
+                            this.save(registration);
                         }
                     } else {
                         System.out.println("Student not found for MSSV: " + studentCode);
@@ -108,52 +116,59 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
     @Override
     public List<Registration> getRegistrationsByFacultyId(int facultyId) {
         Session s = this.factory.getObject().getCurrentSession();
-        Query query = s.createQuery("SELECT r FROM Registration r " +
-                                       "JOIN FETCH r.studentId s " +
-                                       "JOIN FETCH s.facultyId f " +
-                                       "WHERE f.id = :facultyId AND r.participated = true", Registration.class);
+        Query query = s.createQuery("SELECT r FROM Registration r "
+                + "JOIN FETCH r.studentId s "
+                + "JOIN FETCH s.facultyId f "
+                + "WHERE f.id = :facultyId AND r.participated = true", Registration.class);
         query.setParameter("facultyId", facultyId);
-        
+
         return query.getResultList();
     }
 
     @Override
     public List<Registration> findRegistrationsByStudentId(int id) {
-         Session s = factory.getObject().getCurrentSession();
-         Query q = s.createNamedQuery("Registration.findByStudentId");
-         q.setParameter("studentId", id);
-         
-         return q.getResultList();
+        Session s = factory.getObject().getCurrentSession();
+        Query q = s.createNamedQuery("Registration.findByStudentId");
+        q.setParameter("studentId", id);
+
+        return q.getResultList();
     }
 
     @Override
     public Registration findRegistrationById(int id) {
         Session s = factory.getObject().getCurrentSession();
-        
+
         return s.get(Registration.class, id);
     }
 
     @Override
     public void delete(int id) {
         Session s = factory.getObject().getCurrentSession();
-        
+
         Registration r = s.get(Registration.class, id);
-        if(r != null){
+        if (r != null) {
             s.delete(r);
         }
     }
 
+    
+
     @Override
-    public Registration findRegistrationOwner(int studentId, int registrationId) {
+    public Registration findByStudentIdAndActivityParticipationTypeId(Integer studentId, int activityParticipationTypeId) {
         Session s = factory.getObject().getCurrentSession();
-        
-        Query<Registration> q = s.createQuery("SELECT r FROM Registration r " +
-                                "WHERE r.id = :registrationId AND r.studentId.id = :studentId", Registration.class);
-        
-        q.setParameter("studentId", studentId);
-        q.setParameter("registrationId", registrationId);
-        
-        return q.getSingleResult();
+        Query<Registration> query = s.createQuery(
+                "SELECT r FROM Registration r WHERE r.studentId.id = :studentId AND r.activityParticipationTypeId.id = :activityParticipationTypeId",
+                Registration.class
+        );
+        query.setParameter("studentId", studentId);
+        query.setParameter("activityParticipationTypeId", activityParticipationTypeId);
+
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+
     }
 
 }

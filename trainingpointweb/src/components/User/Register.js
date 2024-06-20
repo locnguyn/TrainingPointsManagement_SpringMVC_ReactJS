@@ -53,17 +53,17 @@ const Register = () => {
     },
   ];
 
-  const [user, setUser] = useState({});
+  const [userInfo, setUserInfo] = useState({});
   const [step, setStep] = useState(1);
   const [classes, setClasses] = useState([]);
   const [faculties, setFaculties] = useState([]);
   const avatar = useRef();
   const nav = useNavigate();
-  const u = useContext(MyUserContext);
+  const {user} = useContext(MyUserContext);
 
   const Change = (event, field) => {
     const value = event.target.value;
-    setUser((current) => ({
+    setUserInfo((current) => ({
       ...current,
       [field]: value,
     }));
@@ -87,18 +87,18 @@ const Register = () => {
   }, []);
 
   useEffect(() => {
-    if (u) {
+    if (user) {
       nav("/");
     }
-  }, [u, nav]);
+  }, [user, nav]);
 
   const register = async (e) => {
     e.preventDefault();
 
     const form = new FormData();
-    for (const key in user) {
+    for (const key in userInfo) {
       if (key !== "confirm") {
-        form.append(key, user[key]);
+        form.append(key, userInfo[key]);
       }
     }
     if (avatar.current && avatar.current.files[0]) {
@@ -116,7 +116,7 @@ const Register = () => {
         error: "Tên đăng nhập đã tồn tại!"
       });
       if (res.status === 201) {
-        handleRegisterFirebase(user["email"], user["password"], "ROLE_USER", user["firstName"], user["lastName"], res.data);
+        handleRegisterFirebase(userInfo["email"], userInfo["password"], "ROLE_USER", userInfo["firstName"], userInfo["lastName"], res.data);
         nav("/login")
       };
     } catch (ex) {
@@ -128,12 +128,12 @@ const Register = () => {
   const RenderStep = () => {
     switch (step) {
       case 1:
-        return <Verify onSubmit={setUser} setStep={setStep} label="Email" placeholder="Email" type="email" />;
+        return <Verify onSubmit={setUserInfo} setStep={setStep} label="Email" placeholder="Email" type="email" />;
       case 2:
-        return <Verify setStep={setStep} label={`Nhập mã OTP đã được gửi về email ${user["email"]}`} placeholder="Nhập OTP..." type="text" user={user} />;
+        return <Verify setStep={setStep} label={`Nhập mã OTP đã được gửi về email ${userInfo["email"]}`} placeholder="Nhập OTP..." type="text" user={userInfo} />;
       case 3:
         return (
-          <RegisterContext.Provider value={{Change, faculties, classes, avatar, register, fields, user}}>
+          <RegisterContext.Provider value={{Change, faculties, classes, avatar, register, fields, user: userInfo}}>
             <RemainingField />
           </RegisterContext.Provider>
         );

@@ -7,9 +7,11 @@ package com.pbthnxl.controllers;
 import com.pbthnxl.pojo.Article;
 import com.pbthnxl.pojo.Faculty;
 import com.pbthnxl.pojo.Class;
+import com.pbthnxl.pojo.Semester;
 import com.pbthnxl.services.ArticleService;
 import com.pbthnxl.services.ClassService;
 import com.pbthnxl.services.FacultyService;
+import com.pbthnxl.services.SemesterService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,8 @@ public class ApiCommonController {
     private ArticleService arService;
     @Autowired
     private ClassService classService;
+    @Autowired
+    private SemesterService semesterService;
     
     @CrossOrigin
     @GetMapping("/faculty-list/")
@@ -49,5 +53,11 @@ public class ApiCommonController {
     @GetMapping("/class-list")
     public ResponseEntity<List<Class>> ClassList(){
         return new ResponseEntity<>(this.classService.getClasses(), HttpStatus.OK);
+    }
+    
+    @CrossOrigin
+    @GetMapping("/semester-list/")
+    public ResponseEntity<List<Semester>> SemesterList(){
+        return new ResponseEntity<>(this.semesterService.getSemesters(), HttpStatus.OK);
     }
 }

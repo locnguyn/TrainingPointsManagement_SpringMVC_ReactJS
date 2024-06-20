@@ -27,12 +27,12 @@ const Login = () => {
 
   const nav = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState({});
+  const [userInfo, setUserInfo] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const dispatch = useContext(MyDispatcherContext);
-  const u = useContext(MyUserContext);
+  const { dispatch, dispatchReport, dispatchActivity } = useContext(MyDispatcherContext);
+  const { user} = useContext(MyUserContext);
   const Change = (event, field) => {
-    setUser((current) => {
+    setUserInfo((current) => {
       return { ...current, [field]: event.target.value };
     });
   };
@@ -42,16 +42,16 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (u) {
+    if (user) {
       nav("/");
     }
-  }, [u, nav]);
+  }, [user, nav]);
 
   const login = async (e) => {
     e.preventDefault();
 
     try {
-      let res = await toast.promise(APIs.post(endpoints["login"], { ...user }), {
+      let res = await toast.promise(APIs.post(endpoints["login"], { ...userInfo }), {
         loading: "Đang xử lý...",
         success: "Đăng nhập thành công",
         error: (ex) => {
@@ -64,19 +64,25 @@ const Login = () => {
       });
       cookie.save("token", res.data);
       let u = await authApi().get(endpoints["current-user"]);
-      let r = await authApi().get(endpoints["user-registration"]);
-      cookie.save("user", {
-        "userInfo": u.data,
-        "userRegistration": r.data
-      });
+      let a = await authApi().get(endpoints["user-registration"]);
+      let report = await authApi().get(endpoints["user-report"]);
+      console.log(a.data);
+      handleLoginFirebase(u.data.email, userInfo.password);
       dispatch({
         type: "login",
-        payload: {
-          resData: u.data,
-          regData: r.data
-        }
+        payload: u.data
       });
-      handleLoginFirebase(u.data.email, user.password);
+
+      dispatchReport({
+        type: "initReports",
+        payload: report.data
+      });
+
+      dispatchActivity({
+        type: "initActivities",
+        payload: a.data
+      });
+
       nav(location.state?.from?.pathname || "/");
     } catch (ex) {
       console.error(ex);
@@ -93,7 +99,7 @@ const Login = () => {
             <div className="d-flex align-items-center">
               <Form.Control
                 onChange={(e) => Change(e, f.field)}
-                value={user[f.field]}
+                value={userInfo[f.field]}
                 type={
                   f.field === "password"
                     ? showPassword

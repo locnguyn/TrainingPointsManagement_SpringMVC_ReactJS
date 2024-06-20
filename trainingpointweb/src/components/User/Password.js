@@ -8,16 +8,16 @@ import toast from "react-hot-toast";
 import { updatePasswordFirebase } from "../../configs/firebase";
 
 const Password = () => {
-  const u = useContext(MyUserContext);
-  const [user, setUser] = useState({});
+  const {user} = useContext(MyUserContext);
+  const [userInfo, setUserInfo] = useState({});
   const [error, setError] = useState("");
-  const dispatch = useContext(MyDispatcherContext);
+  const {dispatch} = useContext(MyDispatcherContext);
   const [logout, setLogout] = useState(false);
   const [fields, setFields] = useState([]);
   const nav = useNavigate();
 
   const Change = (e, field) => {
-    setUser((current) => {
+    setUserInfo((current) => {
       const updatedUser = { ...current, [field]: e.target.value };
 
       if (
@@ -37,11 +37,11 @@ const Password = () => {
 
   const Update = async (e) => {
     e.preventDefault();
-    if (error || !user.old_password || !user.new_password || !user.confirm)
+    if (error || !userInfo.old_password || !userInfo.new_password || !userInfo.confirm)
       return;
 
     try {
-      let res = await authApi().patch(endpoints["change-password"], user, {
+      let res = await authApi().patch(endpoints["change-password"], userInfo, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -61,7 +61,7 @@ const Password = () => {
   };
 
   useEffect(() => {
-    if (u) {
+    if (user) {
       setFields([
         {
           label: "Mật Khẩu Cũ",
@@ -96,7 +96,7 @@ const Password = () => {
             <Form.Control
               onChange={(e) => Change(e, f.field)}
               type={f.type}
-              value={user[f.field]}
+              value={userInfo[f.field]}
               required
             ></Form.Control>
           </Form.Group>

@@ -6,8 +6,8 @@ import "./Styles.css";
 import { auth, setOffline, signOut } from "../../configs/firebase";
 
 const Header = () => {
-  const user = useContext(MyUserContext);
-  const dispatch = useContext(MyDispatcherContext);
+  const { user } = useContext(MyUserContext);
+  const { dispatch } = useContext(MyDispatcherContext);
   const nav = useNavigate();
   const location = useLocation();
   // const u = useContext(MyUserContext);
@@ -25,7 +25,6 @@ const Header = () => {
     } catch (ex) {
       console.error(ex);
     }
-
   };
   useEffect(() => {
     if (logout) {
@@ -38,7 +37,9 @@ const Header = () => {
       <Navbar collapseOnSelect expand="lg" className="custom-navbar">
         <Container>
           <Navbar.Brand>
-            <Link to="/" className="nav-link">Điểm Rèn Luyện</Link>
+            <Link to="/" className="nav-link">
+              Điểm Rèn Luyện
+            </Link>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
@@ -46,12 +47,19 @@ const Header = () => {
               <Link className="nav-link" to="/">
                 Trang Chủ
               </Link>
-              <Link className="nav-link" to="/activity">
-                Hoạt Động
-              </Link>
-              <Link className="nav-link" to="/report_missing">
-                Báo Thiếu
-              </Link>
+              {user !== null && (
+                <>
+                  <Link className="nav-link" to="/activity">
+                    Hoạt Động
+                  </Link>
+                  <Link className="nav-link" to="/report-missing">
+                    Báo Thiếu
+                  </Link>
+                  <Link className="nav-link" to="/stats">
+                    Thống Kê
+                  </Link>
+                </>
+              )}
             </Nav>
             <Nav className="ms-auto">
               {user === null ? (
@@ -68,7 +76,7 @@ const Header = () => {
                   <Link to="/current-user">
                     <Image
                       className="me-2"
-                      src={user.userInfo.avatar || "https://i0.wp.com/www.repol.copl.ulaval.ca/wp-content/uploads/2019/01/default-user-icon.jpg?ssl=1"}
+                      src={user.avatar}
                       style={{
                         width: "40px",
                         height: "40px",

@@ -10,6 +10,7 @@ import com.pbthnxl.pojo.User;
 import com.pbthnxl.repositories.ReportMissingRepository;
 import com.pbthnxl.repositories.UserRepository;
 import java.util.List;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ public class ReportMissingRepositoryImpl implements ReportMissingRepository {
             User currentUser = userRepo.getUserByUsername(username);
 
             reportMissing.setUserId(currentUser);
+            
 
             Registration existingRegistration = findExistingRegistration(session, reportMissing);
             if (existingRegistration != null) {
@@ -82,7 +84,13 @@ public class ReportMissingRepositoryImpl implements ReportMissingRepository {
         Query query = session.createQuery(hql);
         query.setParameter("studentId", reportMissing.getStudentId());
         query.setParameter("activityParticipationTypeId", reportMissing.getActivityParticipationTypeId());
-        return (Registration) query.getSingleResult();
+        
+        try {
+            return (Registration) query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+        
     }
 
     @Override
@@ -101,6 +109,39 @@ public class ReportMissingRepositoryImpl implements ReportMissingRepository {
             reportMissing.setChecked(true);
             session.update(reportMissing);
         }
+    }
+
+    @Override
+    public void save(ReportMissing r) {
+        Session s = this.factory.getObject().getCurrentSession();
+
+        s.saveOrUpdate(r);
+    }
+
+    @Override
+    public List<ReportMissing> getStudentReportMissings(int studentId) {
+        Session s = this.factory.getObject().getCurrentSession();
+        Query q = s.createNamedQuery("ReportMissing.findByStudentId");
+        q.setParameter("studentId", studentId);
+        return q.getResultList();
+    }
+
+    @Override
+    public ReportMissing findByStudentIdAndActivityParticipationTypeId(int studentId, int activityParticipationTypeId) {
+        Session s = factory.getObject().getCurrentSession();
+        
+        String hql = "SELECT r FROM ReportMissing r WHERE r.studentId.id = :studentId AND r.activityParticipationTypeId.id = :activityParticipationTypeId";
+        
+        Query q = s.createQuery(hql);
+        q.setParameter("studentId", studentId);
+        q.setParameter("activityParticipationTypeId", activityParticipationTypeId);
+        
+        try {
+            return (ReportMissing) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+        
     }
 
 }

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import CommentList from "./CommentList";
 import InputForm from "../Common/InputForm";
@@ -9,22 +9,52 @@ import { Button, Form, Image, Table } from "react-bootstrap";
 import { MyDispatcherContext, MyUserContext } from "../../configs/Contexts";
 import { IoAdd } from "react-icons/io5";
 import cookie from "react-cookies";
+import MyModal from "../Common/Modal";
 
 const ActivityDetails = () => {
-  const [activity, setActivity] = useState({});
+  const [activities, setActivities] = useState([]);
   const [comments, setComments] = useState([]);
+  const [reports, setReports] = useState([]);
   const { activityId } = useParams();
-  // const [comment, setComment] = useState("");
-  const user = useContext(MyUserContext);
-  const dispatch = useContext(MyDispatcherContext);
+  const [comment, setComment] = useState("");
+  const { user, userActivity, userReport } = useContext(MyUserContext);
+  const { dispatchActivity, dispatchReport } = useContext(MyDispatcherContext);
   const location = useLocation();
   const nav = useNavigate();
+  const [acPartType, setAcPartType] = useState();
 
-  const loadActivity = async () => {
+  const [previewURL, setPreviewURL] = useState(null);
+  const [show, setShow] = useState(false);
+  const proof = useRef();
+
+  const Close = () => {
+    setShow(false);
+    setPreviewURL(null);
+  };
+  const Show = (typeId) => {
+    setShow(true);
+    setAcPartType(typeId);
+  };
+
+  const fileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPreviewURL(URL.createObjectURL(file));
+    } else {
+      setPreviewURL(null);
+    }
+  };
+
+  const Load = async () => {
     try {
       let res = await authApi().get(endpoints["activity-details"](activityId));
-      setActivity(res.data);
-      setComments(res.data.comments);
+      let re = await authApi().get(endpoints["user-report"]);
+
+      if (res.status === 200 && re.status === 200) {
+        setActivities(res.data);
+        setComments(res.data.comments);
+        setReports(re.data);
+      }
     } catch (ex) {
       console.error(ex);
     }
@@ -87,7 +117,7 @@ const ActivityDetails = () => {
     e.preventDefault();
     try {
       let res = await toast.promise(
-        authApi().post(endpoints["activity-registration"], {
+        authApi().post(endpoints["create-registration"], {
           acPartTypeId: acPartTypeId,
         }),
         {
@@ -98,17 +128,9 @@ const ActivityDetails = () => {
       );
 
       if (res.status === 201) {
-        let r = await authApi().get(endpoints["user-registration"]);
-        dispatch({
-          type: "update_user",
-          payload: {
-            resData: user.userInfo,
-            regData: r.data,
-          },
-        });
-        cookie.save("user", {
-          ...user,
-          userRegistration: r.data,
+        dispatchActivity({
+          type: "update-activities",
+          payload: [...userActivity, res.data],
         });
       }
     } catch (ex) {
@@ -120,7 +142,7 @@ const ActivityDetails = () => {
     if (user === null) {
       nav("/login", { state: { from: location } });
     } else {
-      loadActivity();
+      Load();
     }
   }, [user, nav, location]);
 
@@ -129,14 +151,46 @@ const ActivityDetails = () => {
     try {
       const res = await authApi().post(endpoints["activity-like"](activityId));
       if (res.status === 200) {
-        setActivity({
-          ...activity,
-          liked: !activity.liked,
-          likes: activity.liked ? activity.likes - 1 : activity.likes + 1,
+        setActivities({
+          ...activities,
+          liked: !activities.liked,
+          likes: activities.liked ? activities.likes - 1 : activities.likes + 1,
         });
       }
     } catch (ex) {
       console.error(ex);
+    }
+  };
+
+  const CreateReport = async (e, acPartTypedId, proof) => {
+    e.preventDefault();
+
+    try {
+      let form = new FormData();
+      form.append("acPartTypeId", acPartTypedId);
+      console.log(form);
+      if (proof) form.append("files", proof.current.files[0]);
+
+      let res = await await toast.promise(
+        authApi().post(endpoints["create-report"], form, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }),
+        {
+          loading: "Loading",
+          success: "Báo thiếu thành công",
+          error: "Thất bại",
+        }
+      );
+      Close();
+
+      dispatchReport({
+        type: "update-reports",
+        payload: [...userReport, res.data],
+      });
+    } catch (ex) {
+      console.log(ex);
     }
   };
 
@@ -157,43 +211,43 @@ const ActivityDetails = () => {
                 <td>
                   <strong>Tên Hoạt Động</strong>
                 </td>
-                <td>{activity.name}</td>
+                <td>{activities.name}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Địa điểm</strong>
                 </td>
-                <td>{activity.location}</td>
+                <td>{activities.location}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Thời gian bắt đầu</strong>
                 </td>
-                <td>{activity.startDateTime}</td>
+                <td>{activities.startDateTime}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Thời gian kết thúc</strong>
                 </td>
-                <td>{activity.endDateTime}</td>
+                <td>{activities.endDateTime}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Khoa</strong>
                 </td>
-                <td>{activity.faculty}</td>
+                <td>{activities.faculty}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Người tham gia</strong>
                 </td>
-                <td>{activity.participant}</td>
+                <td>{activities.participant}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Điều</strong>
                 </td>
-                <td>{activity.article}</td>
+                <td>{activities.article}</td>
               </tr>
             </tbody>
           </Table>
@@ -211,41 +265,62 @@ const ActivityDetails = () => {
                 <th>Loại Tham Gia</th>
                 <th>Điểm</th>
                 <th></th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
-              {activity.activityParticipationTypes &&
-                activity.activityParticipationTypes.length > 0 && (
+              {activities.activityParticipationTypes &&
+                activities.activityParticipationTypes.length > 0 && (
                   <>
-                    {activity.activityParticipationTypes.map((type, index) => (
-                      <tr key={type.id} align="middle">
-                        <td>{index + 1}</td>
-                        <td>{type.participationType}</td>
-                        <td>{type.point}</td>
-                        <td>
-                          <Button
-                            onClick={(e) => activityRegistration(e, type.id)}
-                            disabled={user?.userRegistration
-                              .map((reg) => reg.acPartTypeId)
-                              .includes(type.id)} size="sm"
-                          >
-                            Đăng Ký
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
+                    {activities.activityParticipationTypes.map(
+                      (type, index) => (
+                        <tr key={type.id} align="middle">
+                          <td>{index + 1}</td>
+                          <td>{type.participationType}</td>
+                          <td>{type.point}</td>
+                          <td>
+                            <Button
+                              onClick={(e) => activityRegistration(e, type.id)}
+                              disabled={userActivity
+                                .map((reg) => reg.acPartTypeId)
+                                .includes(type.id)}
+                              size="sm"
+                            >
+                              Đăng Ký
+                            </Button>
+                          </td>
+
+                          <td>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => Show(type.id)}
+                              disabled={reports.map((re) => re.activityPartType.id).includes(type.id)}
+                            >
+                              Báo Thiếu
+                            </Button>
+                          </td>
+                        </tr>
+                      )
+                    )}
                   </>
                 )}
             </tbody>
           </Table>
+          <MyModal
+            Show={show}
+            Close={Close}
+            fileChange={fileChange}
+            CreateReport={CreateReport}
+            previewURL={previewURL}
+            proof={proof}
+            acPartTypedId={acPartType}
+          />
 
           <div className="row">
-            <div
-              className="mb-2 d-flex"
-              style={{ color: "#666" }}
-            >
+            <div className="mb-2 d-flex" style={{ color: "#666" }}>
               <span>
-                {activity.likes != 0 ? (
+                {activities.likes != 0 ? (
                   <div className="align-self-end me-2">
                     <small>
                       <img
@@ -258,7 +333,7 @@ const ActivityDetails = () => {
                       />
                     </small>
                     <small className="ms-1" style={{ fontSize: "16px" }}>
-                      {activity.likes != 1 ? activity.likes : ""}
+                      {activities.likes != 1 ? activities.likes : ""}
                     </small>
                   </div>
                 ) : (
@@ -281,11 +356,11 @@ const ActivityDetails = () => {
             <div className="">
               <button
                 className={
-                  activity.liked ? "btn btn-primary" : "btn border border-2"
+                  activities.liked ? "btn btn-primary" : "btn border border-2"
                 }
                 onClick={likeOrUnlike}
               >
-                {activity.liked ? (
+                {activities.liked ? (
                   <>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -325,7 +400,7 @@ const ActivityDetails = () => {
             </div>
             <div className="d-flex mb-3">
               <Image
-                src={user.userInfo.avatar}
+                src={user.avatar}
                 width="30"
                 height="30"
                 className="me-2"
@@ -336,9 +411,9 @@ const ActivityDetails = () => {
                 handleSubmit={addComment}
                 placeholder={
                   "Bình luận với vai trò " +
-                  user.userInfo.lastName +
+                  user.lastName +
                   " " +
-                  user.userInfo.firstName
+                  user.firstName
                 }
               />
             </div>

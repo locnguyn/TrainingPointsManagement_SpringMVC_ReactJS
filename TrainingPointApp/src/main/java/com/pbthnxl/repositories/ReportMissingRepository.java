@@ -13,6 +13,9 @@ import java.util.List;
  */
 public interface ReportMissingRepository {
     List<ReportMissing> getReportMissings();
+    List<ReportMissing> getStudentReportMissings(int studentId);
     void confirmReportMissingById(int id);
     void rejectReportMissingById(int id);
+    void save(ReportMissing r);
+    ReportMissing findByStudentIdAndActivityParticipationTypeId(int studentId, int activityParticipationTypeId);
 }

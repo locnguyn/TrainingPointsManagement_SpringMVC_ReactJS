@@ -42,11 +42,6 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public boolean existsByStudentIdAndActivityParticipationTypeId(Integer studentId, int activityParticipationTypeId) {
-        return this.registrationRepository.existsByStudentIdAndActivityParticipationTypeId(studentId, activityParticipationTypeId);
-    }
-
-    @Override
     public void processCSV(MultipartFile file, int activityParticipationTypeId) {
         this.registrationRepository.processCSV(file, activityParticipationTypeId);
     }
@@ -64,7 +59,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     }
 
-    private RegistrationDTO convertToDTO(Registration r) {
+    @Override
+    public RegistrationDTO convertToDTO(Registration r) {
         RegistrationDTO dto = new RegistrationDTO();
 
         dto.setId(r.getId());
@@ -75,7 +71,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         dto.setPoint(r.getActivityParticipationTypeId().getPoint());
 //        dto.setActivity(this.acPartTypeRepo.getActivityParticipationTypeById(r.getActivityParticipationTypeId()));
         dto.setActivity(this.activityService.convertToRegistrationActivityDTO(r.getActivityParticipationTypeId().getActivityId()));
-        
+
         return dto;
     }
 
@@ -89,9 +85,10 @@ public class RegistrationServiceImpl implements RegistrationService {
         this.registrationRepository.delete(id);
     }
 
+
     @Override
-    public Registration findRegistrationOwner(int studentId, int registrationId) {
-        return this.registrationRepository.findRegistrationOwner(studentId, registrationId);
+    public Registration findByStudentIdAndActivityParticipationTypeId(Integer studentId, int activityParticipationTypeId) {
+        return this.registrationRepository.findByStudentIdAndActivityParticipationTypeId(studentId, activityParticipationTypeId);
     }
 
 }

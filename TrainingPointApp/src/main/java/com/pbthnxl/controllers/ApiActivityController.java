@@ -68,21 +68,7 @@ public class ApiActivityController {
         return new ResponseEntity<>(this.acService.findFilteredActivitiesDTO(params), HttpStatus.OK);
     }
 
-    // dang ky hoat dong
-    @CrossOrigin
-    @PostMapping(path = "/registration/", consumes = {
-        MediaType.APPLICATION_JSON_VALUE
-    })
-    @ResponseStatus(HttpStatus.CREATED)
-    public void create(@RequestBody Map<String, String> params, Principal p) {
-        Registration r = new Registration();
-
-        r.setStudentId(this.userSerivce.getUserByUsername(p.getName()).getStudent());
-        r.setActivityParticipationTypeId(acPartService.getActivityParticipationTypeById(Integer.parseInt(params.get("acPartTypeId"))));
-        r.setRegistrationDate(new Date());
-
-        this.regisService.save(r);
-    }
+    
 
     // chi tiet hoat dong
     @CrossOrigin

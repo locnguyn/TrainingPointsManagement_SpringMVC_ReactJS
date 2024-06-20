@@ -12,7 +12,7 @@ moment.locale("vi");
 const Chatbox = ({ isOpen, toggleChatbox, chattingUser }) => {
   const [messages, setMessages] = useState([]);
   const chatId = getChatId(chattingUser.email);
-  const user = useContext(MyUserContext);
+  const {user} = useContext(MyUserContext);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -35,7 +35,7 @@ const Chatbox = ({ isOpen, toggleChatbox, chattingUser }) => {
   }, [])
 
   const send = (message) => {
-    sendMessage(chatId, message, user.userInfo.email, chattingUser.email);
+    sendMessage(chatId, message, user.email, chattingUser.email);
   }
 
   const getMessageClassName = (messages, index, currentEmail) => {
@@ -89,9 +89,9 @@ const Chatbox = ({ isOpen, toggleChatbox, chattingUser }) => {
 
               return (<div
                 key={index}
-                className={`chat-message ${message.email === user.userInfo.email ? 'chat-message-right' : 'chat-message-left'}`}
+                className={`chat-message ${message.email === user.email ? 'chat-message-right' : 'chat-message-left'}`}
               >
-                {message.email !== user.userInfo.email && (
+                {message.email !== user.email && (
                   <div className='avatar-chatbox-body me-2'>
                     <Image src={chattingUser.avatar ? chattingUser.avatar : "https://i0.wp.com/www.repol.copl.ulaval.ca/wp-content/uploads/2019/01/default-user-icon.jpg?ssl=1"} style={{
                       width: "30px",

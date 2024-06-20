@@ -5,12 +5,19 @@
 package com.pbthnxl.repositories.Impl;
 
 import com.pbthnxl.pojo.Activity;
+import com.pbthnxl.pojo.Semester;
 import com.pbthnxl.repositories.ActivityRepository;
+import com.pbthnxl.repositories.SemesterRepository;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -35,6 +42,8 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
     @Autowired
     private LocalSessionFactoryBean factory;
+    @Autowired
+    private SemesterRepository semesterRepo;
 
     @Autowired
     private Environment env;
@@ -116,6 +125,32 @@ public class ActivityRepositoryImpl implements ActivityRepository {
                             b.lessThanOrEqualTo(r.get("endDate"), endDate)
                     )
             ));
+        }
+
+        //kiem tra hoat dong nam trong hk nao
+        String date = params.get("currentDate");
+        if (date != null && !date.isEmpty()) {
+            List<Semester> semesters = this.semesterRepo.getSemesters();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+
+            Date currentDate;
+            try {
+                currentDate = formatter.parse(params.get("currentDate"));
+                System.out.println(currentDate);
+
+                for (Semester sem : semesters) {
+                    if (currentDate.after(sem.getStartDate()) && currentDate.before(sem.getEndDate())) {
+                        predicates.add(b.and(
+                                b.greaterThanOrEqualTo(r.get("startDateTime"), sem.getStartDate()),
+                                b.lessThanOrEqualTo(r.get("endDate"), sem.getEndDate())
+                        ));
+
+                    }
+                }
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+
         }
 
         q.where(predicates.toArray(new Predicate[0]));

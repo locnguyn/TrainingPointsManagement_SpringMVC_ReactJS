@@ -1,6 +1,6 @@
 import { useContext, useEffect, useReducer, useRef, useState } from "react";
 import { authApi, endpoints } from "../../configs/APIs";
-import { Button, Container, Form, Image } from "react-bootstrap";
+import { Button, Card, Container, Figure, Form, Image } from "react-bootstrap";
 import { MyDispatcherContext, MyUserContext } from "../../configs/Contexts";
 import { Link, useNavigate } from "react-router-dom";
 import MyUserReducer from "../Reducer/UserReducer";
@@ -8,15 +8,15 @@ import cookie from "react-cookies";
 import toast from "react-hot-toast";
 
 const User = () => {
-  const [user, setUser] = useState({});
-  const u = useContext(MyUserContext);
-  const dispatch = useContext(MyDispatcherContext);
+  const [userInfo, setUserInfo] = useState({});
+  const {user} = useContext(MyUserContext);
+  const {dispatch} = useContext(MyDispatcherContext);
   const nav = useNavigate();
   const avatar = useRef();
   const [fields, setFields] = useState([]);
 
   const Change = (event, field) => {
-    setUser((current) => {
+    setUserInfo((current) => {
       return { ...current, [field]: event.target.value };
     });
   };
@@ -24,33 +24,37 @@ const User = () => {
   const updateInfo = async (e) => {
     e.preventDefault();
     let form = new FormData();
-    for (let key in user) {
+    for (let key in userInfo) {
       if (key != "confirm") {
-        form.append(key, user[key]);
+        form.append(key, userInfo[key]);
       }
     }
     if (avatar) form.append("files", avatar.current.files[0]);
     try {
-      let res = await toast.promise(authApi().patch(endpoints["update-current-user"], form, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }), {loading: "Đang cập nhật", success: "Cập nhật thành công", error: (ex) =>{
-        if(ex.response.status === 400){
-          return "Nhập sai";
-        } else return "Lỗi hệ thống"
-      }});
+      let res = await toast.promise(
+        authApi().patch(endpoints["update-current-user"], form, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }),
+        {
+          loading: "Đang cập nhật",
+          success: "Cập nhật thành công",
+          error: (ex) => {
+            if (ex.response.status === 400) {
+              return "Nhập sai";
+            } else return "Lỗi hệ thống";
+          },
+        }
+      );
       if (res.status === 200) {
-        cookie.save("user", {
-          ...u,
-          userInfo: res.data,
-        });
+        // cookie.save("user", {
+        //   ...user,
+        //   userInfo: res.data,
+        // });
         dispatch({
           type: "update_user",
-          payload: {
-            resData: res.data,
-            regData: u.userRegistration,
-          },
+          payload: res.data
         });
       }
     } catch (ex) {
@@ -59,61 +63,61 @@ const User = () => {
   };
 
   useEffect(() => {
-    if (u) {
+    if (user) {
       setFields([
         {
           label: "Tên Đăng Nhập",
           field: "username",
-          value: u.userInfo.username,
+          value: user.username,
           type: "text",
         },
         {
           label: "Họ",
           field: "firstName",
-          value: u.userInfo.firstName,
+          value: user.firstName,
           type: "text",
         },
         {
           label: "Tên",
           field: "lastName",
-          value: u.userInfo.lastName,
+          value: user.lastName,
           type: "text",
-        },
-        {
-          label: "Email",
-          field: "email",
-          value: u.userInfo.email,
-          type: "email",
         },
         {
           label: "Số Điện Thoại",
           field: "phone",
-          value: u.userInfo.phoneNumber,
+          value: user.phoneNumber,
           type: "tel",
+        },
+        {
+          label: "Email",
+          field: "email",
+          value: user.email,
+          type: "email",
         },
         {
           label: "Mã Số Sinh Viên",
           field: "studentCode",
-          value: u.userInfo.studentCode,
+          value: user.studentCode,
           type: "text",
         },
         {
           label: "Lớp",
           field: "className",
-          value: u.userInfo.className,
+          value: user.className,
           type: "text",
         },
         {
           label: "Khoa",
           field: "facultyName",
-          value: u.userInfo.facultyName,
+          value: user.facultyName,
           type: "text",
         },
       ]);
     } else {
       nav("/");
     }
-  }, [u, nav]);
+  }, [user, nav]);
   return (
     <Container className="custom-container">
       <h1 className="text-center">Thông Tin Người Dùng</h1>
@@ -135,25 +139,44 @@ const User = () => {
             />
           </Form.Group>
         ))}
-        <Form.Group className="mb-3" controlId="avatar">
+        <Form.Group
+          className="d-flex flex-column align-items-center"
+          controlId="avatar"
+        >
+          <Card style={{ width: "18rem" }} className="mb-4">
+            <Card.Img variant="top" rounded src={user?.avatar} />
+            <Card.Body>
+              <Card.Title>Ảnh đại diện</Card.Title>
+              <Form.Control type="file" accept=".jpg,.png,.jpeg" ref={avatar} />
+            </Card.Body>
+          </Card>
           {/* <Form.Label>Avatar</Form.Label> */}
-          <Image
-            src={u?.userInfo.avatar}
+          {/* <Image
+            src={u?.avatar}
             width="100"
             className="mb-3"
             rounded
-          />
-          <Form.Control type="file" accept=".jpg,.png,.jpeg" ref={avatar} />
-        </Form.Group>
-        <Link to="/change_password">
-          <Button variant="primary" className="mb-3">
-            Đổi Mật Khẩu
-          </Button>
-        </Link>
+          /> */}
+          {/* <Figure>
+            <Figure.Image src={u?.avatar}
+            width="100"
+            className="mb-3"
+            rounded />
+            <Figure.Caption>Ảnh đại diện</Figure.Caption>
+          </Figure> */}
+          <div>
+          <Link to="/change-password">
+            <Button variant="primary" className="mb-3">
+              Đổi Mật Khẩu
+            </Button>
+          </Link>
 
-        <Button variant="success" className="mb-3 ms-3" type="submit">
-          Cập Nhật
-        </Button>
+          <Button variant="success" className="mb-3 ms-3" type="submit">
+            Cập Nhật
+          </Button>
+        </div>
+        </Form.Group>
+        
       </Form>
     </Container>
   );
