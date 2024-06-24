@@ -21,4 +21,5 @@ public interface RegistrationRepository {
     List<Registration> findRegistrationsByStudentId(int id);
     Registration findRegistrationById(int id);
     void delete(int id);
+    List<Registration> filterRegistrationsBySemester(List<Registration> registrations, int semesterId);
 }

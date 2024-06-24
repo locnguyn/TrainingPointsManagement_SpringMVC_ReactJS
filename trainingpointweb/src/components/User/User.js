@@ -144,7 +144,7 @@ const User = () => {
           controlId="avatar"
         >
           <Card style={{ width: "18rem" }} className="mb-4">
-            <Card.Img variant="top" rounded src={user?.avatar} />
+            <Card.Img variant="top" src={user?.avatar} />
             <Card.Body>
               <Card.Title>Ảnh đại diện</Card.Title>
               <Form.Control type="file" accept=".jpg,.png,.jpeg" ref={avatar} />
@@ -176,7 +176,7 @@ const User = () => {
           </Button>
         </div>
         </Form.Group>
-        
+
       </Form>
     </Container>
   );

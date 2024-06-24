@@ -14,4 +14,6 @@ import java.util.List;
 public interface FacultyService {
     List<Faculty> getFaculties();
     Faculty getFacultyById(int id);
+    void addOrUpdate(Faculty c);
+    void delete(Faculty c);
 }

@@ -24,5 +24,20 @@ public class SemesterServiceImpl implements SemesterService{
     public List<Semester> getSemesters() {
         return this.semesterRepo.getSemesters();
     }
+
+    @Override
+    public Semester getSemesterById(int id) {
+        return this.semesterRepo.getSemesterById(id);
+    }
+
+    @Override
+    public void addOrUpdate(Semester s) {
+        this.semesterRepo.addOrUpdate(s);
+    }
+
+    @Override
+    public void delete(Semester s) {
+        this.semesterRepo.delete(s);
+    }
     
 }

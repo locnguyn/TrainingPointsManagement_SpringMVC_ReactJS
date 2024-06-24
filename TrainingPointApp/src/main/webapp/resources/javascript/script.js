@@ -23,7 +23,9 @@ function closeModal() {
     modal.style.display = "none";
 }
 
-function drawChart(chartId, type, labels, data, title) {
+function drawChart(chartId, type, labels, data, title, chart) {
+    if(chart)
+        chart.destroy();
     const ctx = document.getElementById(chartId).getContext('2d');
     const bgs = labels.map(() => {
         return getRandomColor();
@@ -35,7 +37,7 @@ function drawChart(chartId, type, labels, data, title) {
         }];
 
 
-    let chart = new Chart(ctx, {
+    chart = new Chart(ctx, {
         type: type,
         data: {
             labels: labels,
@@ -49,14 +51,6 @@ function drawChart(chartId, type, labels, data, title) {
                     text: title
                 }
             }
-//            scales: {
-//                x: {
-//                    stacked: true
-//                },
-//                y: {
-//                    stacked: true
-//                }
-//            }
         }
     });
 

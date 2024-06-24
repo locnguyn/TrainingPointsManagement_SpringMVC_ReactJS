@@ -102,4 +102,9 @@ public class UserRepositoryImpl implements UserRepository {
         return results;
     }
 
+    @Override
+    public User getUserById(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 }

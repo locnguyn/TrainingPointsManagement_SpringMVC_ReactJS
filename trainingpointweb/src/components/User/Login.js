@@ -7,8 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "./Styles.css";
-import { auth, handleLoginFirebase, handleRegisterFirebase, setUserData } from "../../configs/firebase";
-import { Timestamp } from "firebase/firestore";
+import { handleLoginFirebase } from "../../configs/firebase";
 import toast from "react-hot-toast";
 
 const Login = () => {
@@ -99,7 +98,7 @@ const Login = () => {
             <div className="d-flex align-items-center">
               <Form.Control
                 onChange={(e) => Change(e, f.field)}
-                value={userInfo[f.field]}
+                value={userInfo[f.field] ? userInfo[f.field] : ''}
                 type={
                   f.field === "password"
                     ? showPassword

@@ -14,4 +14,6 @@ import com.pbthnxl.pojo.Class;
 public interface ClassRepository {
     List<Class> getClasses();
     Class getClassById(int id);
+    void addOrUpdate(Class c);
+    void delete(Class c);
 }

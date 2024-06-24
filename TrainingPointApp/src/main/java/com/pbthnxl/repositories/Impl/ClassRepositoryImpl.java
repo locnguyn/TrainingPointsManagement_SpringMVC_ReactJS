@@ -21,14 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public class ClassRepositoryImpl implements ClassRepository {
+
     @Autowired
     private LocalSessionFactoryBean factory;
-    
+
     @Override
     public List<Class> getClasses() {
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createNamedQuery("Class.findAll");
-        
+
         return q.getResultList();
     }
 
@@ -37,5 +38,22 @@ public class ClassRepositoryImpl implements ClassRepository {
         Session s = this.factory.getObject().getCurrentSession();
         return s.get(Class.class, id);
     }
-    
+
+    @Override
+    public void addOrUpdate(Class c) {
+        Session s = this.factory.getObject().getCurrentSession();
+        if (c.getId() != null) {
+            s.update(c);
+        } else {
+            s.save(c);
+        }
+    }
+
+    @Override
+    public void delete(Class c) {
+        Session s = this.factory.getObject().getCurrentSession();
+
+        s.delete(c);
+    }
+
 }

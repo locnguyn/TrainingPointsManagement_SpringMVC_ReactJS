@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
 
 public class StudentUserForm {
+
     @NotEmpty(message = "{user.firstName.emptyErr}")
     @Size(max = 20, message = "{user.firstName.maxErr}")
     private String firstName;
@@ -38,6 +39,8 @@ public class StudentUserForm {
 
     @NotEmpty(message = "{user.confirmPassword.emptyErr}")
     private String confirmPassword;
+
+    private String role;
 
     private MultipartFile avatar;
 
@@ -204,5 +207,19 @@ public class StudentUserForm {
      */
     public void setFacultyId(Integer facultyId) {
         this.facultyId = facultyId;
+    }
+
+    /**
+     * @return the role
+     */
+    public String getRole() {
+        return role;
+    }
+
+    /**
+     * @param role the role to set
+     */
+    public void setRole(String role) {
+        this.role = role;
     }
 }

@@ -36,5 +36,22 @@ public class FacultyRepositoryImpl implements FacultyRepository {
         Session s = this.factory.getObject().getCurrentSession();
         return s.get(Faculty.class, id);
     }
+
+    @Override
+    public void addOrUpdate(Faculty c) {
+        Session s = this.factory.getObject().getCurrentSession();
+        if (c.getId() != null) {
+            s.update(c);
+        } else {
+            s.save(c);
+        }
+    }
+
+    @Override
+    public void delete(Faculty c) {
+        Session s = this.factory.getObject().getCurrentSession();
+
+        s.delete(c);
+    }
     
 }

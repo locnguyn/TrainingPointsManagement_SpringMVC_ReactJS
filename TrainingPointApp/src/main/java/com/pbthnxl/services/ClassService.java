@@ -14,4 +14,6 @@ import com.pbthnxl.pojo.Class;
 public interface ClassService {
     List<com.pbthnxl.pojo.Class> getClasses();
     Class getClassById(int id);
+    void addOrUpdate(Class c);
+    void delete(Class c);
 }

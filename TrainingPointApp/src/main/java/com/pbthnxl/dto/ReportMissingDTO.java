@@ -6,7 +6,6 @@ package com.pbthnxl.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
-import java.util.Set;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 

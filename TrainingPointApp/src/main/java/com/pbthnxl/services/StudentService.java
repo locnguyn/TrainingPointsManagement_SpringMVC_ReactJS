@@ -15,5 +15,6 @@ public interface StudentService {
     boolean isExistingStudentCode(String studentCode);
     void saveStudent(Student student);
     List<Student> findAllAssistants();
-    
+    List<Student> getStudentList(int facultyId);
+    Student getStudentById(int id);
 }

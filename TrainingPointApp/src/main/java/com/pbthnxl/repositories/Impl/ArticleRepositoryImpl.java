@@ -30,5 +30,29 @@ public class ArticleRepositoryImpl implements ArticleRepository {
         Query q = s.createNamedQuery("Article.findAll");
         return q.getResultList();
     }
+
+    @Override
+    public Article getArticleById(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        
+        return s.get(Article.class, id);
+    }
+
+    @Override
+    public void addOrUpdate(Article c) {
+        Session s = this.factory.getObject().getCurrentSession();
+        if (c.getId() != null) {
+            s.update(c);
+        } else {
+            s.save(c);
+        }
+    }
+
+    @Override
+    public void delete(Article c) {
+        Session s = this.factory.getObject().getCurrentSession();
+
+        s.delete(c);
+    }
     
 }

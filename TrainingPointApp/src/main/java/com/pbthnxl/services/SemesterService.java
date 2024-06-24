@@ -13,4 +13,7 @@ import java.util.List;
  */
 public interface SemesterService {
     List<Semester> getSemesters();
+    Semester getSemesterById(int id);
+    void addOrUpdate(Semester s);
+    void delete(Semester s);
 }

@@ -7,9 +7,12 @@ package com.pbthnxl.controllers;
 import com.pbthnxl.dto.StudentUserForm;
 import com.pbthnxl.pojo.Student;
 import com.pbthnxl.pojo.User;
+import com.pbthnxl.services.ArticleService;
 import com.pbthnxl.services.ClassService;
 import com.pbthnxl.services.CloudinaryService;
 import com.pbthnxl.services.FacultyService;
+import com.pbthnxl.services.RegistrationService;
+import com.pbthnxl.services.ReportMissingService;
 import com.pbthnxl.services.StudentService;
 import com.pbthnxl.services.UserService;
 import java.io.IOException;
@@ -31,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author DELL
  */
 @Controller
-@RequestMapping("/assistant")
+@RequestMapping("/user")
 public class AssistantController {
 
     @Autowired
@@ -39,18 +42,27 @@ public class AssistantController {
 
     @Autowired
     private FacultyService facultyService;
-    
+
     @Autowired
     private CloudinaryService cloudinaryService;
-    
+
     @Autowired
     private UserService userService;
-    
+
     @Autowired
     private StudentService studentService;
-    
+
     @Autowired
     private BCryptPasswordEncoder passswordEncoder;
+    
+    @Autowired
+    private RegistrationService registrationService;
+    
+    @Autowired
+    private ArticleService articleService;
+    
+    @Autowired
+    private ReportMissingService reportMissingService;
 
     @ModelAttribute
     public void commonAttr(Model model, Principal principal) {
@@ -58,29 +70,62 @@ public class AssistantController {
         model.addAttribute("faculties", this.facultyService.getFaculties());
     }
 
-
     @GetMapping("/list")
-    public String assistantList(Model model) {
+    public String assistantList(Model model, Principal p) {
+        if (p == null) {
+            return "redirect:/";
+        }
+        User user = userService.getUserByUsername(p.getName());
+        if (user == null || user.getUserRole().equals("ROLE_USER") || user.getUserRole().equals("ROLE_ASSISTANT")) {
+            return "redirect:/";
+        }
         model.addAttribute("assistants", studentService.findAllAssistants());
         return "assistants";
     }
 
+    @GetMapping("/students")
+    public String studentList(Model model, Principal p) {
+        if (p == null) {
+            return "redirect:/";
+        }
+        User user = userService.getUserByUsername(p.getName());
+        if (user == null || user.getUserRole().equals("ROLE_USER")) {
+            return "redirect:/";
+        }
+        model.addAttribute("students", studentService.getStudentList(user.getUserRole().equals("ROLE_ASSISTANT")?user.getStudent().getFacultyId().getId():0));
+        return "students";
+    }
+
     @GetMapping("/add")
-    public String showAddForm(Model model) {
+    public String showAddForm(Model model, Principal p) {
+        if (p == null) {
+            return "redirect:/";
+        }
+        User user = userService.getUserByUsername(p.getName());
+        if (user == null || user.getUserRole().equals("ROLE_USER") || user.getUserRole().equals("ROLE_ASSISTANT")) {
+            return "redirect:/";
+        }
         model.addAttribute("studentUserForm", new StudentUserForm());
         model.addAttribute("classes", classService.getClasses());
         model.addAttribute("faculties", facultyService.getFaculties());
-        return "addAssistant";
+        return "addUser";
     }
 
     @PostMapping("/add")
     public String saveAssistant(@ModelAttribute("studentUserForm") @Valid StudentUserForm form,
             BindingResult result,
-            Model model) {
+            Model model, Principal p) {
+        if (p == null) {
+            return "redirect:/";
+        }
+        User u = userService.getUserByUsername(p.getName());
+        if (u == null || u.getUserRole().equals("ROLE_USER") || u.getUserRole().equals("ROLE_ASSISTANT")) {
+            return "redirect:/";
+        }
         if (result.hasErrors()) {
             model.addAttribute("classes", classService.getClasses());
             model.addAttribute("faculties", facultyService.getFaculties());
-            return "addAssistant";
+            return "addUser";
         }
 
         // Validate password and confirm password
@@ -88,7 +133,7 @@ public class AssistantController {
             result.rejectValue("confirmPassword", "error.studentUserForm", "Mật khẩu nhập lại không khớp");
             model.addAttribute("classes", classService.getClasses());
             model.addAttribute("faculties", facultyService.getFaculties());
-            return "addAssistant";
+            return "addUser";
         }
 
         // Upload avatar to Cloudinary
@@ -104,8 +149,8 @@ public class AssistantController {
         user.setEmail(form.getEmail());
         user.setPhoneNumber(form.getPhoneNumber());
         user.setUsername(form.getUsername());
-        user.setPassword(this.passswordEncoder.encode( form.getPassword())); // You should encrypt the password
-        user.setUserRole("ROLE_ASSISTANT");
+        user.setPassword(this.passswordEncoder.encode(form.getPassword())); // You should encrypt the password
+        user.setUserRole(form.getRole());
         user.setActive(true);
         user.setAvatar(avatarUrl);
         userService.saveUser(user);
@@ -118,12 +163,49 @@ public class AssistantController {
         student.setUserId(user);
         studentService.saveStudent(student);
 
-        return "redirect:/assistant/list";
+        return "redirect:/user/list";
+    }
+
+    @GetMapping("/remove-assistant/{userId}")
+    public String removeAssistant(@PathVariable(value = "userId") int userId, Principal p) {
+        if (p == null) {
+            return "redirect:/";
+        }
+        User user = userService.getUserByUsername(p.getName());
+        if (user == null || user.getUserRole().equals("ROLE_USER") || user.getUserRole().equals("ROLE_ASSISTANT")) {
+            return "redirect:/";
+        }
+        userService.updateUserRole(userId, "ROLE_USER");
+        return "redirect:/user/list";
     }
     
-    @GetMapping("/remove/{userId}")
-    public String removeAssistant(@PathVariable(value = "userId") int userId) {
-        userService.updateUserRole(userId, "ROLE_USER");
-        return "redirect:/assistant/list";
+    @GetMapping("/add-assistant/{userId}")
+    public String addStudentAssistant(@PathVariable(value = "userId") int userId, Principal p) {
+        if (p == null) {
+            return "redirect:/";
+        }
+        User user = userService.getUserByUsername(p.getName());
+        if (user == null || user.getUserRole().equals("ROLE_USER") || user.getUserRole().equals("ROLE_ASSISTANT")) {
+            return "redirect:/";
+        }
+        userService.updateUserRole(userId, "ROLE_ASSISTANT");
+        return "redirect:/user/list";
+    }
+    
+    @GetMapping("/students/{studentId}")
+    public String details(@PathVariable(value = "studentId") int studentId, Principal p, Model model) {
+        if (p == null) {
+            return "redirect:/";
+        }
+        User user = userService.getUserByUsername(p.getName());
+        if (user == null || user.getUserRole().equals("ROLE_USER")) {
+            return "redirect:/";
+        }
+        Student s = this.studentService.getStudentById(studentId);
+        model.addAttribute("student", s);
+        model.addAttribute("registrations", this.registrationService.findRegistrationsByStudentIdDTO(studentId));
+        model.addAttribute("reports", this.reportMissingService.getStudentReportMissings(studentId));
+        model.addAttribute("articles", this.articleService.getArticles());
+        return "studentDetails";
     }
 }

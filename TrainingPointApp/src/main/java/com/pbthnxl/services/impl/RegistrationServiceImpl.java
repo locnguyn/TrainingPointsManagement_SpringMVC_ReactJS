@@ -91,4 +91,9 @@ public class RegistrationServiceImpl implements RegistrationService {
         return this.registrationRepository.findByStudentIdAndActivityParticipationTypeId(studentId, activityParticipationTypeId);
     }
 
+    @Override
+    public List<Registration> filterRegistrationsBySemester(List<Registration> registrations, int semesterId) {
+        return this.registrationRepository.filterRegistrationsBySemester(registrations, semesterId);
+    }
+
 }

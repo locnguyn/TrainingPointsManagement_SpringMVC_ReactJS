@@ -11,8 +11,18 @@ import java.util.Map;
  * @author DELL
  */
 public interface StatisticService {
+
     Map<String, Object> getStatisticsForAllFaculties();
-    Map<String, Integer> getStatisticsForFaculty(int id);
+
     Map<String, Object> getStatisticsByFacultyAndClass();
+
+    Map<String, Integer> getStatisticsForFaculty(int id);
+
     Map<String, Integer> getClassificationStatistics(int facultyId);
+
+    Map<String, Object> getStatisticsByFacultyAndClass(int semesterId);
+
+    Map<String, Integer> getStatisticsForFaculty(int id, int semesterId);
+
+    Map<String, Integer> getClassificationStatistics(int facultyId, int semesterId);
 }

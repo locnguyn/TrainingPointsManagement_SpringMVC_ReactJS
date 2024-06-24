@@ -29,5 +29,15 @@ public class ClassServiceImpl implements ClassService {
     public Class getClassById(int id) {
         return this.classRepository.getClassById(id);
     }
+
+    @Override
+    public void addOrUpdate(Class c) {
+        this.classRepository.addOrUpdate(c);
+    }
+
+    @Override
+    public void delete(Class c) {
+        this.classRepository.delete(c);
+    }
     
 }

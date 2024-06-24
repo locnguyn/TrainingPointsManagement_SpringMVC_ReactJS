@@ -86,7 +86,7 @@ const ActivityDetails = () => {
         );
       }
     } catch (err) {
-      alert("Lỗi khi xóa comment!");
+      toast.error("Lỗi khi xóa comment!");
       console.error(err);
     }
   };

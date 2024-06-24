@@ -5,10 +5,12 @@
 package com.pbthnxl.controllers;
 
 import com.pbthnxl.pojo.ActivityParticipationType;
+import com.pbthnxl.pojo.User;
 import com.pbthnxl.services.ActivityParticipationTypeService;
 import com.pbthnxl.services.ActivityService;
 import com.pbthnxl.services.ParticipationTypeService;
 import com.pbthnxl.services.RegistrationService;
+import com.pbthnxl.services.UserService;
 import java.security.Principal;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,27 +33,38 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/activity-participation-type")
 public class ActivityParticipationTypeController {
+
     @Autowired
     private ActivityService activityService;
-    
+
     @Autowired
     private ParticipationTypeService participationTypeService;
-    
+
     @Autowired
     private ActivityParticipationTypeService activityParticipationTypeService;
-    
+
     @Autowired
     private RegistrationService registrationService;
-    
+
+    @Autowired
+    private UserService userService;
+
     @ModelAttribute
     public void commonAttr(Model model, Principal principal) {
-        model.addAttribute("activities", this.activityService.getActivities()); 
+        model.addAttribute("activities", this.activityService.getActivities());
         model.addAttribute("participationTypes", this.participationTypeService.getParticipationTypes());
     }
-    
+
     @GetMapping("/add")
-    public String createView(@RequestParam(value = "activityId", required = false) Integer activityId, Model model) {
-        if(activityId != null) {
+    public String createView(@RequestParam(value = "activityId", required = false) Integer activityId, Model model, Principal p) {
+        if (p == null) {
+            return "redirect:/";
+        }
+        User user = userService.getUserByUsername(p.getName());
+        if (user == null || user.getUserRole().equals("ROLE_USER")) {
+            return "redirect:/";
+        }
+        if (activityId != null) {
             model.addAttribute("activityId", activityId);
         }
         model.addAttribute("activityParticipationType", new ActivityParticipationType());
@@ -59,26 +72,40 @@ public class ActivityParticipationTypeController {
     }
 
     @GetMapping("/list")
-    public String listView(Model model) {
+    public String listView(Model model, Principal p) {
+        if (p == null) {
+            return "redirect:/";
+        }
+        User user = userService.getUserByUsername(p.getName());
+        if (user == null || user.getUserRole().equals("ROLE_USER")) {
+            return "redirect:/";
+        }
         model.addAttribute("activitiesParticipationType", this.activityParticipationTypeService.getActivityParticipationType());
         return "activitiesParticipationType";
     }
-    
+
     @PostMapping("/add")
     public String createActivityParticipationType(@ModelAttribute(value = "activityParticipationType") @Valid ActivityParticipationType a,
-            BindingResult rs) {
+            BindingResult rs, Principal p) {
+        if (p == null) {
+            return "redirect:/";
+        }
+        User user = userService.getUserByUsername(p.getName());
+        if (user == null || user.getUserRole().equals("ROLE_USER")) {
+            return "redirect:/";
+        }
         if (!rs.hasErrors()) {
             try {
-                ActivityParticipationType a1 = 
-                        this.activityParticipationTypeService
-                            .getActivityParticipationTypeByActivityIdAndParticipationTypeId(
-                    a.getActivityId().getId(), a.getParticipationTypeId().getId());
-                if(a1 != null){
+                ActivityParticipationType a1
+                        = this.activityParticipationTypeService
+                                .getActivityParticipationTypeByActivityIdAndParticipationTypeId(
+                                        a.getActivityId().getId(), a.getParticipationTypeId().getId());
+                if (a1 != null) {
                     a1.setPoint(a.getPoint());
                     this.activityParticipationTypeService.addOrUpdate(a1);
-                }
-                else
+                } else {
                     this.activityParticipationTypeService.addOrUpdate(a);
+                }
                 return "redirect:/activity-participation-type/list";
             } catch (Exception ex) {
                 System.err.println(ex.getMessage());
@@ -86,17 +113,31 @@ public class ActivityParticipationTypeController {
         }
         return "addActivityParticipationType";
     }
-    
+
     @GetMapping("/update/{activityParticipationType}")
-    public String updateView(Model model, @PathVariable(value = "activityParticipationType") int id) {
+    public String updateView(Model model, @PathVariable(value = "activityParticipationType") int id, Principal p) {
+        if (p == null) {
+            return "redirect:/";
+        }
+        User user = userService.getUserByUsername(p.getName());
+        if (user == null || user.getUserRole().equals("ROLE_USER")) {
+            return "redirect:/";
+        }
         model.addAttribute("activityParticipationType", this.activityParticipationTypeService.getActivityParticipationTypeById(id));
-        
+
         return "addActivityParticipationType";
     }
-    
+
     @PostMapping("/update/{activityParticipationTypeId}/upload-csv")
     public String uploadFile(@PathVariable("activityParticipationTypeId") int activityParticipationTypeId,
-                            @RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+            @RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, Principal p) {
+        if (p == null) {
+            return "redirect:/";
+        }
+        User user = userService.getUserByUsername(p.getName());
+        if (user == null || user.getUserRole().equals("ROLE_USER")) {
+            return "redirect:/";
+        }
         try {
             registrationService.processCSV(file, activityParticipationTypeId);
             redirectAttributes.addFlashAttribute("message", "File uploaded successfully.");
@@ -107,9 +148,16 @@ public class ActivityParticipationTypeController {
         }
         return "redirect:/activity-participation-type/list";
     }
-    
+
     @GetMapping("/delete/{id}")
-    public String deleteActivityParticipationType(@PathVariable("id") int id) {
+    public String deleteActivityParticipationType(@PathVariable("id") int id, Principal p) {
+        if (p == null) {
+            return "redirect:/";
+        }
+        User user = userService.getUserByUsername(p.getName());
+        if (user == null || user.getUserRole().equals("ROLE_USER")) {
+            return "redirect:/";
+        }
         this.activityParticipationTypeService.deleteActivityParticipationType(id);
         return "redirect:/activity-participation-type/list";
     }

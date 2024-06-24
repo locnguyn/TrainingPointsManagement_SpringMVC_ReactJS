@@ -7,11 +7,13 @@ package com.pbthnxl.repositories.Impl;
 import com.pbthnxl.pojo.ActivityParticipationType;
 import com.pbthnxl.pojo.Registration;
 import com.pbthnxl.pojo.ReportMissing;
+import com.pbthnxl.pojo.Semester;
 import com.pbthnxl.pojo.Student;
 import com.pbthnxl.repositories.ActivityParticipationTypeRepository;
 import com.pbthnxl.repositories.RegistrationRepository;
 import com.pbthnxl.repositories.ReportMissingRepository;
 import com.pbthnxl.repositories.StudentRepository;
+import com.pbthnxl.services.SemesterService;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.persistence.NoResultException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -47,14 +50,17 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
 
     @Autowired
     private ActivityParticipationTypeRepository activityParticipationTypeRepository;
-    
+
     @Autowired
     private ReportMissingRepository reportRepo;
+    
+    @Autowired
+    private SemesterService semesterService;
 
     @Override
     public void save(Registration registration) {
         Session s = factory.getObject().getCurrentSession();
-        
+
         s.saveOrUpdate(registration);
     }
 
@@ -71,13 +77,13 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
 
                     if (student != null) {
                         Registration registration = this.findByStudentIdAndActivityParticipationTypeId(student.getId(), activityParticipationTypeId);
-                        
+
                         ReportMissing report = this.reportRepo.findByStudentIdAndActivityParticipationTypeId(student.getId(), activityParticipationTypeId);
-                        
+
                         // Kiểm tra xem đã tồn tại registration cho student và activityParticipationType này chưa
-                        if(report != null){
+                        if (report != null) {
                             report.setChecked(true);
-                            
+
                             this.reportRepo.save(report);
                         }
                         if (registration == null) {
@@ -87,10 +93,9 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
                             registration.setActivityParticipationTypeId(this.activityParticipationTypeRepository.getActivityParticipationTypeById(activityParticipationTypeId));
                             registration.setStudentId(student);
                             this.save(registration);
-                            System.out.println(registration + "____________________________________");
-                        } else{
+                        } else {
                             registration.setParticipated(true);
-                            
+
                             this.save(registration);
                         }
                     } else {
@@ -151,8 +156,6 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
         }
     }
 
-    
-
     @Override
     public Registration findByStudentIdAndActivityParticipationTypeId(Integer studentId, int activityParticipationTypeId) {
         Session s = factory.getObject().getCurrentSession();
@@ -169,6 +172,24 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
             return null;
         }
 
+    }
+
+    @Override
+    public List<Registration> filterRegistrationsBySemester(List<Registration> registrations, int semesterId) {
+        if (semesterId == 0) {
+            return registrations;
+        }
+
+        Semester semester = semesterService.getSemesterById(semesterId);
+        if (semester == null) {
+            return registrations;
+        }
+
+        Date startDate = semester.getStartDate();
+        Date endDate = semester.getEndDate();
+        return registrations.stream()
+                .filter(r -> r.getRegistrationDate().getTime() > startDate.getTime() && r.getRegistrationDate().getTime() < endDate.getTime())
+                .collect(Collectors.toList());
     }
 
 }

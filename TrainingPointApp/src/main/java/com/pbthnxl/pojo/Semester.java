@@ -47,16 +47,16 @@ public class Semester implements Serializable {
     @Column(name = "semester_name")
     private int semesterName;
     @Basic(optional = false)
-    @NotNull
+    @NotNull(message = "{semester.startDate.nullErr}")
     @Column(name = "start_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "UTC")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date startDate;
     @Basic(optional = false)
-    @NotNull
+    @NotNull(message = "{semester.endDate.nullErr}")
     @Column(name = "end_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "UTC")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
 
     public Semester() {

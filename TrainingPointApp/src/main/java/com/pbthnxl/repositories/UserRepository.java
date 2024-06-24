@@ -14,6 +14,7 @@ import java.util.List;
 public interface UserRepository {
     User getUserByUsername(String username);
     User getUserByEmail(String email);
+    User getUserById(int id);
     int getIdByUsername(String username);
     void saveUser(User user);
     void updateUserRole(int userId, String role);

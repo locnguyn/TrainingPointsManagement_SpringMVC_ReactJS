@@ -33,4 +33,14 @@ public class StudentServiceImpl implements StudentService {
     public List<Student> findAllAssistants() {
         return this.studentRepository.findAllAssistants();
     }
+
+    @Override
+    public List<Student> getStudentList(int facultyId) {
+        return this.studentRepository.getStudentList(facultyId);
+    }
+
+    @Override
+    public Student getStudentById(int id) {
+        return this.studentRepository.getStudentById(id);
+    }
 }

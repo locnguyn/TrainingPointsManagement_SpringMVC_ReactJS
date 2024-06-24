@@ -158,7 +158,7 @@ public class Student implements Serializable {
 
     @Override
     public String toString() {
-        return "com.pbthnxl.pojo.Student[ id=" + id + " ]";
+        return String.format("%s %s %s %s %s", this.getStudentCode(), this.getUserId().getFirstName(), this.getUserId().getLastName(), this.getUserId().getEmail(), this.getUserId().getPhoneNumber());
     }
     
 }

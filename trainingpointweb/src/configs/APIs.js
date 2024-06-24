@@ -27,7 +27,8 @@ export const endpoints = {
     'verify-otp': "/api/otp/verify/",
     'assistant-list': "/api/assistant-list/",
     'create-report': "api/report/create/",
-    'user-report': "/api/report/student-reports/"
+    'user-report': "/api/report/student-reports/",
+    'vn-pay': "/api/payment/submitOrder",
 }
 
 export const authApi = () => {

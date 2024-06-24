@@ -66,4 +66,24 @@ public class StudentRepositoryImpl implements StudentRepository {
         return query.getResultList();
     }
 
+    @Override
+    public List<Student> getStudentList(int facultyId) {
+        Session s = this.factory.getObject().getCurrentSession();
+        if(facultyId == 0){
+            Query query = s.createNamedQuery("Student.findAll", Student.class);
+            return query.getResultList();
+        }
+        String hql = "SELECT s FROM Student s WHERE s.facultyId.id = :facultyId";
+        Query query = s.createQuery(hql, Student.class);
+        query.setParameter("facultyId", facultyId);
+        return query.getResultList();
+    }
+
+    @Override
+    public Student getStudentById(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        
+        return s.get(Student.class, id);
+    }
+
 }

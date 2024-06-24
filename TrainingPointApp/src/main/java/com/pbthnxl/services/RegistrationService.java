@@ -22,4 +22,5 @@ public interface RegistrationService {
     Registration findRegistrationById(int id);
     void delete(int id);
     RegistrationDTO convertToDTO(Registration r);
+    List<Registration> filterRegistrationsBySemester(List<Registration> registrations, int semesterId);
 }

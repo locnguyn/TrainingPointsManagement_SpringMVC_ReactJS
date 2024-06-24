@@ -22,18 +22,13 @@ const ChatboxList = () => {
 
     useEffect(() => {
         const initializeListeners = async () => {
-            // Example of fetching assistant list asynchronously
             const unsubscribe = getAssistantList(setUsers, user.email);
 
-            // Set up notification listener
             const unsubscribeNotiListen = listenNewNotifications(user.email, (notification) => {
-                console.log('New notification:', notification);
-                // Handle notification, e.g., open chatbox if needed
                 openChatBox(notification.email);
             });
 
             return () => {
-                // Unsubscribe listeners on cleanup
                 unsubscribe();
                 unsubscribeNotiListen();
             };
@@ -44,7 +39,6 @@ const ChatboxList = () => {
 
 
     const toggleChatboxList = () => {
-        console.log(users)
         setOpenChatboxes([]);
         setShowChatboxes(!showChatboxes);
     }

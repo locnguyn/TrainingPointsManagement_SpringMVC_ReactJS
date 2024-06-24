@@ -71,7 +71,12 @@ public class ActivityController {
     
     @PostMapping("/activities")
     public String createActivity(@ModelAttribute(value = "activity") @Valid Activity a,
-            BindingResult rs) {
+            BindingResult rs, Principal p) {
+        if(p == null) return "redirect:/";
+        User user = userService.getUserByUsername(p.getName());
+        if(user == null || user.getUserRole().equals("ROLE_USER")){
+            return "redirect:/";
+        }
         if (!rs.hasErrors()) {
             try {
                 this.activityService.addOrUpdate(a);
@@ -85,21 +90,36 @@ public class ActivityController {
     }
     
     @GetMapping("/activities/{activityId}")
-    public String updateView(Model model, @PathVariable(value = "activityId") int id) {
+    public String updateView(Model model, @PathVariable(value = "activityId") int id, Principal p) {
+        if(p == null) return "redirect:/";
+        User user = userService.getUserByUsername(p.getName());
+        if(user == null || user.getUserRole().equals("ROLE_USER")){
+            return "redirect:/";
+        }
         model.addAttribute("activity", this.activityService.getActivityById(id));
         
         return "activities";
     }
     
     @GetMapping("/activities/{activityId}/participation-type")
-    public String addParticipationType(Model model, @PathVariable(value = "activityId") int id) {
+    public String addParticipationType(Model model, @PathVariable(value = "activityId") int id, Principal p) {
+        if(p == null) return "redirect:/";
+        User user = userService.getUserByUsername(p.getName());
+        if(user == null || user.getUserRole().equals("ROLE_USER")){
+            return "redirect:/";
+        }
         System.out.println(this.activityParticipationTypeService.getActivityParticipationTypesByActivityId(id));
         model.addAttribute("activitiesParticipationType", this.activityParticipationTypeService.getActivityParticipationTypesByActivityId(id));
         return "activitiesParticipationType";
     }
     
     @GetMapping("/delete-activity/{id}")
-    public String deleteActivity(@PathVariable("id") int id) {
+    public String deleteActivity(@PathVariable("id") int id, Principal p) {
+        if(p == null) return "redirect:/";
+        User user = userService.getUserByUsername(p.getName());
+        if(user == null || user.getUserRole().equals("ROLE_USER")){
+            return "redirect:/";
+        }
         this.activityService.deleteActivity(id);
         return "redirect:/";
     }

@@ -17,7 +17,7 @@
         <label for="lastName">Họ Sinh viên</label>
         <form:errors path="lastName" cssClass="text text-danger" />
     </div>
-    
+
     <div class="form-floating mb-3 mt-3">
         <form:input class="form-control" path="studentCode" placeholder="Mã số sinh viên" />
         <label for="studentCode">Mã số Sinh viên</label>
@@ -27,29 +27,35 @@
     <div class="form-floating mb-3 mt-3">
         <form:select class="form-select" id="facultyId" path="facultyId">
             <c:forEach items="${faculties}" var="f">
-                <option value="${f.id}">${f.name}</option>
+                <form:option value="${f.id}">${f.name}</form:option>
             </c:forEach>
         </form:select>
         <label for="facultyId" class="form-label">Chọn khoa</label>
         <form:errors path="facultyId" element="div" cssClass="text text-danger" />
     </div>
-    
+    <div class="form-floating mb-3 mt-3">
+        <form:select class="form-select" id="role" path="role">
+            <form:option value="ROLE_USER">Sinh viên</form:option>
+            <form:option value="ROLE_ASSISTANT">Trợ lý sinh viên</form:option>
+        </form:select>
+        <label for="role" class="form-label">Chọn vai trò</label>
+    </div>S
     <div class="form-floating mb-3 mt-3">
         <form:select class="form-select" id="classId" path="classId">
             <c:forEach items="${classes}" var="c">
-                <option value="${c.id}">${c.name}</option>
+                <form:option value="${c.id}">${c.name}</form:option>
             </c:forEach>
         </form:select>
         <label for="classId" class="form-label">Chọn lớp</label>
         <form:errors path="classId" element="div" cssClass="text text-danger" />
     </div>
-    
+
     <div class="form-floating mb-3 mt-3">
         <form:input class="form-control" path="email" type="email" placeholder="Email sinh viên" />
         <label for="email">Email Sinh viên</label>
         <form:errors path="email" cssClass="text text-danger" />
     </div>
-    
+
     <div class="form-floating mb-3 mt-3">
         <form:input class="form-control" path="phoneNumber" placeholder="Số điện thoại sinh viên" />
         <label for="phoneNumber">Số điện thoại Sinh viên</label>
@@ -61,7 +67,7 @@
         <label for="username">Tên đăng nhập</label>
         <form:errors path="username" cssClass="text text-danger" />
     </div>
-    
+
     <div class="form-floating mb-3 mt-3">
         <form:password class="form-control" path="password" placeholder="Mật khẩu" />
         <label for="password">Mật khẩu</label>
@@ -73,7 +79,7 @@
         <label for="confirmPassword">Xác nhận mật khẩu</label>
         <form:errors path="confirmPassword" cssClass="text text-danger" />
     </div>
-    
+
     <div class="form-floating mb-3 mt-3">
         <form:input type="file" class="form-control" path="avatar" placeholder="Ảnh đại diện" accept="image/png, image/jpeg" />
         <label for="avatar">Ảnh đại diện</label>

@@ -7,10 +7,13 @@ package com.pbthnxl.controllers;
 import com.pbthnxl.pojo.Activity;
 import com.pbthnxl.pojo.Article;
 import com.pbthnxl.pojo.Faculty;
+import com.pbthnxl.pojo.User;
 import com.pbthnxl.services.ActivityParticipationTypeService;
 import com.pbthnxl.services.ActivityService;
 import com.pbthnxl.services.ArticleService;
 import com.pbthnxl.services.FacultyService;
+import com.pbthnxl.services.SemesterService;
+import com.pbthnxl.services.UserService;
 import java.security.Principal;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,10 +47,19 @@ public class IndexController {
 
     @Autowired
     private ArticleService articleService;
+    
+    @Autowired
+    private SemesterService semesterService;
+    
+    @Autowired
+    private UserService userService;
 
     @ModelAttribute
     public void commonAttr(Model model, Principal principal) {
         model.addAttribute("faculties", this.facultyService.getFaculties());
+        model.addAttribute("semesters", this.semesterService.getSemesters());
+        if(principal != null)
+            model.addAttribute("user", userService.getUserByUsername(principal.getName()));
     }
     
     @GetMapping("/")
@@ -59,7 +71,12 @@ public class IndexController {
     }
     
     @GetMapping("/stats")
-    public String stats(){
+    public String stats(Principal p){
+        if(p == null) return "redirect:/";
+        User user = userService.getUserByUsername(p.getName());
+        if(user == null || user.getUserRole().equals("ROLE_USER")){
+            return "redirect:/";
+        }
         return "stats";
     }
 }
