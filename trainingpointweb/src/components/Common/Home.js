@@ -129,7 +129,7 @@ const Home = () => {
                   Xem Hoạt Động
                 </Button>
               </Link>
-              <Link to="/report_missing">
+              <Link to="/report-missing">
                 <Button variant="secondary">Báo Thiếu</Button>
               </Link>
             </div>

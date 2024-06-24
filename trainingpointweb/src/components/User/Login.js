@@ -28,8 +28,8 @@ const Login = () => {
   const location = useLocation();
   const [userInfo, setUserInfo] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const { dispatch} = useContext(MyDispatcherContext);
-  const { user} = useContext(MyUserContext);
+  const { dispatch } = useContext(MyDispatcherContext);
+  const { user } = useContext(MyUserContext);
   const Change = (event, field) => {
     setUserInfo((current) => {
       return { ...current, [field]: event.target.value };
@@ -50,17 +50,20 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      let res = await toast.promise(APIs.post(endpoints["login"], { ...userInfo }), {
-        loading: "Đang xử lý...",
-        success: "Đăng nhập thành công",
-        error: (ex) => {
-          if (ex.response.status === 400) {
-            return "Sai tài khoản/mật khẩu";
-          } else {
-            return "Lỗi hệ thống";
-          }
+      let res = await toast.promise(
+        APIs.post(endpoints["login"], { ...userInfo }),
+        {
+          loading: "Đang xử lý...",
+          success: "Đăng nhập thành công",
+          error: (ex) => {
+            if (ex.response.status === 400) {
+              return "Sai tài khoản/mật khẩu";
+            } else {
+              return "Lỗi hệ thống";
+            }
+          },
         }
-      });
+      );
       cookie.save("token", res.data);
       let u = await authApi().get(endpoints["current-user"]);
       let a = await authApi().get(endpoints["user-registration"]);
@@ -69,7 +72,7 @@ const Login = () => {
       handleLoginFirebase(u.data.email, userInfo.password);
       dispatch({
         type: "login",
-        payload: u.data
+        payload: u.data,
       });
       nav(location.state?.from?.pathname || "/");
     } catch (ex) {
@@ -87,7 +90,7 @@ const Login = () => {
             <div className="d-flex align-items-center">
               <Form.Control
                 onChange={(e) => Change(e, f.field)}
-                value={userInfo[f.field] ? userInfo[f.field] : ''}
+                value={userInfo[f.field] ? userInfo[f.field] : ""}
                 type={
                   f.field === "password"
                     ? showPassword
@@ -96,6 +99,7 @@ const Login = () => {
                     : f.type
                 }
                 placeholder={f.label}
+                required
               />
               {f.field === "password" && (
                 <Button variant="light" onClick={togglePasswordVisibility}>

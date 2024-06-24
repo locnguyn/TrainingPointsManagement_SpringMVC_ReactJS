@@ -140,9 +140,7 @@ public class ApiUserController {
         if (params.containsKey("phone")) {
             user.setPhoneNumber(params.get("phone"));
         }
-        if (params.containsKey("email")) {
-            user.setEmail(params.get("email"));
-        }
+        
         if (files != null && files.length > 0) {
             String avatarUrl = this.cloudinary.uploadFile(files[0]);
             user.setAvatar(avatarUrl);

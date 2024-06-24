@@ -10,7 +10,7 @@
   top: 0;
   backdrop-filter: blur(45px);
   box-shadow: 10px 10px 20px #babecc, -10px -10px 20px #ffffff;
-  background-color: transparent;
+  background-color: white;
   border-radius: 8px;
   z-index: 10;
 }

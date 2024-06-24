@@ -7,12 +7,14 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { updatePasswordFirebase } from "../../configs/firebase";
 import Validate from "../../Utils/Validate";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Password = () => {
-  const {user} = useContext(MyUserContext);
+  const { user } = useContext(MyUserContext);
   const [userInfo, setUserInfo] = useState({});
   const [error, setError] = useState("");
-  const {dispatch} = useContext(MyDispatcherContext);
+  const { dispatch } = useContext(MyDispatcherContext);
   const [logout, setLogout] = useState(false);
   const [fields, setFields] = useState([]);
   const nav = useNavigate();
@@ -26,16 +28,15 @@ const Password = () => {
         updatedUser.new_password &&
         updatedUser.confirm
       ) {
-        
         if (updatedUser.new_password !== updatedUser.confirm) {
           setError("Không Khớp!");
         } else {
-          if(!Validate.validatePassword(updatedUser.new_password))
-            {
-              setError("Mật khẩu phải dài ít nhất 8 ký tự, có ít nhất một số, một chữ cái viết hoa, một chữ cái viết thường, một ký tự đặc biệt")
-            }
-          // setError("");
-        } 
+          if (!Validate.validatePassword(updatedUser.new_password)) {
+            setError(
+              "Mật khẩu phải dài ít nhất 8 ký tự, có ít nhất một số, một chữ cái viết hoa, một chữ cái viết thường, một ký tự đặc biệt"
+            );
+          } else setError("");
+        }
       }
       return updatedUser;
     });
@@ -43,7 +44,12 @@ const Password = () => {
 
   const Update = async (e) => {
     e.preventDefault();
-    if (error || !userInfo.old_password || !userInfo.new_password || !userInfo.confirm)
+    if (
+      error ||
+      !userInfo.old_password ||
+      !userInfo.new_password ||
+      !userInfo.confirm
+    )
       return;
 
     try {
@@ -53,7 +59,7 @@ const Password = () => {
         },
       });
       if (res.status === 200) {
-        await updatePasswordFirebase(user.new_password);
+        await updatePasswordFirebase(userInfo.new_password);
         toast.success("Cập nhật thành công");
         dispatch({
           type: "logout",
@@ -85,7 +91,7 @@ const Password = () => {
           type: "password",
         },
       ]);
-    }
+    } else nav('/');
     if (logout) {
       nav("/login");
       setLogout(false);
@@ -105,7 +111,7 @@ const Password = () => {
               value={userInfo[f.field]}
               required
               placeholder={f.label}
-            ></Form.Control>
+            />
           </Form.Group>
         ))}
         {error && (

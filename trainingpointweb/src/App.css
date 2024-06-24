@@ -5,6 +5,10 @@
   position: relative;
   font-family: sans-serif;
   box-sizing: border-box;
+  
+}
+body{
+  background-color: whitesmoke;
 }
 
 .App-logo {
