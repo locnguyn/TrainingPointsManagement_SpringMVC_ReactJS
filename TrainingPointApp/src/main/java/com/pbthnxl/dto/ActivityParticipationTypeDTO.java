@@ -19,6 +19,8 @@ public class ActivityParticipationTypeDTO {
     private int point;
     private String participationType;
     private RegistrationActivityDTO activity;
+    private Boolean isParticipated;
+    private Boolean isRegistered;
 
     /**
      * @return the id
@@ -74,6 +76,34 @@ public class ActivityParticipationTypeDTO {
      */
     public void setActivity(RegistrationActivityDTO activity) {
         this.activity = activity;
+    }
+
+    /**
+     * @return the isParticipated
+     */
+    public Boolean getIsParticipated() {
+        return isParticipated;
+    }
+
+    /**
+     * @param isParticipated the isParticipated to set
+     */
+    public void setIsParticipated(Boolean isParticipated) {
+        this.isParticipated = isParticipated;
+    }
+
+    /**
+     * @return the isRegistered
+     */
+    public Boolean getIsRegistered() {
+        return isRegistered;
+    }
+
+    /**
+     * @param isRegistered the isRegistered to set
+     */
+    public void setIsRegistered(Boolean isRegistered) {
+        this.isRegistered = isRegistered;
     }
 
 }

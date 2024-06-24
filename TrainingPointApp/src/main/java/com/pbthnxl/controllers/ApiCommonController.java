@@ -60,4 +60,5 @@ public class ApiCommonController {
     public ResponseEntity<List<Semester>> SemesterList(){
         return new ResponseEntity<>(this.semesterService.getSemesters(), HttpStatus.OK);
     }
+    
 }

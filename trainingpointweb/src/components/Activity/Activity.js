@@ -1,44 +1,86 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { Button, ButtonGroup, Nav, Tab, Table, Tabs } from "react-bootstrap";
+import {
+  Button,
+  ButtonGroup,
+  Dropdown,
+  Nav,
+  Tab,
+  Table,
+  Tabs,
+} from "react-bootstrap";
 import "./styles.css";
-import { authApi, endpoints } from "../../configs/APIs";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { MyDispatcherContext, MyUserContext } from "../../configs/Contexts";
+import APIs, { authApi, endpoints } from "../../configs/APIs";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
+import { MyUserContext } from "../../configs/Contexts";
 import { FaMinusCircle } from "react-icons/fa";
 import toast from "react-hot-toast";
 import MyModal from "../Common/Modal";
+import { useSearchParam } from "react-use";
 
 const Activity = () => {
-  const { user, userReport, userActivity } = useContext(MyUserContext);
-  const [activites, setActivites] = useState([]);
+  const { user } = useContext(MyUserContext);
+  const [activites, setActivities] = useState([]);
+  const [semseter, setSemester] = useState([]);
   const [filterActivities, setFilterActivities] = useState([]);
   const nav = useNavigate();
   const location = useLocation();
-  const { dispatch: dispatchActivity, dispatchReport } = useContext(MyDispatcherContext);
   const proof = useRef();
   const [previewURL, setPreviewURL] = useState(null);
   const [show, setShow] = useState(false);
   const [acPartType, setAcPartType] = useState();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const loadActivity = async () =>{
-    try{
-      let res = await authApi().get(endpoints['user-registration']);
+  const loadActivity = async (filters = {}) => {
+    try {
+      // lay ds semester
+      let sem = await APIs.get(endpoints["semester-list"]);
+      if (sem.status === 200) {
+        setSemester(sem.data);
 
-      if(res.status === 200){
-        setActivites(res.data);
-        setFilterActivities(res.data);
+        // lay hk moi nhat
+        const latestSemester = sem.data[sem.data.length - 1].id;
+
+        if (!filters.semesterId) {
+          filters.semesterId = latestSemester;
+          const newSearchParams = new URLSearchParams(filters);
+          setSearchParams(newSearchParams);
+        }
+
+        let params = new URLSearchParams(filters);
+        let res = await authApi().get(
+          `${endpoints["user-registration"]}?${params}`
+        );
+
+        if (res.status === 200) {
+          setActivities(res.data);
+          setFilterActivities(res.data);
+        }
       }
-
-    }catch(ex) {
+    } catch (ex) {
       console.log(ex);
     }
-  }
+  };
+
+  const updateFilter = (key, value) => {
+    searchParams.set(key, value);
+    setSearchParams(searchParams);
+  };
 
   const delRegistration = async (e, registrationId) => {
     e.preventDefault();
 
+    const confirmed = window.confirm("Bạn có chắc muốn xóa?")
+    if(!confirmed) return;
+
     try {
       let res = await toast.promise(
+        
         authApi().delete(endpoints["registration-delete"](registrationId)),
         {
           loading: "Loading",
@@ -48,11 +90,10 @@ const Activity = () => {
       );
 
       if (res.status === 200) {
-        setActivites((preActivities) =>
+        setFilterActivities((preActivities) =>
           preActivities.filter((a) => a.id != registrationId)
         );
       }
-
     } catch (ex) {
       console.error(ex);
     }
@@ -101,41 +142,37 @@ const Activity = () => {
           error: "Thất bại",
         }
       );
-      Close()
-
-      // setReports((preReports =>{
-      //   preReports.filter((r) => r.activityPartType.id != acPartTypedId);
-      // }))
-
-      dispatchReport({
-        type: "update-reports",
-        payload: [...userReport, res.data]
-      })
+      Close();
     } catch (ex) {
       console.log(ex);
     }
   };
 
   useEffect(() => {
-    if (user !== null) {
-      dispatchActivity({
-        type: "update-activities",
-        payload: [...activites],
-      });
-    }
-  }, [activites]);
-
-  useEffect(() => {
     if (user === null) {
       nav("/login", { state: { from: location } });
     }
-    loadActivity();
-  }, [user, nav, location]);
+    let filters = Object.fromEntries([...searchParams]);
+    loadActivity(filters);
+  }, [user, nav, location, searchParams]);
   return (
     <>
       {user !== null && (
         <>
-          <h1 className="text-center mt-3">Hoạt Động Tham Gia</h1>
+          <h1 className="text-center mt-5 mb-3">Hoạt Động Tham Gia</h1>
+          <Dropdown className="mb-3">
+            <Dropdown.Toggle variant="success">Học Kỳ</Dropdown.Toggle>
+            <Dropdown.Menu>
+              {semseter.map((s) => (
+                <Dropdown.Item
+                  key={s.id}
+                  onClick={() => updateFilter("semesterId", s.id)}
+                >
+                  {s.semesterName}
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown>
           <Tabs
             defaultActiveKey="default"
             id="uncontrolled-tab-example"

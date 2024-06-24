@@ -6,19 +6,20 @@ import toast from "react-hot-toast";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import APIs, { authApi, endpoints } from "../../configs/APIs";
 import { Button, Form, Image, Table } from "react-bootstrap";
-import { MyDispatcherContext, MyUserContext } from "../../configs/Contexts";
+import { MyUserContext } from "../../configs/Contexts";
 import { IoAdd } from "react-icons/io5";
 import cookie from "react-cookies";
 import MyModal from "../Common/Modal";
+import {
+  format
+} from "date-fns";
 
 const ActivityDetails = () => {
-  const [activities, setActivities] = useState([]);
+  const [activities, setActivities] = useState();
+  const [registeredActivity, setRegisterActivity] = useState([]);
   const [comments, setComments] = useState([]);
-  const [reports, setReports] = useState([]);
   const { activityId } = useParams();
-  const [comment, setComment] = useState("");
-  const { user, userActivity, userReport } = useContext(MyUserContext);
-  const { dispatchActivity, dispatchReport } = useContext(MyDispatcherContext);
+  const { user } = useContext(MyUserContext);
   const location = useLocation();
   const nav = useNavigate();
   const [acPartType, setAcPartType] = useState();
@@ -48,12 +49,11 @@ const ActivityDetails = () => {
   const Load = async () => {
     try {
       let res = await authApi().get(endpoints["activity-details"](activityId));
-      let re = await authApi().get(endpoints["user-report"]);
 
-      if (res.status === 200 && re.status === 200) {
+
+      if (res.status === 200) {
         setActivities(res.data);
         setComments(res.data.comments);
-        setReports(re.data);
       }
     } catch (ex) {
       console.error(ex);
@@ -127,12 +127,10 @@ const ActivityDetails = () => {
         }
       );
 
-      if (res.status === 201) {
-        dispatchActivity({
-          type: "update-activities",
-          payload: [...userActivity, res.data],
-        });
+      if(res.status === 201){
+        setRegisterActivity(activities.activityParticipationTypes.filter((a) => a.id === acPartTypeId));
       }
+
     } catch (ex) {
       console.error(ex);
     }
@@ -144,7 +142,7 @@ const ActivityDetails = () => {
     } else {
       Load();
     }
-  }, [user, nav, location]);
+  }, [user, nav, location, registeredActivity]);
 
   const likeOrUnlike = async () => {
     console.log(user);
@@ -184,11 +182,6 @@ const ActivityDetails = () => {
         }
       );
       Close();
-
-      dispatchReport({
-        type: "update-reports",
-        payload: [...userReport, res.data],
-      });
     } catch (ex) {
       console.log(ex);
     }
@@ -196,7 +189,7 @@ const ActivityDetails = () => {
 
   return (
     <>
-      {user !== null && (
+      {user !== null && activities && (
         <>
           <h1 className="text-center mt-3">Chi Tiết Hoạt Động</h1>
           <Table
@@ -223,13 +216,13 @@ const ActivityDetails = () => {
                 <td>
                   <strong>Thời gian bắt đầu</strong>
                 </td>
-                <td>{activities.startDateTime}</td>
+                <td>{format(activities.startDateTime, "dd-MM-yyyy HH:mm")}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Thời gian kết thúc</strong>
                 </td>
-                <td>{activities.endDateTime}</td>
+                <td>{format(activities.endDateTime, "dd-MM-yyyy HH:mm")}</td>
               </tr>
               <tr>
                 <td>
@@ -281,9 +274,7 @@ const ActivityDetails = () => {
                           <td>
                             <Button
                               onClick={(e) => activityRegistration(e, type.id)}
-                              disabled={userActivity
-                                .map((reg) => reg.acPartTypeId)
-                                .includes(type.id)}
+                              disabled={type.isRegistered ||  registeredActivity.includes(type.id)}
                               size="sm"
                             >
                               Đăng Ký
@@ -295,7 +286,7 @@ const ActivityDetails = () => {
                               variant="danger"
                               size="sm"
                               onClick={() => Show(type.id)}
-                              disabled={reports.map((re) => re.activityPartType.id).includes(type.id)}
+                              disabled={type.isParticipated == true}
                             >
                               Báo Thiếu
                             </Button>

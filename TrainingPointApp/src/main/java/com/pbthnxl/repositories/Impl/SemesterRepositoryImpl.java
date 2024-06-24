@@ -4,6 +4,7 @@
  */
 package com.pbthnxl.repositories.Impl;
 
+import com.pbthnxl.pojo.Registration;
 import com.pbthnxl.pojo.Semester;
 import com.pbthnxl.repositories.SemesterRepository;
 import java.util.List;
@@ -44,7 +45,6 @@ public class SemesterRepositoryImpl implements SemesterRepository {
     @Override
     public void addOrUpdate(Semester s) {
         Session ss = this.factory.getObject().getCurrentSession();
-        System.out.println("---------------------------------------------------------------------------------------------------------------------" + s.getId());
         if (s.getId() != null) {
             ss.update(s);
         } else {

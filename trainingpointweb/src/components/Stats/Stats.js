@@ -1,18 +1,23 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import APIs, { authApi, endpoints } from "../../configs/APIs";
 import { MyUserContext } from "../../configs/Contexts";
-import { redirect, useLocation, useNavigate } from "react-router-dom";
+import { redirect, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Chart, defaults } from "chart.js/auto";
 import { Bar, Line } from "react-chartjs-2";
-import { DropdownButton, Dropdown } from "react-bootstrap";
-import { useSearchParam } from "react-use";
-import toast from "react-hot-toast";
+import { DropdownButton, Dropdown, Container, Button } from "react-bootstrap";
+import Payment from "../Payment/Payment";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import toast from "react-hot-toast";
 import axios from "axios";
+import { useSearchParam } from "react-use";
+import { text } from "@fortawesome/fontawesome-svg-core";
+
 
 const Stats = () => {
-  const [activites, setActivites] = useState([]);
+  const [activites, setActivities] = useState([]);
+  const [semester, setSemester] = useState([]);
+  const [totalConfirmedPoints, setTotalConfirmedPoints] = useState(0);
   const [data, setData] = useState(null);
   const [paid, setPaid] = useState(false);
   const { user } = useContext(MyUserContext);
@@ -22,74 +27,113 @@ const Stats = () => {
   const status = useSearchParam("status");
   const vnpResponseCode = useSearchParam("vnp_ResponseCode");
   const pdfRef = useRef(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [show, setShow] = useState(null);
 
   useEffect(() => {
     if (resultCode == 0 || status == 1 || vnpResponseCode == "00") {
       setPaid(true);
     }
   }, [])
-
-  const Load = async () => {
+  
+  const Load = async (filters = {}) => {
     try {
-      let res = await authApi().get(endpoints["user-registration"]);
-      let article = await APIs.get(endpoints["article-list"]);
+      // lay ds semester
+      let sem = await APIs.get(endpoints["semester-list"]);
+      if (sem.status === 200) {
+        setSemester(sem.data);
 
-      if (res.status === 200 && article.status === 200) {
-        setActivites(res.data);
-        const articleNames = article.data.map((article) => article.name);
-        const confirmedPoints = articleNames.map((articleName) => {
-          return res.data.reduce((acc, activity) => {
-            if (
-              activity.activity.article === articleName &&
-              activity.participated
-            ) {
-              return acc + activity.point;
-            }
-            return acc;
-          }, 0);
-        });
-        const registeredPoints = articleNames.map((articleName) => {
-          return res.data.reduce((acc, activity) => {
-            if (
-              activity.activity.article === articleName &&
-              !activity.participated
-            ) {
-              return acc + activity.point;
-            }
-            return acc;
-          }, 0);
-        });
+        // lay hk moi nhat
 
-        setData({
-          labels: article.data.map((r) => r.name),
-          datasets: [
-            {
-              label: "Điểm tối đa",
-              data: [25, 20, 20, 25, 10, 10],
-              backgroundColor: "rgba(255, 99, 132, 0.2)",
-              borderColor: "rgba(255, 99, 132, 1)",
-              borderWidth: 1,
-            },
-            {
-              label: "Điểm xác nhận",
-              data: confirmedPoints,
-              backgroundColor: "rgba(54, 162, 235, 0.2)",
-              borderColor: "rgba(54, 162, 235, 1)",
-              borderWidth: 1,
-            },
-            {
-              label: "Điểm đăng ký",
-              data: registeredPoints,
-              backgroundColor: "rgba(75, 192, 192, 0.2)",
-              borderColor: "rgba(75, 192, 192, 1)",
-              borderWidth: 1,
-            },
-          ],
-        });
+        const lastestSemester = sem.data[sem.data.length - 1].id;
+
+        if (!filters.semesterId) {
+          filters.semesterId = lastestSemester;
+          // Update the URL search params to include the default semesterId
+          const newSearchParams = new URLSearchParams(filters);
+          setSearchParams(newSearchParams);
+        }
+
+        let params = new URLSearchParams(filters);
+        let res = await authApi().get(
+          `${endpoints["user-registration"]}?${params}`
+        );
+
+        if (res.status === 200) {
+          setActivities(res.data);
+          let article = await APIs.get(endpoints["article-list"]);
+
+          const articleNames = article.data.map((article) => article.name);
+          const confirmedPoints = articleNames.map((articleName) => {
+            return res.data.reduce((acc, activity) => {
+              if (
+                activity.activity.article === articleName &&
+                activity.participated
+              ) {
+                return acc + activity.point;
+              }
+              return acc;
+            }, 0);
+          });
+
+          setTotalConfirmedPoints(
+            confirmedPoints.reduce((acc, curr) => acc + curr, 0)
+          );
+          const registeredPoints = articleNames.map((articleName) => {
+            return res.data.reduce((acc, activity) => {
+              if (
+                activity.activity.article === articleName &&
+                !activity.participated
+              ) {
+                return acc + activity.point;
+              }
+              return acc;
+            }, 0);
+          });
+          setData({
+            labels: article.data.map((r) => r.name),
+            datasets: [
+              {
+                label: "Điểm tối đa",
+                data: [25, 20, 25, 20, 10, 10],
+                backgroundColor: "lightpink",
+                borderColor: "rgba(255, 99, 132, 1)",
+                borderWidth: 1,
+              },
+              {
+                label: "Điểm xác nhận",
+                data: confirmedPoints,
+                backgroundColor: "lightgreen",
+                borderColor: "rgba(54, 162, 235, 1)",
+                borderWidth: 1,
+              },
+              {
+                label: "Điểm đăng ký",
+                data: registeredPoints,
+                backgroundColor: "lightblue",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+              },
+            ],
+          });
+        }
       }
     } catch (ex) {
       console.error(ex);
     }
+  };
+
+  const Close = () => {
+    setShow(false);
+  };
+
+  const Show = () => {
+    setShow(true);
+  };
+
+  const updateFilter = (key, value) => {
+    searchParams.set(key, value);
+    setSearchParams(searchParams);
   };
 
   defaults.maintainAspectRatio = true;
@@ -99,8 +143,9 @@ const Stats = () => {
     if (user == null) {
       nav("/login", { state: { from: location } });
     }
-    Load();
-  }, [user]);
+    let filters = Object.fromEntries([...searchParams]);
+    Load(filters);
+  }, [user, searchParams]);
 
   const exportToPdf = () => {
     const input = pdfRef.current;
@@ -112,90 +157,111 @@ const Stats = () => {
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
       pdf.save("thanh-tich.pdf");
-      toast.success("Download file PDF thành công!");
+      toast.success("Thanh toán thành công!");
       setPaid(false);
     });
     nav(location.pathname, { replace: true });
   };
 
-  const payMomo = async () => {
-    try {
-      const res = await axios.post("http://localhost:5000/api/momo-pay", {
-        total: 10000,
-        redirectUrl: "http://localhost:3000/stats"
-      })
+  // const payMomo = async () => {
+  //   try {
+  //     const res = await axios.post("http://localhost:5000/api/momo-pay", {
+  //       total: 10000,
+  //       redirectUrl: "http://localhost:3000/stats"
+  //     })
 
-      if (res.data.payUrl) {
-        window.location.href = res.data.payUrl;
-      }
-    } catch (error) {
-      toast.error("Có lỗi xảy ra, vui lòng thử lại sau");
-    }
-  };
+  //     if (res.data.payUrl) {
+  //       window.location.href = res.data.payUrl;
+  //     }
+  //   } catch (error) {
+  //     toast.error("Có lỗi xảy ra, vui lòng thử lại sau");
+  //   }
+  // };
 
-  const payZalo = async () => {
-    try {
-      const res = await axios.post("http://localhost:5000/api/zalo-pay", {
-        total: 10000,
-        redirectUrl: "http://localhost:3000/stats"
-      })
+  // const payZalo = async () => {
+  //   try {
+  //     const res = await axios.post("http://localhost:5000/api/zalo-pay", {
+  //       total: 10000,
+  //       redirectUrl: "http://localhost:3000/stats"
+  //     })
 
-      if (res.data.payUrl) {
-        window.location.href = res.data.payUrl;
-      }
-    } catch (error) {
-      toast.error("Có lỗi xảy ra, vui lòng thử lại sau");
-    }
-  }
-
-  const payVnPay = async () => {
-    const form = new FormData();
-    form.append("amount", 10000);
-    form.append("orderInfo", "Thanh toán cho Điểm rèn luyện Lộc Hiếu");
-    try {
-      const res = await authApi().post(endpoints['vn-pay'], form);
-      console.log(res);
-
-      if (res.data) {
-        window.location.href = res.data;
-      }
-    } catch (error) {
-      toast.error("Có lỗi xảy ra, vui lòng thử lại sau");
-    }
-  }
-
+  //     if (res.data.payUrl) {
+  //       window.location.href = res.data.payUrl;
+  //     }
+  //   } catch (error) {
+  //     toast.error("Có lỗi xảy ra, vui lòng thử lại sau");
+  //   }
+  // }
+  
   return (
     <>
-      {user != null && (
+      {user != null && semester && (
         <>
-
           {data && (
             <>
-              <div ref={pdfRef}>
-                <h1 className="text-center m-3">Thống Kê Điểm Rèn Luyện</h1>
+              <Container ref={pdfRef}>
+              <h1 className="text-center m-5">Thống Kê Điểm Rèn Luyện</h1>
                 <Bar
+                  className="mt-3 mb-3"
                   data={data}
                   options={{
-                    legend: { display: false },
+                    plugins: {
+                      legend: { display: false },
                     title: {
                       display: true,
-                      text: "Predicted world population (millions) in 2050",
+                      text: `Kết quả rèn luyện: ${totalConfirmedPoints}đ`,
+                      position: 'bottom',
+                      font:{
+                        size: 20,
+                        family: 'Arial',
+                        weight: 'bold'
+                      },
+                      color: 'red',
+                      fullSize: true
                     },
+                    }
+                    
                   }}
                 />
+              </Container>
+              <div className="mb-2">
+                <Dropdown className="d-inline mx-2 mb-3">
+                  <Dropdown.Toggle variant="success">Học Kỳ</Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    {semester.map((s) => (
+                      <Dropdown.Item
+                        key={s.id}
+                        onClick={() => updateFilter("semesterId", s.id)}
+                      >
+                        {s.semesterName}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+                <Button className="d-inline mx-2" onClick={() => Show()}>
+                  Xuất PDF
+                </Button>
+                <Payment
+                  Show={show}
+                  Close={Close}
+                  setPaid={setPaid}
+                />
               </div>
-              {paid ? <div className="alert alert-success m-4">Thanh toán thành công. Bấm <a style={{ cursor: "pointer" }} onClick={exportToPdf}><strong>download</strong></a> để tải file PDF về.</div> :
-                <div className="d-flex flex-row justify-content-evenly m-3">
-                  <button className="btn btn-success flex-1" onClick={payMomo}>
-                    Export To PDF Momo
-                  </button>
-                  <button className="btn btn-success flex-1" onClick={payZalo}>
-                    Export To PDF Zalo
-                  </button>
-                  <button className="btn btn-success flex-1" onClick={payVnPay}>
-                    Export To PDF VNPay
-                  </button>
-                </div>}
+
+              
+              {paid &&<div className="alert alert-info m-3">Thanh toán thành công. Bấm <a style={{ cursor: "pointer" }} onClick={exportToPdf}><strong>download</strong></a> để tải file PDF về.</div>
+                // <div className="d-flex flex-row justify-content-evenly m-3">
+                //   <button className="btn btn-success flex-1" onClick={payMomo}>
+                //     Export To PDF Momo
+                //   </button>
+                //   <button className="btn btn-success flex-1" onClick={payZalo}>
+                //     Export To PDF Zalo
+                //   </button>
+                //   <button className="btn btn-success flex-1" onClick={payVnPay}>
+                //     Export To PDF VNPay
+                //   </button>
+                // </div>
+                }
             </>
           )}
         </>

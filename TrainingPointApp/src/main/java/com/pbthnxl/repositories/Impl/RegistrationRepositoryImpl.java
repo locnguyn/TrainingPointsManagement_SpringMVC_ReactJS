@@ -12,18 +12,27 @@ import com.pbthnxl.pojo.Student;
 import com.pbthnxl.repositories.ActivityParticipationTypeRepository;
 import com.pbthnxl.repositories.RegistrationRepository;
 import com.pbthnxl.repositories.ReportMissingRepository;
+import com.pbthnxl.repositories.SemesterRepository;
 import com.pbthnxl.repositories.StudentRepository;
 import com.pbthnxl.services.SemesterService;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.persistence.NoResultException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.hibernate.Session;
@@ -57,6 +66,9 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
     @Autowired
     private SemesterService semesterService;
 
+    @Autowired
+    private SemesterRepository semesterRepo;
+    
     @Override
     public void save(Registration registration) {
         Session s = factory.getObject().getCurrentSession();
@@ -131,12 +143,50 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
     }
 
     @Override
-    public List<Registration> findRegistrationsByStudentId(int id) {
+    public List<Registration> findRegistrationsByStudentId(int id, Map<String, String> params) {
         Session s = factory.getObject().getCurrentSession();
-        Query q = s.createNamedQuery("Registration.findByStudentId");
-        q.setParameter("studentId", id);
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<Registration> q = b.createQuery(Registration.class);
+        Root<Registration> r = q.from(Registration.class);
 
-        return q.getResultList();
+        q.select(r);
+
+        List<Predicate> predicates = new ArrayList();
+        
+        predicates.add(b.equal(r.get("studentId"), id));
+
+        //kiem tra dang ky  nam trong hk nao
+        String date = params.get("currentDate");
+        if (date != null && !date.isEmpty()) {
+            List<Semester> semesters = this.semesterRepo.getSemesters();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+
+            Date currentDate;
+            try {
+                currentDate = formatter.parse(params.get("currentDate"));
+                System.out.println(currentDate);
+
+                for (Semester sem : semesters) {
+                    if (currentDate.after(sem.getStartDate()) && currentDate.before(sem.getEndDate())) {
+                        predicates.add(b.and(
+                                b.greaterThanOrEqualTo(r.get("registrationDate"), sem.getStartDate()),
+                                b.lessThanOrEqualTo(r.get("registrationDate"), sem.getEndDate())
+                        ));
+
+                    }
+                }
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+
+        }
+
+        q.where(predicates.toArray(new Predicate[0]));
+        q.orderBy(b.desc(r.get("registrationDate")));
+
+        Query query = s.createQuery(q);
+
+        return query.getResultList();
     }
 
     @Override
@@ -172,6 +222,19 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
             return null;
         }
 
+    }
+    
+    @Override
+    public Registration findRegistrationOwner(int studentId, int registrationId) {
+        Session s = factory.getObject().getCurrentSession();
+        
+        Query<Registration> q = s.createQuery("SELECT r FROM Registration r " +
+                                "WHERE r.id = :registrationId AND r.studentId.id = :studentId", Registration.class);
+        
+        q.setParameter("studentId", studentId);
+        q.setParameter("registrationId", registrationId);
+        
+        return q.getSingleResult();
     }
 
     @Override

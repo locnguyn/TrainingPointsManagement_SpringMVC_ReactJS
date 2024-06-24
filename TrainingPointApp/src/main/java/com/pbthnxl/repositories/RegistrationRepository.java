@@ -6,6 +6,7 @@ package com.pbthnxl.repositories;
 
 import com.pbthnxl.pojo.Registration;
 import java.util.List;
+import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -18,8 +19,9 @@ public interface RegistrationRepository {
     void processCSV(MultipartFile file, int activityParticipationTypeId);
     List<Registration> getRegistrations();
     List<Registration> getRegistrationsByFacultyId(int facultyId);
-    List<Registration> findRegistrationsByStudentId(int id);
+    List<Registration> findRegistrationsByStudentId(int id, Map<String, String> params);
     Registration findRegistrationById(int id);
-    void delete(int id);
     List<Registration> filterRegistrationsBySemester(List<Registration> registrations, int semesterId);
+    Registration findRegistrationOwner(int studentId, int registrationId);
+    void delete(int id);
 }

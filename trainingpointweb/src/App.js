@@ -17,19 +17,16 @@ import Password from "./components/User/Password";
 import ActivityDetails from "./components/Activity/ActivityDetails";
 import Verify from "./components/User/Verify";
 import DismissableToast from "./components/Common/Toast";
-import MyReportReducer from "./components/Reducer/MyReportReducer";
-import MyActivityReducer from "./components/Reducer/MyActivityReducer";
 import Stats from "./components/Stats/Stats";
 import { auth, encodeEmail, setOffline, updateUserData } from "./configs/firebase";
 import ChatboxList from "./components/ChatboxList/ChatboxList";
 import './App.css';
+import Paypal from "./components/Payment/Payment";
 
 const UPDATE_INTERVAL_MS = 10000;
 
 function App() {
   const [user, dispatch] = useReducer(MyUserReducer, cookie.load("user") || null);
-  const [userReport, dispatchReport] = useReducer(MyReportReducer, JSON.parse(localStorage.getItem("userReports")) || null);
-  const [userActivity, dispatchActivity] = useReducer(MyActivityReducer, JSON.parse(localStorage.getItem("userActivities")) || null);
   const lastUpdateRef = useRef(Date.now());
 
   useEffect(() => {
@@ -47,9 +44,9 @@ function App() {
     };
 
     const handleBeforeUnload = (e) => {
-      e.preventDefault();
+      // e.preventDefault();
       setOffline();
-      e.returnValue = true;
+      // e.returnValue = true;
     };
 
     const intervalId = setInterval(updateUserStatus, UPDATE_INTERVAL_MS);
@@ -65,8 +62,8 @@ function App() {
   return (
     <Container className="App">
       <BrowserRouter>
-        <MyUserContext.Provider value={{user, userReport, userActivity}}>
-          <MyDispatcherContext.Provider value={{dispatch, dispatchReport, dispatchActivity}}>
+        <MyUserContext.Provider value={{user}}>
+          <MyDispatcherContext.Provider value={{dispatch}}>
             <Header />
             <Routes>
               <Route path="/" element={<Home />} />
@@ -80,6 +77,7 @@ function App() {
               <Route path="/change-password" element={<Password />} />
               <Route path="/activity/:activityId" element={<ActivityDetails />} />
               <Route path="/stats" element={<Stats />} />
+              <Route path="/payment" element={<Paypal />} />
             </Routes>
             <Footer />
             {user && <ChatboxList />}

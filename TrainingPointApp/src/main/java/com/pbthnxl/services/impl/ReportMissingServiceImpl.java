@@ -67,7 +67,7 @@ public class ReportMissingServiceImpl implements ReportMissingService{
         
         dto.setProof(r.getProof());
         dto.setReportDate(r.getReportDate());
-        dto.setActivityPartType(this.acPartTypeService.convertToDTO(r.getActivityParticipationTypeId(), true));
+        dto.setActivityPartType(this.acPartTypeService.convertToDTO(r.getActivityParticipationTypeId(), true, 0));
         
         return dto;
     }

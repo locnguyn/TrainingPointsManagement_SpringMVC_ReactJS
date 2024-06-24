@@ -5,7 +5,7 @@ const ProofModal = ({ Show, Close, proof }) => {
 
   return (
     <>
-      <Modal show={Show} onHide={Close} centered className="custom-backdrop">
+      <Modal show={Show} onHide={Close} centered >
         <Modal.Header closeButton>
           <Modal.Title>Minh chứng</Modal.Title>
         </Modal.Header>

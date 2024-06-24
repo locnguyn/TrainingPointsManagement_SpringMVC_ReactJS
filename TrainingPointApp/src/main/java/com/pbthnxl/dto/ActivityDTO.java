@@ -18,10 +18,10 @@ public class ActivityDTO {
     private Integer id;
     private String name;
     private String location;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm", timezone = "UTC")
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "YYYY-MM-DD HH:mm", timezone = "GMT+7")
     @Temporal(TemporalType.TIMESTAMP)
     private Date startDateTime;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm", timezone = "UTC")
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "YYYY-MM-DD HH:mm", timezone = "GMT+7")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDateTime;
     private String participant;

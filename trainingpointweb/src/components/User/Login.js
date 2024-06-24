@@ -28,7 +28,7 @@ const Login = () => {
   const location = useLocation();
   const [userInfo, setUserInfo] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const { dispatch, dispatchReport, dispatchActivity } = useContext(MyDispatcherContext);
+  const { dispatch} = useContext(MyDispatcherContext);
   const { user} = useContext(MyUserContext);
   const Change = (event, field) => {
     setUserInfo((current) => {
@@ -71,17 +71,6 @@ const Login = () => {
         type: "login",
         payload: u.data
       });
-
-      dispatchReport({
-        type: "initReports",
-        payload: report.data
-      });
-
-      dispatchActivity({
-        type: "initActivities",
-        payload: a.data
-      });
-
       nav(location.state?.from?.pathname || "/");
     } catch (ex) {
       console.error(ex);

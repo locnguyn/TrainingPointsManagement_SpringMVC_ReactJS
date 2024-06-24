@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -67,8 +68,10 @@ public class ApiRegistrationController {
         MediaType.APPLICATION_JSON_VALUE
     })
     @CrossOrigin
-    public ResponseEntity<List<RegistrationDTO>> list(Principal p) {
-        List<RegistrationDTO> r = this.regisService.findRegistrationsByStudentIdDTO(this.userService.getUserByUsername(p.getName()).getStudent().getId());
+    public ResponseEntity<List<RegistrationDTO>> list(Principal p, @RequestParam Map<String, String> params) {
+        List<RegistrationDTO> r = this.regisService.
+                findRegistrationsByStudentIdDTO(this.userService.
+                        getUserByUsername(p.getName()).getStudent().getId(), params);
 
         return new ResponseEntity<>(r, HttpStatus.OK);
     }
@@ -77,7 +80,7 @@ public class ApiRegistrationController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable(value = "id") int id, Principal p) {
-        Registration r = this.regisService.findByStudentIdAndActivityParticipationTypeId(this.userService.getUserByUsername(p.getName()).getStudent().getId(), id);
+        Registration r = this.regisService.findRegistrationOwner(this.userService.getUserByUsername(p.getName()).getStudent().getId(), id);
 
         if (r != null) {
             this.regisService.delete(id);

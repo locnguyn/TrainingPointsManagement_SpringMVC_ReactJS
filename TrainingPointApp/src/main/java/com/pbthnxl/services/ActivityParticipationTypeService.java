@@ -22,5 +22,5 @@ public interface ActivityParticipationTypeService {
     ActivityParticipationType getActivityParticipationTypeByActivityIdAndParticipationTypeId(int activityId, int participationTypeId);
     void deleteActivityParticipationType(int id);
     List<ActivityParticipationTypeDTO> getActivityParticipationTypeDTOs();
-    ActivityParticipationTypeDTO convertToDTO(ActivityParticipationType type, Boolean isGetReport);
+    ActivityParticipationTypeDTO convertToDTO(ActivityParticipationType type, Boolean isGetReport, int studentId);
 }

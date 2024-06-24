@@ -12,7 +12,9 @@ import com.pbthnxl.repositories.RegistrationRepository;
 import com.pbthnxl.repositories.StudentRepository;
 import com.pbthnxl.services.ActivityService;
 import com.pbthnxl.services.RegistrationService;
+import com.pbthnxl.services.SemesterService;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,14 +29,21 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Autowired
     private RegistrationRepository registrationRepository;
+
     @Autowired
     private StudentRepository studentRepo;
+
     @Autowired
     private ActivityRepository activityRepo;
+
     @Autowired
     private ActivityParticipationTypeRepository acPartTypeRepo;
+
     @Autowired
     private ActivityService activityService;
+
+    @Autowired
+    private SemesterService semesterService;
 
     @Override
     public void save(Registration registration) {
@@ -47,13 +56,21 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public List<Registration> findRegistrationsByStudentId(int id) {
-        return this.registrationRepository.findRegistrationsByStudentId(id);
+    public List<Registration> findRegistrationsByStudentId(int id, Map<String, String> params) {
+        return this.registrationRepository.findRegistrationsByStudentId(id, params);
     }
 
     @Override
-    public List<RegistrationDTO> findRegistrationsByStudentIdDTO(int id) {
-        List<Registration> list = this.registrationRepository.findRegistrationsByStudentId(id);
+    public List<RegistrationDTO> findRegistrationsByStudentIdDTO(int id, Map<String, String> params) {
+        List<Registration> list = this.registrationRepository.findRegistrationsByStudentId(id, params);
+
+        if (params.containsKey("semesterId")) {
+            List<Registration> filteredList = this.registrationRepository.
+                    filterRegistrationsBySemester(list, this.semesterService.
+                            getSemesterById(Integer.parseInt(params.get("semesterId"))).getId());
+
+            return filteredList.stream().map(this::convertToDTO).collect(Collectors.toList());
+        }
 
         return list.stream().map(this::convertToDTO).collect(Collectors.toList());
 
@@ -85,15 +102,22 @@ public class RegistrationServiceImpl implements RegistrationService {
         this.registrationRepository.delete(id);
     }
 
-
     @Override
     public Registration findByStudentIdAndActivityParticipationTypeId(Integer studentId, int activityParticipationTypeId) {
         return this.registrationRepository.findByStudentIdAndActivityParticipationTypeId(studentId, activityParticipationTypeId);
     }
 
     @Override
+
     public List<Registration> filterRegistrationsBySemester(List<Registration> registrations, int semesterId) {
         return this.registrationRepository.filterRegistrationsBySemester(registrations, semesterId);
+
+    }
+
+    @Override
+    public Registration findRegistrationOwner(int studentId, int registrationId) {
+        return this.registrationRepository.findRegistrationOwner(studentId, registrationId);
+
     }
 
 }

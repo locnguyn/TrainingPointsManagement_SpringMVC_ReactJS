@@ -16,7 +16,8 @@ import org.springframework.stereotype.Service;
  * @author hieu
  */
 @Service
-public class SemesterServiceImpl implements SemesterService{
+public class SemesterServiceImpl implements SemesterService {
+
     @Autowired
     private SemesterRepository semesterRepo;
 
@@ -39,5 +40,4 @@ public class SemesterServiceImpl implements SemesterService{
     public void delete(Semester s) {
         this.semesterRepo.delete(s);
     }
-    
 }

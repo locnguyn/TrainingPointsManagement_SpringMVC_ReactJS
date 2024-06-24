@@ -17,6 +17,7 @@ import com.pbthnxl.services.StudentService;
 import com.pbthnxl.services.UserService;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.HashMap;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -203,7 +204,7 @@ public class AssistantController {
         }
         Student s = this.studentService.getStudentById(studentId);
         model.addAttribute("student", s);
-        model.addAttribute("registrations", this.registrationService.findRegistrationsByStudentIdDTO(studentId));
+        model.addAttribute("registrations", this.registrationService.findRegistrationsByStudentIdDTO(studentId, new HashMap<>()));
         model.addAttribute("reports", this.reportMissingService.getStudentReportMissings(studentId));
         model.addAttribute("articles", this.articleService.getArticles());
         return "studentDetails";

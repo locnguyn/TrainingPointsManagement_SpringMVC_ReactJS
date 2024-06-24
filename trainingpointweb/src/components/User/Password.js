@@ -6,6 +6,7 @@ import { authApi, endpoints } from "../../configs/APIs";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { updatePasswordFirebase } from "../../configs/firebase";
+import Validate from "../../Utils/Validate";
 
 const Password = () => {
   const {user} = useContext(MyUserContext);
@@ -25,11 +26,16 @@ const Password = () => {
         updatedUser.new_password &&
         updatedUser.confirm
       ) {
+        
         if (updatedUser.new_password !== updatedUser.confirm) {
           setError("Không Khớp!");
         } else {
-          setError("");
-        }
+          if(!Validate.validatePassword(updatedUser.new_password))
+            {
+              setError("Mật khẩu phải dài ít nhất 8 ký tự, có ít nhất một số, một chữ cái viết hoa, một chữ cái viết thường, một ký tự đặc biệt")
+            }
+          // setError("");
+        } 
       }
       return updatedUser;
     });
@@ -98,6 +104,7 @@ const Password = () => {
               type={f.type}
               value={userInfo[f.field]}
               required
+              placeholder={f.label}
             ></Form.Control>
           </Form.Group>
         ))}
