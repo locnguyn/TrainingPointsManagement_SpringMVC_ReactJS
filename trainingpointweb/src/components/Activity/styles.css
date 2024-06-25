@@ -54,7 +54,7 @@
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.174);
 }
 
-.dropdown-menu::before {
+.comment-dropdown-menu::before {
   content: "";
     border-width: 20px 30px;
     border-style: solid ;

@@ -4,18 +4,23 @@
  */
 package com.pbthnxl.controllers;
 
-
-
 /**
  *
  * @author DELL
  */
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pbthnxl.services.VNPayService;
 import com.pbthnxl.utils.PaypalIntent;
 import com.pbthnxl.utils.PaypalUserAction;
 import com.pbthnxl.utils.PaypalPaySource;
 import com.pbthnxl.vn.zalopay.crypto.HMACUtil;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -38,10 +43,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
-import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.http.client.methods.HttpHead;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -58,106 +69,103 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/api/payment")
 @PropertySource("classpath:configs.properties")
 public class ApiPaymentController {
+
     @Autowired
     private Environment env;
-    
+
     @Autowired
     private VNPayService vnPayService;
-    
-    private Logger logger = Logger.getLogger(this.getClass().getName());
-    private String key2 = "eG4r0GcoNtRGbO8";
-    private Mac HmacSHA256;
-    private static Map<String, String> config = new HashMap<String, String>() {
-        {
-            put("app_id", "2553");
-            put("key1", "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL");
-            put("key2", "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz");
-            put("endpoint", "https://sb-openapi.zalopay.vn/v2/create");
-        }
-    };
-    private static final String CLIENT_ID = "AThRltxPxUWCRRenurymjrI2hc4hIY6dc6nh4sVAXgc8D6rLz_Gjyn1QZ8VQVyqDMwLhoD4elut5Uuwu";
-    private static final String CLIENT_SECRET = "EKiVQSnvUCsUZ_CKqyzV4DQQ-ccV3y5asgf_snM-dr_Q5SuPoJtZ5uI8lq6Rs9geMQCBXRI9i_DZu3oI";
 
-    public static String getCurrentTimeString(String format) {
-        Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT+7"));
-        SimpleDateFormat fmt = new SimpleDateFormat(format);
-        fmt.setCalendar(cal);
-        return fmt.format(cal.getTimeInMillis());
-    }
-    
-    public void CallbackController() throws Exception {
-        HmacSHA256 = Mac.getInstance("HmacSHA256");
-        HmacSHA256.init(new SecretKeySpec(key2.getBytes(), "HmacSHA256"));
-    }
+    private static final String ACCESS_KEY = "F8BBA842ECF85";
+    private static final String SECRET_KEY = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
 
+    //ZALOPAY Version 1
+    @CrossOrigin
     @PostMapping(value = "/zalopay/create/", consumes = {
         MediaType.APPLICATION_JSON_VALUE
     })
-    @CrossOrigin
-    public ResponseEntity<String> createOrder(@RequestParam Map<String, String> params) {
-        Random rand = new Random();
-        int random_id = rand.nextInt(1000000);
-        final Map embed_data = new HashMap() {
-            {
-            }
-        };
-
-        final Map[] item = {
-            new HashMap() {
+    public ResponseEntity<String> zalopayCreateOrder(@RequestBody Map<String, String> params) throws UnsupportedEncodingException, IOException {
+        if (params.containsKey("amount")) {
+            Random rand = new Random();
+            int random_id = rand.nextInt(1000000);
+            String return_url = env.getProperty("base_url") + env.getProperty("zalopay.return_url");
+            final Map embeddata = new HashMap() {
                 {
+                    put("redirecturl", return_url);
                 }
+            };
+
+            final Map[] item = {
+                new HashMap() {
+                    {
+
+                    }
+                }
+            };
+
+            Map<String, Object> order = new HashMap<String, Object>() {
+                {
+                    put("appid", env.getProperty("zalopay.appId"));
+                    put("apptransid", getCurrentTimeString("yyMMdd") + "_" + random_id); // mã giao dich có định dạng yyMMdd_xxxx
+                    put("apptime", System.currentTimeMillis()); // miliseconds
+                    put("appuser", "demo");
+                    put("amount", params.get("amount"));
+                    put("description", "Export PDF Fee - " + params.get("amount"));
+                    put("bankcode", "zalopayapp");
+                    put("item", new JSONObject(item).toString());
+                    put("embeddata", new JSONObject(embeddata).toString());
+                }
+            };
+
+            // appid +”|”+ apptransid +”|”+ appuser +”|”+ amount +"|" + apptime +”|”+ embeddata +"|" +item
+            String data = order.get("appid") + "|" + order.get("apptransid") + "|" + order.get("appuser") + "|" + order.get("amount")
+                    + "|" + order.get("apptime") + "|" + order.get("embeddata") + "|" + order.get("item");
+            order.put("mac", HMACUtil.HMacHexStringEncode(HMACUtil.HMACSHA256, env.getProperty("zalopay.key1"), data));
+
+            CloseableHttpClient client = HttpClients.createDefault();
+            HttpPost post = new HttpPost(env.getProperty("zalopay.create_order"));
+
+            List<NameValuePair> param = new ArrayList<>();
+            for (Map.Entry<String, Object> e : order.entrySet()) {
+                param.add(new BasicNameValuePair(e.getKey(), e.getValue().toString()));
             }
-        };
 
-        Map<String, Object> order = new HashMap<String, Object>() {
-            {
-                put("app_id", config.get("app_id"));
-                put("app_trans_id", getCurrentTimeString("yyMMdd") + "_" + random_id); // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
-                put("app_time", System.currentTimeMillis()); // miliseconds
-                put("app_user", "user123");
-                put("amount", 50000);
-                put("description", "Lazada - Payment for the order #" + random_id);
-                put("bank_code", "zalopayapp");
-                put("item", new JSONObject(item).toString());
-                put("embed_data", new JSONObject(embed_data).toString());
+            // Content-Type: application/x-www-form-urlencoded
+            post.setEntity(new UrlEncodedFormEntity(param));
+
+            CloseableHttpResponse res = client.execute(post);
+            BufferedReader rd = new BufferedReader(new InputStreamReader(res.getEntity().getContent()));
+            StringBuilder resultJsonStr = new StringBuilder();
+            String line;
+
+            while ((line = rd.readLine()) != null) {
+                resultJsonStr.append(line);
             }
-        };
 
-        // app_id +”|”+ app_trans_id +”|”+ appuser +”|”+ amount +"|" + app_time +”|”+ embed_data +"|" +item
-        String data = order.get("app_id") + "|" + order.get("app_trans_id") + "|" + order.get("app_user") + "|" + order.get("amount")
-                + "|" + order.get("app_time") + "|" + order.get("embed_data") + "|" + order.get("item");
-        order.put("mac", HMACUtil.HMacHexStringEncode(HMACUtil.HMACSHA256, config.get("key1"), data));
+            JSONObject result = new JSONObject(resultJsonStr.toString());
 
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
+            System.out.println(result);
+
+            return new ResponseEntity<>(result.toString(), HttpStatus.CREATED);
+
+//            RestTemplate restTemplate = new RestTemplate();
+//
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            String orderJson = objectMapper.writeValueAsString(order);
+//
+//            HttpEntity<String> request = new HttpEntity<>(orderJson, headers);
+//            ResponseEntity<String> response = restTemplate.postForEntity(env.getProperty("zalopay.create_order"), request, String.class);
+//
+//            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+        }
+
+        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
-    
-    @PostMapping("/submitOrder")
-    public ResponseEntity<String> submitOrder(@RequestParam("amount") int orderTotal,
-                            @RequestParam("orderInfo") String orderInfo,
-                            HttpServletRequest request){
-        String vnpayUrl = vnPayService.createOrder(orderTotal, orderInfo, "http://localhost:3000/stats");
-        return new ResponseEntity<>(vnpayUrl, HttpStatus.OK);
-    }
 
-    @GetMapping("/vnpay-payment")
-    public String GetMapping(HttpServletRequest request, Model model){
-        int paymentStatus =vnPayService.orderReturn(request);
-
-        String orderInfo = request.getParameter("vnp_OrderInfo");
-        String paymentTime = request.getParameter("vnp_PayDate");
-        String transactionId = request.getParameter("vnp_TransactionNo");
-        String totalPrice = request.getParameter("vnp_Amount");
-
-        model.addAttribute("orderId", orderInfo);
-        model.addAttribute("totalPrice", totalPrice);
-        model.addAttribute("paymentTime", paymentTime);
-        model.addAttribute("transactionId", transactionId);
-
-        return paymentStatus == 1 ? "ordersuccess" : "orderfail";
-    }
-        
-
-//    @PostMapping("/zalopay/callback/")
+    //    @PostMapping("/zalopay/callback/")
 //    @CrossOrigin
 //    public ResponseEntity<String> calllback(@RequestBody String jsonStr) {
 //        JSONObject result = new JSONObject();
@@ -192,27 +200,53 @@ public class ApiPaymentController {
 //        // thông báo kết quả cho ZaloPay server
 //        return new ResponseEntity<>(result.toString(), HttpStatus.CREATED);
 //    }
+    //VNPAY
+    @PostMapping("/submitOrder")
+    public ResponseEntity<String> submitOrder(@RequestParam("amount") int orderTotal,
+            @RequestParam("orderInfo") String orderInfo,
+            HttpServletRequest request) {
+        String return_url = env.getProperty("base_url") + env.getProperty("zalopay.return_url");
+        String vnpayUrl = vnPayService.createOrder(orderTotal, orderInfo, return_url);
+        return new ResponseEntity<>(vnpayUrl, HttpStatus.OK);
+    }
 
-    @CrossOrigin
+    @GetMapping("/vnpay-payment")
+    public String GetMapping(HttpServletRequest request, Model model) {
+        int paymentStatus = vnPayService.orderReturn(request);
+
+        String orderInfo = request.getParameter("vnp_OrderInfo");
+        String paymentTime = request.getParameter("vnp_PayDate");
+        String transactionId = request.getParameter("vnp_TransactionNo");
+        String totalPrice = request.getParameter("vnp_Amount");
+
+        model.addAttribute("orderId", orderInfo);
+        model.addAttribute("totalPrice", totalPrice);
+        model.addAttribute("paymentTime", paymentTime);
+        model.addAttribute("transactionId", transactionId);
+
+        return paymentStatus == 1 ? "ordersuccess" : "orderfail";
+    }
+
+    //PAYPAL
     @PostMapping("/paypal/create/")
-    public ResponseEntity<String> paypalCcreateOrder(@RequestParam Map<String, String> params) {
+    public ResponseEntity<String> paypalCreateOrder(@RequestParam Map<String, String> params) {
         if (params.containsKey("amount") && params.containsKey("access_token")) {
 //            String url = "https://api-m.sandbox.paypal.com/v2/checkout/orders";
             String return_url = env.getProperty("paypal.return_url");
             String cancel_url = env.getProperty("paypal.cancel_url");
             String currencyCode = "USD";
             RestTemplate restTemplate = new RestTemplate();
-            
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("PayPal-Request-Id", generateRandomRequestId());
             headers.set("Authorization", "Bearer " + params.get("access_token"));
-            
+
             String requestBody = buildRequestBody(PaypalIntent.CAPTURE, currencyCode, params.get("amount"), PaypalPaySource.paypal, PaypalUserAction.PAY_NOW, return_url, cancel_url);
 //            String requestBody = "{ \"intent\": \"CAPTURE\", \"purchase_units\": [ { \"amount\": { \"currency_code\": \"USD\", \"value\": \"100.00\" } } ], \"payment_source\": { \"paypal\": { \"experience_context\": { \"payment_method_preference\": \"IMMEDIATE_PAYMENT_REQUIRED\", \"brand_name\": \"EXAMPLE INC\", \"locale\": \"en-US\", \"landing_page\": \"LOGIN\", \"shipping_preference\": \"NO_SHIPPING\", \"user_action\": \"PAY_NOW\", \"return_url\": \"http://localhost:3000/\", \"cancel_url\": \"https://example.com/cancelUrl\" } } } }";
 
             System.out.print(requestBody);
-            
+
             HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
             ResponseEntity<String> response = restTemplate.postForEntity(env.getProperty("paypal.create_order"), request, String.class);
@@ -222,42 +256,35 @@ public class ApiPaymentController {
 
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
-    
-    @CrossOrigin
+
     @PostMapping("/paypal/capture/{orderId}")
-    public ResponseEntity<String> paypalCaptureOrder(@RequestParam Map<String, String> params, @PathVariable(value = "orderId") String orderId ){
-        if(orderId != null && params.containsKey("access_token")){
+    public ResponseEntity<String> paypalCaptureOrder(@RequestParam Map<String, String> params, @PathVariable(value = "orderId") String orderId) {
+        if (orderId != null && params.containsKey("access_token")) {
             String url = env.getProperty("paypal.capture_order");
             String finalUrl = url.replace("{id}", orderId);
-            
+
             RestTemplate restTemplate = new RestTemplate();
-            
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("Authorization", "Bearer " + params.get("access_token"));
 
             StringBuilder requestBody = new StringBuilder();
-            
-            
+
             HttpEntity<String> request = new HttpEntity<>(null, headers);
             ResponseEntity<String> response = restTemplate.exchange(finalUrl, HttpMethod.POST, request, String.class);
-            
+
             System.out.println("Capture");
-            
+
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         }
-        
+
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-    }
-    
-    private String encodeCredentials(String clientId, String clientSecret) {
-        String credentials = clientId + ":" + clientSecret;
-        return Base64.getEncoder().encodeToString(credentials.getBytes());
     }
 
     private String buildRequestBody(PaypalIntent intent, String currencyCode, String value, PaypalPaySource paySource, PaypalUserAction action, String returnUrl, String cancelUrl) {
         StringBuilder requestBody = new StringBuilder();
-        
+
         System.out.println(paySource);
 
         requestBody.append("{ \"intent\": \"").append(intent).append("\", ");
@@ -272,8 +299,20 @@ public class ApiPaymentController {
 
         return requestBody.toString();
     }
-    
+
     private String generateRandomRequestId() {
         return UUID.randomUUID().toString();
     }
+
+    public static String getCurrentTimeString(String format) {
+        Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT+7"));
+        SimpleDateFormat fmt = new SimpleDateFormat(format);
+        fmt.setCalendar(cal);
+        return fmt.format(cal.getTimeInMillis());
+    }
+
+//    public void CallbackController() throws Exception {
+//        HmacSHA256 = Mac.getInstance("HmacSHA256");
+//        HmacSHA256.init(new SecretKeySpec(key2.getBytes(), "HmacSHA256"));
+//    }
 }

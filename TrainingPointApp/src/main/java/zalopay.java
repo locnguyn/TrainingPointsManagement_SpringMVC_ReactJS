@@ -9,63 +9,72 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.SignatureException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import javax.crypto.spec.SecretKeySpec;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.apache.http.NameValuePair;
 import org.json.JSONObject;
+import javax.crypto.Mac;
 
 public class zalopay {
 
     private static Map<String, String> config = new HashMap<String, String>(){{
-        put("app_id", "2553");
-        put("key1", "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL");
-        put("key2", "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz");
-        put("endpoint", "https://sb-openapi.zalopay.vn/v2/create");
+        put("appid", "553");
+        put("key1", "9phuAOYhan4urywHTh0ndEXiV3pKHr5Q");
+        put("key2", "Iyz2habzyr7AG8SgvoBCbKwKi3UzlLi3");
+        put("endpoint", "https://sandbox.zalopay.com.vn/v001/tpe/createorder");
     }};
 
     public static String getCurrentTimeString(String format) {
         Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT+7"));
         SimpleDateFormat fmt = new SimpleDateFormat(format);
         fmt.setCalendar(cal);
-        
         return fmt.format(cal.getTimeInMillis());
     }
-    
 
     public static void main( String[] args ) throws Exception
     {
         Random rand = new Random();
         int random_id = rand.nextInt(1000000);
-        final Map embed_data = new HashMap(){{}};
-
-        final Map[] item = {
-            new HashMap(){{}}
-        };
-        
-        TimeZone timeZone = TimeZone.getTimeZone("GMT+7");
-        Calendar calendar = Calendar.getInstance(timeZone);
-        long currentTimeInMillis = calendar.getTimeInMillis();
-        
-
-        Map<String, Object> order = new HashMap<String, Object>(){{
-            put("app_id", config.get("app_id"));
-            put("app_trans_id", getCurrentTimeString("yyMMdd") +"_"+ random_id); // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
-            put("app_time", currentTimeInMillis); // miliseconds
-            put("app_user", "user123");
-            put("amount", 50000);
-            put("description", "Lazada - Payment for the order #"+random_id);
-            put("bank_code", "zalopayapp");
-            put("item", new JSONObject(item).toString());
-            put("embed_data", new JSONObject(embed_data).toString());
+        final Map embeddata = new HashMap(){{
+            put("merchantinfo", "embeddata123");
+            put("redirecturl", "https://docs.zalopay.vn/v2/general/overview.html");
         }};
 
-        // app_id +”|”+ app_trans_id +”|”+ appuser +”|”+ amount +"|" + app_time +”|”+ embed_data +"|" +item
-        String data = order.get("app_id") +"|"+ order.get("app_trans_id") +"|"+ order.get("app_user") +"|"+ order.get("amount")
-                +"|"+ order.get("app_time") +"|"+ order.get("embed_data") +"|"+ order.get("item");
+        final Map[] item = {
+            new HashMap(){{
+                put("itemid", "knb");
+                put("itemname", "kim nguyen bao");
+                put("itemprice", 198400);
+                put("itemquantity", 1);
+            }}
+        };
+
+        Map<String, Object> order = new HashMap<String, Object>(){{
+            put("appid", config.get("appid"));
+            put("apptransid", getCurrentTimeString("yyMMdd") +"_"+ random_id); // mã giao dich có định dạng yyMMdd_xxxx
+            put("apptime", System.currentTimeMillis()); // miliseconds
+            put("appuser", "demo");
+            put("amount", 50000);
+            put("description", "ZaloPay Intergration Demo");
+            put("bankcode", "zalopayapp");
+            put("item", new JSONObject(item).toString());
+            put("embeddata", new JSONObject(embeddata).toString());
+        }};
+
+        // appid +”|”+ apptransid +”|”+ appuser +”|”+ amount +"|" + apptime +”|”+ embeddata +"|" +item
+        String data = order.get("appid") +"|"+ order.get("apptransid") +"|"+ order.get("appuser") +"|"+ order.get("amount")
+                +"|"+ order.get("apptime") +"|"+ order.get("embeddata") +"|"+ order.get("item");
         order.put("mac", HMACUtil.HMacHexStringEncode(HMACUtil.HMACSHA256, config.get("key1"), data));
 
-        System.out.println(order);
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost post = new HttpPost(config.get("endpoint"));
 

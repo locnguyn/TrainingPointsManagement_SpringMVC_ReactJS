@@ -4,6 +4,7 @@ import APIs, { authApi, endpoints, paypal } from "../../configs/APIs";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import "./Styles.css";
+import ZaloPayLogo from "./ZaloPay_Logo.png";
 
 const Payment = ({ Show, Close, setPaid }) => {
   const Message = ({ content }) => {
@@ -26,6 +27,18 @@ const Payment = ({ Show, Close, setPaid }) => {
     return null;
   };
 
+  const zalopayCreateOrder = async () => {
+    try {
+      const res = await authApi().post(endpoints["zalopay-create-order"], {"amount": 10000});
+
+      if (res.data) {
+        window.location.href = res.data.orderurl;
+      }
+    } catch (ex) {
+      toast.error("Có lỗi xảy ra, vui lòng thử lại sau");
+    }
+  };
+
   const payVnPay = async () => {
     const form = new FormData();
     form.append("amount", 10000);
@@ -42,7 +55,7 @@ const Payment = ({ Show, Close, setPaid }) => {
     }
   };
 
-  const createOrder = async () => {
+  const paypalCreateOrder = async () => {
     const access_token = await generateAcessToken();
     if (access_token != null) {
       // setToken(access_token);
@@ -122,7 +135,13 @@ const Payment = ({ Show, Close, setPaid }) => {
           <Modal.Title>Vui Lòng Thanh Toán</Modal.Title>
         </Modal.Header>
         <Modal.Body className="text-center">
-          <Button className="button-style" onClick={payVnPay}>
+          <Button className="mb-3 button-style" onClick={zalopayCreateOrder}>
+            <img src={ZaloPayLogo} alt="ZaloPay Logo" width={120} />
+          </Button>
+          <Button
+            className="mb-3 button-style"
+            onClick={payVnPay}
+          >
             <div className="d-flex flex-row align-items-center">
               <div className="col">
                 <div className="a">
@@ -135,10 +154,7 @@ const Payment = ({ Show, Close, setPaid }) => {
               </div>
               <div className="col-auto">
                 <div className="icon">
-                  <img
-                    src="./vnPay.svg"
-                    alt=""
-                  />
+                  <img src="./vnPay.svg" alt="" />
                 </div>
               </div>
             </div>
@@ -154,7 +170,7 @@ const Payment = ({ Show, Close, setPaid }) => {
                 label: "paypal",
                 captureOrder: false,
               }}
-              createOrder={async () => await createOrder()}
+              createOrder={async () => await paypalCreateOrder()}
               onApprove={() => {
                 approve();
                 console.log("Thanh toán thành công");

@@ -1,6 +1,7 @@
 import axios from "axios";
 import cookie from "react-cookies";
 const BASE_URL = "http://localhost:8080/TrainingPointApp/";
+// const BASE_URL = "http://18.141.12.170:8080/TrainingPointApp-1.0-SNAPSHOT/";
 const PAY_PAL = "https://api-m.sandbox.paypal.com/";
 const CLIENT_ID =
   "AdUJsj4oizEC1GPXkuRs25s-024YionolowWse7xtfDPoeAZpKSk6LE7YUyO0-JKCRtSxn-89QMrKk-F";
@@ -37,7 +38,8 @@ export const endpoints = {
     'vn-pay': "/api/payment/submitOrder",
     "paypal-genrate-access-token": "/v1/oauth2/token",
     "paypal-create-order": "api/payment/paypal/create/",
-    "paypal-capture-order": (orderId) =>  `api/payment/paypal/capture/${orderId}`
+    "paypal-capture-order": (orderId) =>  `api/payment/paypal/capture/${orderId}`,
+    "zalopay-create-order": "api/payment/zalopay/create/"
 }
 
 export const authApi = () => {

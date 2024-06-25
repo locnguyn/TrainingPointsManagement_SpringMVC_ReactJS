@@ -1,7 +1,12 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import APIs, { authApi, endpoints } from "../../configs/APIs";
 import { MyUserContext } from "../../configs/Contexts";
-import { redirect, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  redirect,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Chart, defaults } from "chart.js/auto";
 import { Bar, Line } from "react-chartjs-2";
 import { DropdownButton, Dropdown, Container, Button } from "react-bootstrap";
@@ -12,7 +17,6 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useSearchParam } from "react-use";
 import { text } from "@fortawesome/fontawesome-svg-core";
-
 
 const Stats = () => {
   const [activites, setActivities] = useState([]);
@@ -35,7 +39,7 @@ const Stats = () => {
     if (resultCode == 0 || status == 1 || vnpResponseCode == "00") {
       setPaid(true);
     }
-  }, [])
+  }, []);
 
   const Load = async (filters = {}) => {
     try {
@@ -95,7 +99,10 @@ const Stats = () => {
         }, 0);
         return Math.min(totalPoints, maxPoints[index]);
       });
-      const totalConfirmedPoints = totalPoints.reduce((acc, points) => acc + points, 0);
+      const totalConfirmedPoints = totalPoints.reduce(
+        (acc, points) => acc + points,
+        0
+      );
       setTotalConfirmedPoints(totalConfirmedPoints);
       const registeredPoints = articleNames.map((articleName) => {
         return activities.reduce((acc, activity) => {
@@ -137,7 +144,7 @@ const Stats = () => {
     } catch (ex) {
       console.error(ex);
     }
-  }
+  };
 
   const Close = () => {
     setShow(false);
@@ -222,21 +229,18 @@ const Stats = () => {
                   data={data}
                   options={{
                     plugins: {
-                      legend: { display: false },
+                      legend: { display: true },
                       title: {
                         display: true,
                         text: `Kết quả rèn luyện: ${totalConfirmedPoints}đ`,
-                        position: 'bottom',
+                        position: "bottom",
                         font: {
                           size: 20,
-                          family: 'Arial',
-                          weight: 'bold'
+                          family: "Arial",
+                          weight: "bold",
                         },
-                        color: 'red',
-                        fullSize: true
                       },
-                    }
-
+                    },
                   }}
                 />
               </Container>
@@ -257,15 +261,19 @@ const Stats = () => {
                 <Button className="d-inline mx-2" onClick={() => Show()}>
                   Xuất PDF
                 </Button>
-                <Payment
-                  Show={show}
-                  Close={Close}
-                  setPaid={setPaid}
-                />
+                <Payment Show={show} Close={Close} setPaid={setPaid} />
               </div>
 
-
-              {paid && <div className="alert alert-info m-3">Thanh toán thành công. Bấm <a style={{ cursor: "pointer" }} onClick={exportToPdf}><strong>download</strong></a> để tải file PDF về.</div>
+              {
+                paid && (
+                  <div className="alert alert-info m-3">
+                    Thanh toán thành công. Bấm{" "}
+                    <a style={{ cursor: "pointer" }} onClick={exportToPdf}>
+                      <strong>download</strong>
+                    </a>{" "}
+                    để tải file PDF về.
+                  </div>
+                )
                 // <div className="d-flex flex-row justify-content-evenly m-3">
                 //   <button className="btn btn-success flex-1" onClick={payMomo}>
                 //     Export To PDF Momo
