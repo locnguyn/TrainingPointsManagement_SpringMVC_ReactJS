@@ -5,6 +5,8 @@
 package com.pbthnxl.pojo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.pbthnxl.validator.SemesterDate;
+import com.pbthnxl.validator.UniqueSemesterName;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -28,6 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "semester")
 @XmlRootElement
+@SemesterDate(message = "{semester.endDateAfterStartDate.message}")
 @NamedQueries({
     @NamedQuery(name = "Semester.findAll", query = "SELECT s FROM Semester s"),
     @NamedQuery(name = "Semester.findById", query = "SELECT s FROM Semester s WHERE s.id = :id"),
@@ -45,6 +48,7 @@ public class Semester implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "semester_name")
+    @UniqueSemesterName(message = "{semester.UniqueName.message}")
     private int semesterName;
     @Basic(optional = false)
     @NotNull(message = "{semester.startDate.nullErr}")
@@ -114,7 +118,6 @@ public class Semester implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Semester)) {
             return false;
         }

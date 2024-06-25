@@ -80,7 +80,7 @@ const Activity = () => {
 
     try {
       let res = await toast.promise(
-        
+
         authApi().delete(endpoints["registration-delete"](registrationId)),
         {
           loading: "Loading",
@@ -130,7 +130,7 @@ const Activity = () => {
       console.log(form);
       if (proof) form.append("files", proof.current.files[0]);
 
-      let res = await await toast.promise(
+      let res = await toast.promise(
         authApi().post(endpoints["create-report"], form, {
           headers: {
             "Content-Type": "multipart/form-data",

@@ -16,4 +16,5 @@ public interface SemesterService {
     Semester getSemesterById(int id);
     void addOrUpdate(Semester s);
     void delete(Semester s);
+    Semester findByName(int name);
 }

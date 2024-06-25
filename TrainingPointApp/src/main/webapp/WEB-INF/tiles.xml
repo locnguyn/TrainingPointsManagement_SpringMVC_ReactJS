@@ -65,6 +65,22 @@
         <put-attribute name="title" value="Danh sách điều" />
         <put-attribute name="content" value="/WEB-INF/pages/articles.jsp" />
     </definition>
+    <definition name="addParticipant" extends="baseLayout">
+        <put-attribute name="title" value="Thêm/Chỉnh sửa đối tượng tham gia" />
+        <put-attribute name="content" value="/WEB-INF/pages/addParticipant.jsp" />
+    </definition>
+    <definition name="participants" extends="baseLayout">
+        <put-attribute name="title" value="Danh sách đối tượng tham gia" />
+        <put-attribute name="content" value="/WEB-INF/pages/participants.jsp" />
+    </definition>
+    <definition name="addParticipationType" extends="baseLayout">
+        <put-attribute name="title" value="Thêm/Chỉnh sửa hình thức tham gia" />
+        <put-attribute name="content" value="/WEB-INF/pages/addParticipationType.jsp" />
+    </definition>
+    <definition name="participationTypes" extends="baseLayout">
+        <put-attribute name="title" value="Danh sách hình thức tham gia" />
+        <put-attribute name="content" value="/WEB-INF/pages/participationTypes.jsp" />
+    </definition>
     <definition name="addFaculty" extends="baseLayout">
         <put-attribute name="title" value="Thêm/Chỉnh sửa khoa" />
         <put-attribute name="content" value="/WEB-INF/pages/addFaculty.jsp" />
@@ -80,5 +96,9 @@
     <definition name="studentDetails" extends="baseLayout">
         <put-attribute name="title" value="Thành tích cá nhân" />
         <put-attribute name="content" value="/WEB-INF/pages/studentDetails.jsp" />
+    </definition>
+    <definition name="classStats" extends="baseLayout">
+        <put-attribute name="title" value="Thống kê theo lớp" />
+        <put-attribute name="content" value="/WEB-INF/pages/classStats.jsp" />
     </definition>
 </tiles-definitions>

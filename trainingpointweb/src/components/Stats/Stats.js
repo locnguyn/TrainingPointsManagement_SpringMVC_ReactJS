@@ -17,6 +17,7 @@ import { text } from "@fortawesome/fontawesome-svg-core";
 const Stats = () => {
   const [activites, setActivities] = useState([]);
   const [semester, setSemester] = useState([]);
+  // const [totalPoints, setTotalPoints] = useState([]);
   const [totalConfirmedPoints, setTotalConfirmedPoints] = useState(0);
   const [data, setData] = useState(null);
   const [paid, setPaid] = useState(false);
@@ -35,7 +36,7 @@ const Stats = () => {
       setPaid(true);
     }
   }, [])
-  
+
   const Load = async (filters = {}) => {
     try {
       // lay ds semester
@@ -61,67 +62,82 @@ const Stats = () => {
 
         if (res.status === 200) {
           setActivities(res.data);
-          let article = await APIs.get(endpoints["article-list"]);
-
-          const articleNames = article.data.map((article) => article.name);
-          const confirmedPoints = articleNames.map((articleName) => {
-            return res.data.reduce((acc, activity) => {
-              if (
-                activity.activity.article === articleName &&
-                activity.participated
-              ) {
-                return acc + activity.point;
-              }
-              return acc;
-            }, 0);
-          });
-
-          setTotalConfirmedPoints(
-            confirmedPoints.reduce((acc, curr) => acc + curr, 0)
-          );
-          const registeredPoints = articleNames.map((articleName) => {
-            return res.data.reduce((acc, activity) => {
-              if (
-                activity.activity.article === articleName &&
-                !activity.participated
-              ) {
-                return acc + activity.point;
-              }
-              return acc;
-            }, 0);
-          });
-          setData({
-            labels: article.data.map((r) => r.name),
-            datasets: [
-              {
-                label: "Điểm tối đa",
-                data: [25, 20, 25, 20, 10, 10],
-                backgroundColor: "lightpink",
-                borderColor: "rgba(255, 99, 132, 1)",
-                borderWidth: 1,
-              },
-              {
-                label: "Điểm xác nhận",
-                data: confirmedPoints,
-                backgroundColor: "lightgreen",
-                borderColor: "rgba(54, 162, 235, 1)",
-                borderWidth: 1,
-              },
-              {
-                label: "Điểm đăng ký",
-                data: registeredPoints,
-                backgroundColor: "lightblue",
-                borderColor: "rgba(75, 192, 192, 1)",
-                borderWidth: 1,
-              },
-            ],
-          });
+          calculatePoints(res.data);
         }
       }
     } catch (ex) {
       console.error(ex);
     }
   };
+
+  const calculatePoints = async (activities) => {
+    try {
+      let article = await APIs.get(endpoints["article-list"]);
+      const articleNames = article.data.map((article) => article.name);
+      const confirmedPoints = articleNames.map((articleName) => {
+        return activities.reduce((acc, activity) => {
+          if (
+            activity.activity.article === articleName &&
+            activity.participated
+          ) {
+            return acc + activity.point;
+          }
+          return acc;
+        }, 0);
+      });
+      const maxPoints = [25, 20, 25, 20, 10, 10];
+      const totalPoints = articleNames.map((articleName, index) => {
+        const totalPoints = activities.reduce((acc, reg) => {
+          if (reg.activity.article === articleName && reg.participated) {
+            return acc + reg.point;
+          }
+          return acc;
+        }, 0);
+        return Math.min(totalPoints, maxPoints[index]);
+      });
+      const totalConfirmedPoints = totalPoints.reduce((acc, points) => acc + points, 0);
+      setTotalConfirmedPoints(totalConfirmedPoints);
+      const registeredPoints = articleNames.map((articleName) => {
+        return activities.reduce((acc, activity) => {
+          if (
+            activity.activity.article === articleName &&
+            !activity.participated
+          ) {
+            return acc + activity.point;
+          }
+          return acc;
+        }, 0);
+      });
+      setData({
+        labels: article.data.map((r) => r.name),
+        datasets: [
+          {
+            label: "Điểm tối đa",
+            data: [25, 20, 25, 20, 10, 10],
+            backgroundColor: "lightpink",
+            borderColor: "rgba(255, 99, 132, 1)",
+            borderWidth: 1,
+          },
+          {
+            label: "Điểm xác nhận",
+            data: confirmedPoints,
+            backgroundColor: "lightgreen",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1,
+          },
+          {
+            label: "Điểm đăng ký",
+            data: registeredPoints,
+            backgroundColor: "lightblue",
+            borderColor: "rgba(75, 192, 192, 1)",
+            borderWidth: 1,
+          },
+        ],
+      });
+    } catch (ex) {
+      console.error(ex);
+    }
+  }
 
   const Close = () => {
     setShow(false);
@@ -192,7 +208,7 @@ const Stats = () => {
   //     toast.error("Có lỗi xảy ra, vui lòng thử lại sau");
   //   }
   // }
-  
+
   return (
     <>
       {user != null && semester && (
@@ -200,27 +216,27 @@ const Stats = () => {
           {data && (
             <>
               <Container ref={pdfRef}>
-              <h1 className="text-center m-5">Thống Kê Điểm Rèn Luyện</h1>
+                <h1 className="text-center m-5">Thống Kê Điểm Rèn Luyện</h1>
                 <Bar
                   className="mt-3 mb-3"
                   data={data}
                   options={{
                     plugins: {
                       legend: { display: false },
-                    title: {
-                      display: true,
-                      text: `Kết quả rèn luyện: ${totalConfirmedPoints}đ`,
-                      position: 'bottom',
-                      font:{
-                        size: 20,
-                        family: 'Arial',
-                        weight: 'bold'
+                      title: {
+                        display: true,
+                        text: `Kết quả rèn luyện: ${totalConfirmedPoints}đ`,
+                        position: 'bottom',
+                        font: {
+                          size: 20,
+                          family: 'Arial',
+                          weight: 'bold'
+                        },
+                        color: 'red',
+                        fullSize: true
                       },
-                      color: 'red',
-                      fullSize: true
-                    },
                     }
-                    
+
                   }}
                 />
               </Container>
@@ -248,8 +264,8 @@ const Stats = () => {
                 />
               </div>
 
-              
-              {paid &&<div className="alert alert-info m-3">Thanh toán thành công. Bấm <a style={{ cursor: "pointer" }} onClick={exportToPdf}><strong>download</strong></a> để tải file PDF về.</div>
+
+              {paid && <div className="alert alert-info m-3">Thanh toán thành công. Bấm <a style={{ cursor: "pointer" }} onClick={exportToPdf}><strong>download</strong></a> để tải file PDF về.</div>
                 // <div className="d-flex flex-row justify-content-evenly m-3">
                 //   <button className="btn btn-success flex-1" onClick={payMomo}>
                 //     Export To PDF Momo
@@ -261,7 +277,7 @@ const Stats = () => {
                 //     Export To PDF VNPay
                 //   </button>
                 // </div>
-                }
+              }
             </>
           )}
         </>

@@ -8,6 +8,7 @@ import com.pbthnxl.pojo.Registration;
 import com.pbthnxl.pojo.Semester;
 import com.pbthnxl.repositories.SemesterRepository;
 import java.util.List;
+import javax.persistence.NoResultException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,19 @@ public class SemesterRepositoryImpl implements SemesterRepository {
         Session ss = this.factory.getObject().getCurrentSession();
 
         ss.delete(s);
+    }
+
+    @Override
+    public Semester findByName(int name) {
+        Session s = this.factory.getObject().getCurrentSession();
+
+        Query q = s.createNamedQuery("Semester.findBySemesterName");
+        q.setParameter("semesterName", name);
+        try {
+            return (Semester) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
 }

@@ -13,4 +13,8 @@ import java.util.List;
  */
 public interface ParticipantRepository {
     List<Participant> getParticipants();
+    Participant findByName(String name);
+    void addOrUpdate(Participant p);
+    Participant getParticipantById(int id);
+    void delete(Participant c);
 }

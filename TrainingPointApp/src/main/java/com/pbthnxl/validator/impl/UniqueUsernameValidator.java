@@ -1,8 +1,6 @@
 package com.pbthnxl.validator.impl;
 
-import com.pbthnxl.services.StudentService;
 import com.pbthnxl.services.UserService;
-import com.pbthnxl.validator.UniqueStudentCode;
 import com.pbthnxl.validator.UniqueUsername;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -27,6 +25,9 @@ public class UniqueUsernameValidator implements ConstraintValidator<UniqueUserna
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
+        if (value != null && !value.matches("^[a-zA-Z0-9]+$")) {
+            return false;
+        }
         return userService.getUserByUsername(value) == null;
     }
     

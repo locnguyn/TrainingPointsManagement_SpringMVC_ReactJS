@@ -12,6 +12,7 @@ export const endpoints = {
     'create-registration': "api/registration/create/",
     'actitivty-report': "api/activity/report",
     'activity-details': (activityId) => `/api/activity/${activityId}`,
+    'activity-comments': (activityId) => `/api/activity/${activityId}/comments`,
     'activity-add-comment': (activityId) => `/api/activity/${activityId}/add-comment/`,
     'activity-like': (activityId) => `/api/activity/${activityId}/like/`,
     'user-registration': "api/registration/user-registration/",

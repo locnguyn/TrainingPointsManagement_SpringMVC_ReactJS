@@ -170,22 +170,22 @@
             ];
             const articleNames = articles.map(article => article.name);
             const confirmedPoints = articleNames.map(articleName => {
-            return registrations.reduce((acc, activity) => {
-            if (activity.activity.article === articleName && activity.participated) {
-            return acc + activity.point;
-            }
-            return acc;
-            }, 0);
+                return registrations.reduce((acc, activity) => {
+                    if (activity.activity.article === articleName && activity.participated) {
+                        return acc + activity.point;
+                    }
+                    return acc;
+                }, 0);
             });
             const maxPoints = [25, 20, 25, 20, 10, 10];
             const totalPoints = articleNames.map((articleName, index) => {
-            const totalPoints = registrations.reduce((acc, reg) => {
-            if (reg.activity.article === articleName && reg.participated) {
-            return acc + reg.point;
-            }
-            return acc;
-            }, 0);
-                    return Math.min(totalPoints, maxPoints[index]);
+                const totalPoints = registrations.reduce((acc, reg) => {
+                    if (reg.activity.article === articleName && reg.participated) {
+                        return acc + reg.point;
+                    }
+                    return acc;
+                }, 0);
+                return Math.min(totalPoints, maxPoints[index]);
             });
             const totalConfirmedPoints = totalPoints.reduce((acc, points) => acc + points, 0);
             document.getElementById("point").innerHTML = totalConfirmedPoints;
@@ -218,7 +218,7 @@
                     datasets: [
                     {
                     label: "Điểm tối đa",
-                            data: [25, 20, 20, 25, 10, 10],
+                            data: [25, 20, 25, 20, 10, 10],
                             backgroundColor: "rgba(255, 99, 132, 0.2)",
                             borderColor: "rgba(255, 99, 132, 1)",
                             borderWidth: 1,

@@ -39,5 +39,10 @@ public class ClassServiceImpl implements ClassService {
     public void delete(Class c) {
         this.classRepository.delete(c);
     }
+
+    @Override
+    public Class findByName(String name) {
+        return this.classRepository.findByName(name);
+    }
     
 }

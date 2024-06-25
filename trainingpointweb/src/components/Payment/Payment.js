@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import "./Styles.css";
 
-const Paypal = ({ Show, Close, setPaid }) => {
+const Payment = ({ Show, Close, setPaid }) => {
   const Message = ({ content }) => {
     return <p>{content}</p>;
   };
@@ -122,7 +122,7 @@ const Paypal = ({ Show, Close, setPaid }) => {
           <Modal.Title>Vui Lòng Thanh Toán</Modal.Title>
         </Modal.Header>
         <Modal.Body className="text-center">
-          <Button className="mb-3 button-style" onClick={payVnPay}>
+          <Button className="button-style" onClick={payVnPay}>
             <div className="d-flex flex-row align-items-center">
               <div className="col">
                 <div className="a">
@@ -171,4 +171,4 @@ const Paypal = ({ Show, Close, setPaid }) => {
   );
 };
 
-export default Paypal;
+export default Payment;

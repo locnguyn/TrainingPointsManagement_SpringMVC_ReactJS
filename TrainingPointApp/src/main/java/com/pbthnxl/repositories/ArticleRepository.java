@@ -16,4 +16,5 @@ public interface ArticleRepository {
     Article getArticleById(int id);
     void addOrUpdate(Article c);
     void delete(Article c);
+    Article findByName(String name);
 }

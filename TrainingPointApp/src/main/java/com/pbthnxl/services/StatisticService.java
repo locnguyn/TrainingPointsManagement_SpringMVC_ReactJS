@@ -25,4 +25,6 @@ public interface StatisticService {
     Map<String, Integer> getStatisticsForFaculty(int id, int semesterId);
 
     Map<String, Integer> getClassificationStatistics(int facultyId, int semesterId);
+    
+    Map<String, Object> getStatisticsForClass(int classId, int semesterId);
 }

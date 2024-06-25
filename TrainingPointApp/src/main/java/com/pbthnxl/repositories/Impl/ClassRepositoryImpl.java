@@ -7,8 +7,9 @@ package com.pbthnxl.repositories.Impl;
 import com.pbthnxl.pojo.Class;
 import com.pbthnxl.repositories.ClassRepository;
 import java.util.List;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import org.hibernate.Session;
-import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
@@ -54,6 +55,20 @@ public class ClassRepositoryImpl implements ClassRepository {
         Session s = this.factory.getObject().getCurrentSession();
 
         s.delete(c);
+    }
+
+    @Override
+    public Class findByName(String name) {
+        Session s = this.factory.getObject().getCurrentSession();
+
+        Query q = s.createNamedQuery("Class.findByName");
+        q.setParameter("name", name);
+
+        try {
+            return (Class) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
 }

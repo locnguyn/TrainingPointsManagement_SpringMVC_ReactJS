@@ -39,7 +39,7 @@
             <form:option value="ROLE_ASSISTANT">Trợ lý sinh viên</form:option>
         </form:select>
         <label for="role" class="form-label">Chọn vai trò</label>
-    </div>S
+    </div>
     <div class="form-floating mb-3 mt-3">
         <form:select class="form-select" id="classId" path="classId">
             <c:forEach items="${classes}" var="c">

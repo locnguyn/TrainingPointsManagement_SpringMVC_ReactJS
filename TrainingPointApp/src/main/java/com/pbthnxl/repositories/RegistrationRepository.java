@@ -19,6 +19,7 @@ public interface RegistrationRepository {
     void processCSV(MultipartFile file, int activityParticipationTypeId);
     List<Registration> getRegistrations();
     List<Registration> getRegistrationsByFacultyId(int facultyId);
+    List<Registration> getRegistrationsByClassId(int classId);
     List<Registration> findRegistrationsByStudentId(int id, Map<String, String> params);
     Registration findRegistrationById(int id);
     List<Registration> filterRegistrationsBySemester(List<Registration> registrations, int semesterId);

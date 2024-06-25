@@ -39,5 +39,10 @@ public class ArticleServiceImpl implements ArticleService {
     public void delete(Article c) {
         this.articleRepository.delete(c);
     }
+
+    @Override
+    public Article findByName(String name) {
+        return this.articleRepository.findByName(name);
+    }
     
 }

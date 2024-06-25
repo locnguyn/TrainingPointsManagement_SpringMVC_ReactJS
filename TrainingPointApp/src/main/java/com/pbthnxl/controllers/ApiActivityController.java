@@ -21,6 +21,7 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author hieu
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/api/activity")
 public class ApiActivityController {
 
@@ -60,26 +62,30 @@ public class ApiActivityController {
     @Autowired
     private InteractionService interactionService;
 
-    // danh sach hoat dong
-    @CrossOrigin
+
     @RequestMapping("/list/")
     public ResponseEntity<List<ActivityDTO>> list(@RequestParam Map<String, String> params) {
 
         return new ResponseEntity<>(this.acService.findFilteredActivitiesDTO(params), HttpStatus.OK);
     }
 
-    
-
-    // chi tiet hoat dong
-    @CrossOrigin
     @GetMapping("/{id}")
     public ResponseEntity<ActivityDTO> activiyDetails(@PathVariable(value = "id") Integer id, Principal p) {
-        System.out.println(p.getName());
         return new ResponseEntity<>(this.acService.getActivityByIdDTO(id, p.getName()), HttpStatus.OK);
     }
+    
+    @GetMapping("/{id}/comments")
+    public ResponseEntity<List<CommentDTO>> activiyComments(@PathVariable(value = "id") Integer id, Principal p, @RequestParam Map<String, String> params) {
+        String page = params.get("page");
+        int pg = 0;
+        if(page != null && !page.isEmpty()){
+            pg = Integer.parseInt(page);
+        }
+        List<Comment> cmts = this.coService.getCommentsByActivityId(id, pg);
 
-    // them comment cho hoat dong
-    @CrossOrigin
+        return new ResponseEntity<>(cmts.stream().map(c -> this.coService.convertToDTO(c, p.getName())).collect(Collectors.toList()), HttpStatus.OK);
+    }
+
     @PostMapping(path = "/{id}/add-comment/", consumes = {
         MediaType.APPLICATION_JSON_VALUE
     })
@@ -98,7 +104,6 @@ public class ApiActivityController {
 
     }
 
-    @CrossOrigin
     @PostMapping("/{id}/like/")
     public ResponseEntity<String> likeOrUnlike(@PathVariable(value = "id") Integer id, Principal p) {
         Integer userId = this.userSerivce.getIdByUsername(p.getName());

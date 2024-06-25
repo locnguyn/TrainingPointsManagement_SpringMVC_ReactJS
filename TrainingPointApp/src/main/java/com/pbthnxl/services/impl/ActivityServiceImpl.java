@@ -100,7 +100,7 @@ public class ActivityServiceImpl implements ActivityService {
 
         int studentId = this.userService.getUserByUsername(username).getStudent().getId();
 
-        dto.setComments(this.commentRepo.getCommentsByActivityId(id).stream().map(c -> this.commentService.convertToDTO(c, username)).collect(Collectors.toSet()));
+//        dto.setComments(this.commentRepo.getCommentsByActivityId(id).stream().map(c -> this.commentService.convertToDTO(c, username)).collect(Collectors.toSet()));
         dto.setActivityParticipationTypes(this.acPartTypeRepo.getActivityParticipationTypesByActivityId(id).stream().map((c) -> this.acPartTypeService.convertToDTO(c, false, studentId)).collect(Collectors.toSet()));
         dto.setLikes(this.countLikes(id));
         dto.setLiked(this.isUserLikedActivity(id, username));

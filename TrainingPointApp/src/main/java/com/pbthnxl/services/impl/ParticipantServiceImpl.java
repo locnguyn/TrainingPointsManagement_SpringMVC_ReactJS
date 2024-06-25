@@ -24,5 +24,25 @@ public class ParticipantServiceImpl implements ParticipantService {
     public List<Participant> getParticipants() {
         return this.participantRepository.getParticipants();
     }
+
+    @Override
+    public Participant findByName(String name) {
+        return this.participantRepository.findByName(name);
+    }
+
+    @Override
+    public void addOrUpdate(Participant p) {
+        this.participantRepository.addOrUpdate(p);
+    }
+
+    @Override
+    public Participant getParticipantById(int id) {
+        return this.participantRepository.getParticipantById(id);
+    }
+
+    @Override
+    public void delete(Participant c) {
+        this.participantRepository.delete(c);
+    }
     
 }

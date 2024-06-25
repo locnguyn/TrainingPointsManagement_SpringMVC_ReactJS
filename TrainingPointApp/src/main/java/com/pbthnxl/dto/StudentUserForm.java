@@ -1,5 +1,6 @@
 package com.pbthnxl.dto;
 
+import com.pbthnxl.validator.UniqueEmail;
 import com.pbthnxl.validator.UniqueStudentCode;
 import com.pbthnxl.validator.UniqueUsername;
 import javax.validation.constraints.Email;
@@ -19,6 +20,7 @@ public class StudentUserForm {
     @Size(max = 45, message = "{user.lastName.maxErr}")
     private String lastName;
 
+    @UniqueEmail(message = "{user.UniqueEmail.message}")
     @NotEmpty(message = "{user.email.nullErr}")
     @Email(message = "{user.email.invalid}")
     private String email;

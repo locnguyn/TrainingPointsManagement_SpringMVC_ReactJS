@@ -16,4 +16,5 @@ public interface ClassRepository {
     Class getClassById(int id);
     void addOrUpdate(Class c);
     void delete(Class c);
+    Class findByName(String name);
 }

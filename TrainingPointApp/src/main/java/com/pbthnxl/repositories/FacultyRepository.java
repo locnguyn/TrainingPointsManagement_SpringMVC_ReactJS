@@ -16,4 +16,5 @@ public interface FacultyRepository {
     Faculty getFacultyById(int id);
     void addOrUpdate(Faculty c);
     void delete(Faculty c);
+    Faculty findByName(String name);
 }

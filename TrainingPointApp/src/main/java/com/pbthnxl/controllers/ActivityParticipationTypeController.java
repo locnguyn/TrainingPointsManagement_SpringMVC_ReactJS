@@ -103,10 +103,11 @@ public class ActivityParticipationTypeController {
                 if (a1 != null) {
                     a1.setPoint(a.getPoint());
                     this.activityParticipationTypeService.addOrUpdate(a1);
+                    return "redirect:/activities/" + a1.getActivityId().getId() + "/participation-type";
                 } else {
                     this.activityParticipationTypeService.addOrUpdate(a);
+                    return "redirect:/activities/" + a.getActivityId().getId() + "/participation-type";
                 }
-                return "redirect:/activity-participation-type/list";
             } catch (Exception ex) {
                 System.err.println(ex.getMessage());
             }
@@ -146,7 +147,8 @@ public class ActivityParticipationTypeController {
             redirectAttributes.addFlashAttribute("message", "An error occurred while processing the file." + e.getMessage());
             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
         }
-        return "redirect:/activity-participation-type/list";
+        ActivityParticipationType ac = this.activityParticipationTypeService.getActivityParticipationTypeById(activityParticipationTypeId);
+        return "redirect:/activities/" + ac.getActivityId().getId() + "/participation-type";
     }
 
     @GetMapping("/delete/{id}")
@@ -159,6 +161,7 @@ public class ActivityParticipationTypeController {
             return "redirect:/";
         }
         this.activityParticipationTypeService.deleteActivityParticipationType(id);
-        return "redirect:/activity-participation-type/list";
+        ActivityParticipationType ac = this.activityParticipationTypeService.getActivityParticipationTypeById(id);
+        return "redirect:/activities/" + ac.getActivityId().getId() + "/participation-type";
     }
 }

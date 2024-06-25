@@ -24,5 +24,25 @@ public class ParticipationTypeServiceImpl implements ParticipationTypeService {
     public List<ParticipationType> getParticipationTypes() {
         return this.participationTypeRepository.getParticipationTypes();
     }
+
+    @Override
+    public ParticipationType findByName(String name) {
+        return this.participationTypeRepository.findByName(name);
+    }
+
+    @Override
+    public void addOrUpdate(ParticipationType p) {
+        this.participationTypeRepository.addOrUpdate(p);
+    }
+
+    @Override
+    public ParticipationType getParticipationTypeById(int id) {
+        return this.participationTypeRepository.getParticipationTypeById(id);
+    }
+
+    @Override
+    public void delete(ParticipationType c) {
+        this.participationTypeRepository.delete(c);
+    }
     
 }

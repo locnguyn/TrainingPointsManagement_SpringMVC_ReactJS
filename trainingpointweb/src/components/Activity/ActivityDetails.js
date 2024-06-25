@@ -13,6 +13,8 @@ import MyModal from "../Common/Modal";
 import {
   format
 } from "date-fns";
+import LoadMore from "../Common/LoadMore";
+import { commentPageSize } from "../../configs/configs";
 
 const ActivityDetails = () => {
   const [activities, setActivities] = useState();
@@ -23,6 +25,9 @@ const ActivityDetails = () => {
   const location = useLocation();
   const nav = useNavigate();
   const [acPartType, setAcPartType] = useState();
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loadedFull, setLoadedFull] = useState(false);
 
   const [previewURL, setPreviewURL] = useState(null);
   const [show, setShow] = useState(false);
@@ -49,19 +54,38 @@ const ActivityDetails = () => {
   const Load = async () => {
     try {
       let res = await authApi().get(endpoints["activity-details"](activityId));
-
-
       if (res.status === 200) {
         setActivities(res.data);
-        setComments(res.data.comments);
       }
     } catch (ex) {
       console.error(ex);
     }
   };
 
+  const loadComments = async () => {
+    let params = new URLSearchParams();
+    params.set('page', page);
+    try {
+      let res = await authApi().get(`${endpoints["activity-comments"](activityId)}?${params}`);
+      if (res.status === 200) {
+        setComments([...comments, ...res.data]);
+      }
+      updateTotalPages(res.data.length < commentPageSize);
+    } catch (ex) {
+      console.error(ex);
+    }
+  }
+
+  const updateTotalPages = (noMorePages) => {
+    if (noMorePages) setLoadedFull(true);
+    setTotalPages((prevTotalPages) => (noMorePages ? prevTotalPages + 1 : prevTotalPages));
+  }
+
+  useEffect(() => {
+    loadComments();
+  }, [page])
+
   const addComment = async (comment) => {
-    console.log(comment);
     try {
       let res = await authApi().post(
         endpoints["activity-add-comment"](activityId),
@@ -145,7 +169,6 @@ const ActivityDetails = () => {
   }, [user, nav, location, registeredActivity]);
 
   const likeOrUnlike = async () => {
-    console.log(user);
     try {
       const res = await authApi().post(endpoints["activity-like"](activityId));
       if (res.status === 200) {
@@ -169,7 +192,7 @@ const ActivityDetails = () => {
       console.log(form);
       if (proof) form.append("files", proof.current.files[0]);
 
-      let res = await await toast.promise(
+      let res = await toast.promise(
         authApi().post(endpoints["create-report"], form, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -186,6 +209,10 @@ const ActivityDetails = () => {
       console.log(ex);
     }
   };
+
+  const loadMore = () => {
+    setPage(page + 1);
+  }
 
   return (
     <>
@@ -388,6 +415,7 @@ const ActivityDetails = () => {
                 handleDelete={deleteComment}
                 handleUpdate={updateComment}
               />
+              {!loadedFull && <LoadMore objName="bình luận" handleLoadMore={loadMore}/>}
             </div>
             <div className="d-flex mb-3">
               <Image

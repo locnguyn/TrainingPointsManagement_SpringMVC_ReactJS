@@ -40,4 +40,9 @@ public class SemesterServiceImpl implements SemesterService {
     public void delete(Semester s) {
         this.semesterRepo.delete(s);
     }
+
+    @Override
+    public Semester findByName(int name) {
+        return this.semesterRepo.findByName(name);
+    }
 }

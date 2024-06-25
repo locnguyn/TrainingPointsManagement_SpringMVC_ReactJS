@@ -11,6 +11,8 @@ import javax.persistence.Query;
 import org.hibernate.Session;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,16 +23,27 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional
+@PropertySource("classpath:configs.properties")
 public class CommentRepositoryImpl implements CommentRepository {
 
     @Autowired
     private LocalSessionFactoryBean factory;
+    
+    @Autowired
+    private Environment env;
 
     @Override
-    public List<Comment> getCommentsByActivityId(int activityId) {
+    public List<Comment> getCommentsByActivityId(int activityId, int page) {
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createNamedQuery("Comment.findByActivityId", Comment.class);
         q.setParameter("activityId", activityId);
+        
+        if (page != 0) {
+            int pageSize = Integer.parseInt(env.getProperty("comments.pageSize").toString());
+            int start = (page - 1) * pageSize;
+            q.setFirstResult(start);
+            q.setMaxResults(pageSize);
+        }
 
         return q.getResultList();
     }

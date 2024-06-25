@@ -255,4 +255,15 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<Registration> getRegistrationsByClassId(int classId) {
+        Session s = this.factory.getObject().getCurrentSession();
+        Query query = s.createQuery("SELECT r FROM Registration r "
+                + "JOIN FETCH r.studentId s "
+                + "JOIN FETCH s.classId c "
+                + "WHERE c.id = :classId AND r.participated = true", Registration.class);
+        query.setParameter("classId", classId);
+        return query.getResultList();
+    }
+
 }

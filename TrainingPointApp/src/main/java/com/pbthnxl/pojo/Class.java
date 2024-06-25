@@ -5,6 +5,7 @@
 package com.pbthnxl.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pbthnxl.validator.UniqueClassName;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -46,6 +47,7 @@ public class Class implements Serializable {
     @NotNull
     @Size(min = 1, max = 10)
     @Column(name = "name")
+    @UniqueClassName(message = "{class.UniqueName.message}")
     private String name;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "classId")
     @JsonIgnore

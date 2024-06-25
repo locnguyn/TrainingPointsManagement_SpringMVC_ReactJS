@@ -23,8 +23,8 @@ public class CommentServiceImpl implements CommentService {
     private CommentRepository commentRepo;
 
     @Override
-    public List<Comment> getCommentsByActivityId(int activityId) {
-        return this.commentRepo.getCommentsByActivityId(activityId);
+    public List<Comment> getCommentsByActivityId(int activityId, int page) {
+        return this.commentRepo.getCommentsByActivityId(activityId, page);
     }
 
     @Override

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Row,
@@ -6,28 +6,22 @@ import {
   Button,
   Table,
   Dropdown,
-  DropdownButton,
-  DropdownItem,
 } from "react-bootstrap";
 import {
   Link,
-  useLocation,
   useNavigate,
-  useSearchParams,
 } from "react-router-dom";
 import "./Styles.css";
-import { MyUserContext } from "../../configs/Contexts";
-import APIs, { authApi, endpoints } from "../../configs/APIs";
-import moment from "moment";
+import APIs, { endpoints } from "../../configs/APIs";
 import {
-  parse,
   format,
   startOfWeek,
   endOfWeek,
   startOfMonth,
-  endOfMonth,
-  addMonths,
+  endOfMonth
 } from "date-fns";
+import { pageSize } from "../../configs/configs";
+import LoadMore from "./LoadMore";
 
 
 const Home = () => {
@@ -38,25 +32,44 @@ const Home = () => {
   const [selectedTime, setSelectedTime] = useState("default");
   const [faculty, setFaculty] = useState([]);
   const [article, setArticle] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loadedFull, setLoadedFull] = useState(false);
   const nav = useNavigate();
 
-  const load = async () => {
+  const load = async (page = 1) => {
     let params = new URLSearchParams();
     let currentDate = new Date();
-    currentDate = `${currentDate.getFullYear()}/${
-      currentDate.getMonth() + 1
-    }/${currentDate.getDate()}`;
+    currentDate = `${currentDate.getFullYear()}/${currentDate.getMonth() + 1
+      }/${currentDate.getDate()}`;
     if (currentDate) {
       params.set("currentDate", currentDate);
     }
+    if (page) {
+      params.set("page", page);
+    }
     let res = await APIs.get(`${endpoints["activity-list"]}?${params}`);
+    const newActivities = res.data || [];
+    setActivities([...activities, ...newActivities]);
+    setFilteredActivities([...filteredActivities, ...newActivities]);
+    updateTotalPages(newActivities.length < pageSize);
+  };
+
+  const updateTotalPages = (noMorePages) => {
+    if (noMorePages) setLoadedFull(true);
+    setTotalPages((prevTotalPages) => (noMorePages ? prevTotalPages + 1 : prevTotalPages));
+  }
+
+  const loadFilterInfo = async () => {
     let fac = await APIs.get(endpoints["faculty-list"]);
     let art = await APIs.get(endpoints["article-list"]);
-    setActivities(res.data);
-    setFilteredActivities(res.data);
     setFaculty(fac.data);
     setArticle(art.data);
-  };
+  }
+
+  const loadMore = () => {
+    setPage(page + 1);
+  }
 
   const FilteredActivities = () => {
     let updatedActivities = activities;
@@ -77,7 +90,6 @@ const Home = () => {
       const now = new Date();
       if (selectedTime === "day") {
         const current = Date.parse(now);
-        console.log(current);
         updatedActivities = updatedActivities.filter((a) => {
           return current > a.startDateTime && current < a.endDateTime;
         });
@@ -105,10 +117,20 @@ const Home = () => {
     FilteredActivities();
   }, [selectedFaculty, selectedArticle, selectedTime]);
 
+  useEffect(() => {
+    loadFilterInfo();
+  }, []);
 
   useEffect(() => {
-    load();
-  }, []);
+    load(page);
+  }, [page]);
+
+  // const updateTotalPages = (newActivities) => {
+  //   const currentPageFull = newActivities.length === pageSize;
+  //   if (currentPageFull) {
+  //     setTotalPages((prevTotalPages) => prevTotalPages + 1);
+  //   }
+  // };
 
   return (
     <>
@@ -201,6 +223,7 @@ const Home = () => {
             ))}
           </tbody>
         </Table>
+        {!loadedFull && <LoadMore objName="hoạt động" handleLoadMore={loadMore} />}
       </Container>
     </>
   );

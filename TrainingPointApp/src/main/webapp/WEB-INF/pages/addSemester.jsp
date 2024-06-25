@@ -6,6 +6,7 @@
 <c:url value="/semester/add" var="action" />
 <div>${semester.id}</div>
 <form:form method="post" action="${action}" modelAttribute="semester" enctype="multipart/form-data">
+    <form:errors path="*" cssClass="text text-danger" />
     <!-- Form fields for Student Assistant -->
     <div class="form-floating mb-3 mt-3">
         <form:input class="form-control" path="semesterName" placeholder="Tên Học Kỳ" />

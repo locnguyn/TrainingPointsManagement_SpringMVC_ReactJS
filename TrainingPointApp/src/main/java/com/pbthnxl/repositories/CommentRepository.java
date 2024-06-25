@@ -12,7 +12,7 @@ import java.util.List;
  * @author hieu
  */
 public interface CommentRepository {
-    List<Comment> getCommentsByActivityId(int activityId);
+    List<Comment> getCommentsByActivityId(int activityId, int page);
     void saveOrUpdate(Comment comment);
     void delete(int id);
     Comment getCommentById(int id);

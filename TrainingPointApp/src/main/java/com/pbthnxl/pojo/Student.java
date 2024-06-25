@@ -4,6 +4,7 @@
  */
 package com.pbthnxl.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pbthnxl.validator.UniqueStudentCode;
 import java.io.Serializable;
 import java.util.Set;
@@ -61,8 +62,10 @@ public class Student implements Serializable {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @OneToOne(optional = false)
     private User userId;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentId")
     private Set<ReportMissing> reportMissingSet;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentId")
     private Set<Registration> registrationSet;
 
