@@ -13,6 +13,7 @@ import com.pbthnxl.services.ActivityService;
 import com.pbthnxl.services.RegistrationService;
 import com.pbthnxl.services.ReportMissingService;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,9 +74,9 @@ public class ReportMissingServiceImpl implements ReportMissingService{
     }
 
     @Override
-    public List<ReportMissingDTO> getStudentReportMissings(int studentId) {
+    public List<ReportMissingDTO> getStudentReportMissings(int studentId, Map<String, String> params) {
         
-        return this.reportMissingRepository.getStudentReportMissings(studentId).stream().map(this::convertToDTO).collect(Collectors.toList());
+        return this.reportMissingRepository.getStudentReportMissings(studentId, params).stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     @Override

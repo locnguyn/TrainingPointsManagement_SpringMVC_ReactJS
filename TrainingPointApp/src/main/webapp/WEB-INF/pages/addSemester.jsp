@@ -2,7 +2,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<h1 class="text-center text-info m-4">Thêm trợ lý sinh viên</h1>
+<h1 class="text-center text-info m-4">Thêm học kỳ</h1>
 <c:url value="/semester/add" var="action" />
 <div>${semester.id}</div>
 <form:form method="post" action="${action}" modelAttribute="semester" enctype="multipart/form-data">

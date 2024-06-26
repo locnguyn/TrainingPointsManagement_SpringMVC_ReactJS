@@ -44,9 +44,9 @@ function App() {
     };
 
     const handleBeforeUnload = (e) => {
-      // e.preventDefault();
+      e.preventDefault();
       setOffline();
-      // e.returnValue = true;
+      e.returnValue = true;
     };
 
     const intervalId = setInterval(updateUserStatus, UPDATE_INTERVAL_MS);

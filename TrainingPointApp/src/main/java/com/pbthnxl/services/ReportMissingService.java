@@ -7,6 +7,7 @@ package com.pbthnxl.services;
 import com.pbthnxl.dto.ReportMissingDTO;
 import com.pbthnxl.pojo.ReportMissing;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -14,7 +15,7 @@ import java.util.List;
  */
 public interface ReportMissingService {
     List<ReportMissing> getReportMissings();
-    List<ReportMissingDTO> getStudentReportMissings(int studentId);
+    List<ReportMissingDTO> getStudentReportMissings(int studentId, Map<String, String> params);
     void confirmReportMissingById(int id);
     void rejectReportMissingById(int id);
     void save(ReportMissing r);

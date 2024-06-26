@@ -231,9 +231,9 @@ public class ApiPaymentController {
     @PostMapping("/paypal/create/")
     public ResponseEntity<String> paypalCreateOrder(@RequestParam Map<String, String> params) {
         if (params.containsKey("amount") && params.containsKey("access_token")) {
-//            String url = "https://api-m.sandbox.paypal.com/v2/checkout/orders";
-            String return_url = env.getProperty("paypal.return_url");
-            String cancel_url = env.getProperty("paypal.cancel_url");
+            String url = "https://api-m.sandbox.paypal.com/v2/checkout/orders";
+            String return_url = env.getProperty("base_url") + env.getProperty("paypal.return_url");
+            String cancel_url = env.getProperty("base_url") + env.getProperty("paypal.cancel_url");
             String currencyCode = "USD";
             RestTemplate restTemplate = new RestTemplate();
 
@@ -249,7 +249,7 @@ public class ApiPaymentController {
 
             HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-            ResponseEntity<String> response = restTemplate.postForEntity(env.getProperty("paypal.create_order"), request, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         }

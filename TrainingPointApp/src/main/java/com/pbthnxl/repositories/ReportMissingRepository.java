@@ -6,6 +6,7 @@ package com.pbthnxl.repositories;
 
 import com.pbthnxl.pojo.ReportMissing;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public interface ReportMissingRepository {
     List<ReportMissing> getReportMissings();
-    List<ReportMissing> getStudentReportMissings(int studentId);
+    List<ReportMissing> getStudentReportMissings(int studentId,  Map<String, String> params);
     void confirmReportMissingById(int id);
     void rejectReportMissingById(int id);
     void save(ReportMissing r);

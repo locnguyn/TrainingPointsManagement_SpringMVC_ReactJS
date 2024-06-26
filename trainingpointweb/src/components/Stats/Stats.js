@@ -234,10 +234,12 @@ const Stats = () => {
                         display: true,
                         text: `Kết quả rèn luyện: ${totalConfirmedPoints}đ`,
                         position: "bottom",
+                        color: "red",
                         font: {
                           size: 20,
                           family: "Arial",
                           weight: "bold",
+                          
                         },
                       },
                     },

@@ -64,14 +64,6 @@ public class RegistrationServiceImpl implements RegistrationService {
     public List<RegistrationDTO> findRegistrationsByStudentIdDTO(int id, Map<String, String> params) {
         List<Registration> list = this.registrationRepository.findRegistrationsByStudentId(id, params);
 
-        if (params.containsKey("semesterId")) {
-            List<Registration> filteredList = this.registrationRepository.
-                    filterRegistrationsBySemester(list, this.semesterService.
-                            getSemesterById(Integer.parseInt(params.get("semesterId"))).getId());
-
-            return filteredList.stream().map(this::convertToDTO).collect(Collectors.toList());
-        }
-
         return list.stream().map(this::convertToDTO).collect(Collectors.toList());
 
     }

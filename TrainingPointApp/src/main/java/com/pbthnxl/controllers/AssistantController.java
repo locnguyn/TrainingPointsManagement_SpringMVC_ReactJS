@@ -200,7 +200,7 @@ public class AssistantController {
     }
     
     @GetMapping("/students/{studentId}")
-    public String details(@PathVariable(value = "studentId") int studentId, Principal p, Model model) {
+    public String details(@PathVariable(value = "studentId") int studentId,  Map<String, String> params, Principal p, Model model) {
         if (p == null) {
             return "redirect:/";
         }
@@ -211,7 +211,7 @@ public class AssistantController {
         Student s = this.studentService.getStudentById(studentId);
         model.addAttribute("student", s);
         model.addAttribute("registrations", this.registrationService.findRegistrationsByStudentIdDTO(studentId, new HashMap<>()));
-        model.addAttribute("reports", this.reportMissingService.getStudentReportMissings(studentId));
+        model.addAttribute("reports", this.reportMissingService.getStudentReportMissings(studentId, params));
         model.addAttribute("articles", this.articleService.getArticles());
         return "studentDetails";
     }

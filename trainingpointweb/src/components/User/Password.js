@@ -7,8 +7,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { updatePasswordFirebase } from "../../configs/firebase";
 import Validate from "../../Utils/Validate";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 
 const Password = () => {
   const { user } = useContext(MyUserContext);
@@ -58,14 +57,13 @@ const Password = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      if (res.status === 200) {
+      
         await updatePasswordFirebase(userInfo.new_password);
         toast.success("Cập nhật thành công");
         dispatch({
           type: "logout",
         });
         setLogout(true);
-      }
     } catch (ex) {
       if (ex.response.status === 400) toast.error("Sai Mật Khẩu");
       else toast.error(ex);

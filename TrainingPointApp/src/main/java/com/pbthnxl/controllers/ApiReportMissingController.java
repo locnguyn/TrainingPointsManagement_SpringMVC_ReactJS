@@ -95,11 +95,16 @@ public class ApiReportMissingController {
 
     @CrossOrigin
     @GetMapping(path = "/student-reports/")
-    public ResponseEntity<List<ReportMissingDTO>> getUserReports(Principal p) {
-
+    public ResponseEntity<List<ReportMissingDTO>> getUserReports(@RequestParam Map<String, String> params, Principal p) {
+        
         if (p != null) {
+            String page = params.get("page");
+            int pg =0;
+            if(page != null && !page.isEmpty()){
+                pg = Integer.parseInt(page);
+            }
             return new ResponseEntity<>(this.reportService.getStudentReportMissings(this.userService
-                    .getUserByUsername(p.getName()).getStudent().getId()), HttpStatus.OK);
+                    .getUserByUsername(p.getName()).getStudent().getId(), params), HttpStatus.OK);
         }
 
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

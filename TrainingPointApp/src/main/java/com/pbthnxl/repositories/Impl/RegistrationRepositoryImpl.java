@@ -38,6 +38,8 @@ import org.apache.commons.csv.CSVRecord;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +51,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Repository
 @Transactional
+@PropertySource("classpath:configs.properties")
 public class RegistrationRepositoryImpl implements RegistrationRepository {
 
     @Autowired
@@ -62,13 +65,16 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
 
     @Autowired
     private ReportMissingRepository reportRepo;
-    
+
     @Autowired
     private SemesterService semesterService;
 
     @Autowired
     private SemesterRepository semesterRepo;
-    
+
+    @Autowired
+    private Environment env;
+
     @Override
     public void save(Registration registration) {
         Session s = factory.getObject().getCurrentSession();
@@ -145,46 +151,34 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
     @Override
     public List<Registration> findRegistrationsByStudentId(int id, Map<String, String> params) {
         Session s = factory.getObject().getCurrentSession();
-        CriteriaBuilder b = s.getCriteriaBuilder();
-        CriteriaQuery<Registration> q = b.createQuery(Registration.class);
-        Root<Registration> r = q.from(Registration.class);
 
-        q.select(r);
+        StringBuilder hql = new StringBuilder("FROM Registration r WHERE r.studentId.id = :studentId");
 
-        List<Predicate> predicates = new ArrayList();
-        
-        predicates.add(b.equal(r.get("studentId"), id));
-
-        //kiem tra dang ky  nam trong hk nao
-        String date = params.get("currentDate");
-        if (date != null && !date.isEmpty()) {
-            List<Semester> semesters = this.semesterRepo.getSemesters();
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
-
-            Date currentDate;
-            try {
-                currentDate = formatter.parse(params.get("currentDate"));
-                System.out.println(currentDate);
-
-                for (Semester sem : semesters) {
-                    if (currentDate.after(sem.getStartDate()) && currentDate.before(sem.getEndDate())) {
-                        predicates.add(b.and(
-                                b.greaterThanOrEqualTo(r.get("registrationDate"), sem.getStartDate()),
-                                b.lessThanOrEqualTo(r.get("registrationDate"), sem.getEndDate())
-                        ));
-
-                    }
-                }
-            } catch (ParseException ex) {
-                ex.printStackTrace();
-            }
-
+        // loc theo hoc ky
+        if (params.containsKey("semesterId")) {
+            hql.append(" AND EXISTS (");
+            hql.append("SELECT 1 FROM Semester sem WHERE sem.id = :semesterId");
+            hql.append(" AND r.registrationDate BETWEEN sem.startDate AND sem.endDate)");
         }
 
-        q.where(predicates.toArray(new Predicate[0]));
-        q.orderBy(b.desc(r.get("registrationDate")));
+        hql.append(" ORDER BY r.registrationDate DESC");
 
-        Query query = s.createQuery(q);
+        Query<Registration> query = s.createQuery(hql.toString(), Registration.class);
+        query.setParameter("studentId", id);
+
+        if (params.containsKey("semesterId")) {
+            query.setParameter("semesterId", Integer.parseInt(params.get("semesterId")));
+        }
+
+        // Pagination
+        String page = params.get("page");
+        if (page != null && !page.isEmpty()) {
+            int pageSize = Integer.parseInt(env.getProperty("default.pageSize"));
+            int pg = Integer.parseInt(page);
+            int start = (pg - 1) * pageSize;
+            query.setFirstResult(start);
+            query.setMaxResults(pageSize);
+        }
 
         return query.getResultList();
     }
@@ -223,17 +217,17 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
         }
 
     }
-    
+
     @Override
     public Registration findRegistrationOwner(int studentId, int registrationId) {
         Session s = factory.getObject().getCurrentSession();
-        
-        Query<Registration> q = s.createQuery("SELECT r FROM Registration r " +
-                                "WHERE r.id = :registrationId AND r.studentId.id = :studentId", Registration.class);
-        
+
+        Query<Registration> q = s.createQuery("SELECT r FROM Registration r "
+                + "WHERE r.id = :registrationId AND r.studentId.id = :studentId", Registration.class);
+
         q.setParameter("studentId", studentId);
         q.setParameter("registrationId", registrationId);
-        
+
         return q.getSingleResult();
     }
 

@@ -10,10 +10,13 @@ import com.pbthnxl.pojo.User;
 import com.pbthnxl.repositories.ReportMissingRepository;
 import com.pbthnxl.repositories.UserRepository;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 @Repository
 @Transactional
+@PropertySource("classpath:configs.properties")
 public class ReportMissingRepositoryImpl implements ReportMissingRepository {
 
     @Autowired
@@ -34,6 +38,9 @@ public class ReportMissingRepositoryImpl implements ReportMissingRepository {
 
     @Autowired
     private UserRepository userRepo;
+    
+    @Autowired
+    private Environment env;
 
     @Override
     public List<ReportMissing> getReportMissings() {
@@ -119,11 +126,38 @@ public class ReportMissingRepositoryImpl implements ReportMissingRepository {
     }
 
     @Override
-    public List<ReportMissing> getStudentReportMissings(int studentId) {
+    public List<ReportMissing> getStudentReportMissings(int studentId,  Map<String, String> params) {
         Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createNamedQuery("ReportMissing.findByStudentId");
-        q.setParameter("studentId", studentId);
-        return q.getResultList();
+        
+        StringBuilder hql = new StringBuilder("FROM ReportMissing r WHERE r.studentId.id = :studentId");
+        
+        //loc theo hoc ky
+        if(params.containsKey("semesterId")){
+            hql.append(" AND EXISTS (");
+            hql.append("SELECT 1 FROM Semester sem WHERE sem.id = :semesterId");
+            hql.append(" AND r.reportDate BETWEEN sem.startDate AND sem.endDate)");
+        }
+        
+        hql.append(" ORDER BY r.reportDate");
+        
+        Query<ReportMissing> query = s.createQuery(hql.toString(), ReportMissing.class);
+        query.setParameter("studentId", studentId);
+        
+        if (params.containsKey("semesterId")) {
+            query.setParameter("semesterId", Integer.parseInt(params.get("semesterId")));
+        }
+        
+        //pagination
+        String page = params.get("page");
+        if (page != null && !page.isEmpty()) {
+            int pageSize = Integer.parseInt(env.getProperty("default.pageSize"));
+            int pg = Integer.parseInt(page);
+            int start = (pg - 1) * pageSize;
+            query.setFirstResult(start);
+            query.setMaxResults(pageSize);
+        }
+        
+        return query.getResultList();
     }
 
     @Override

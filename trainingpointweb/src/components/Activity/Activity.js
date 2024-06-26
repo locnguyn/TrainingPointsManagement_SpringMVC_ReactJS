@@ -22,11 +22,14 @@ import { FaMinusCircle } from "react-icons/fa";
 import toast from "react-hot-toast";
 import MyModal from "../Common/Modal";
 import { useSearchParam } from "react-use";
+import { defaultPageSize } from "../../configs/configs";
+import LoadMore from "../Common/LoadMore";
 
 const Activity = () => {
   const { user } = useContext(MyUserContext);
-  const [activites, setActivities] = useState([]);
-  const [semseter, setSemester] = useState([]);
+  const [activities, setActivities] = useState([]);
+  const [semester, setSemester] = useState([]);
+  const [article, setArticle] = useState([]);
   const [filterActivities, setFilterActivities] = useState([]);
   const nav = useNavigate();
   const location = useLocation();
@@ -34,53 +37,76 @@ const Activity = () => {
   const [previewURL, setPreviewURL] = useState(null);
   const [show, setShow] = useState(false);
   const [acPartType, setAcPartType] = useState();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [page, setPage] = useState(1);
+  const [loadedFull, setLoadedFull] = useState(false);
+  const [selectedSemester, setSelectedSemester] = useState();
 
-  const loadActivity = async (filters = {}) => {
+  const loadActivity = async (page = 1) => {
+    if (semester.length === 0) return;
+    const params = new URLSearchParams();
     try {
-      // lay ds semester
-      let sem = await APIs.get(endpoints["semester-list"]);
-      if (sem.status === 200) {
-        setSemester(sem.data);
+      // lay hk moi nhat
+      const latestSemester = semester[semester.length - 1].id;
 
-        // lay hk moi nhat
-        const latestSemester = sem.data[sem.data.length - 1].id;
+       
+      if (page) {
+        params.set("page", page);
+      }
+      if (latestSemester) {
+        params.set("semesterId", latestSemester);
+      }
+      if (selectedSemester) {
+        params.set("semesterId", selectedSemester);
+      }
 
-        if (!filters.semesterId) {
-          filters.semesterId = latestSemester;
-          const newSearchParams = new URLSearchParams(filters);
-          setSearchParams(newSearchParams);
-        }
+      let res = await authApi().get(
+        `${endpoints["user-registration"]}?${params}`
+      );
 
-        let params = new URLSearchParams(filters);
-        let res = await authApi().get(
-          `${endpoints["user-registration"]}?${params}`
+      if (res.status === 200) {
+        const newActivities = res.data || [];
+        setActivities((prevActivities) =>
+          page === 1 ? newActivities : [...prevActivities, ...newActivities]
         );
-
-        if (res.status === 200) {
-          setActivities(res.data);
-          setFilterActivities(res.data);
-        }
+        setFilterActivities((prevFilterActivities) =>
+          page === 1
+            ? newActivities
+            : [...prevFilterActivities, ...newActivities]
+        );
+        updateTotalPages(newActivities.length < defaultPageSize);
       }
     } catch (ex) {
       console.log(ex);
     }
   };
 
-  const updateFilter = (key, value) => {
-    searchParams.set(key, value);
-    setSearchParams(searchParams);
+  const updateTotalPages = (noMorePages) => {
+    if (noMorePages) setLoadedFull(true);
+  };
+
+  const loadMore = () => {
+    setPage(page + 1);
+  };
+
+  const loadSemester = async () => {
+    try {
+      let sem = await APIs.get(endpoints["semester-list"]);
+      let arti = await APIs.get(endpoints["article-list"]);
+      setSemester(sem.data);
+      setArticle(arti.data);
+    } catch (ex) {
+      console.error(ex);
+    }
   };
 
   const delRegistration = async (e, registrationId) => {
     e.preventDefault();
 
-    const confirmed = window.confirm("Bạn có chắc muốn xóa?")
-    if(!confirmed) return;
+    const confirmed = window.confirm("Bạn có chắc muốn xóa?");
+    if (!confirmed) return;
 
     try {
       let res = await toast.promise(
-
         authApi().delete(endpoints["registration-delete"](registrationId)),
         {
           loading: "Loading",
@@ -100,7 +126,9 @@ const Activity = () => {
   };
 
   const FilterActivities = (article) => {
-    setFilterActivities(activites.filter((a) => a.activity.article == article));
+    setFilterActivities(
+      activities.filter((a) => a.activity.article == article)
+    );
   };
 
   const Close = () => {
@@ -149,12 +177,26 @@ const Activity = () => {
   };
 
   useEffect(() => {
+    loadSemester();
+  }, []);
+
+  useEffect(() => {
+    loadActivity(page);
+  }, [page, selectedSemester]);
+
+  useEffect(() => {
     if (user === null) {
       nav("/login", { state: { from: location } });
     }
-    let filters = Object.fromEntries([...searchParams]);
-    loadActivity(filters);
-  }, [user, nav, location, searchParams]);
+    loadActivity(page);
+  }, [user, nav, location, semester]);
+
+  useEffect(() => {
+    setActivities([]);
+    setFilterActivities([]);
+    setPage(1);
+    setLoadedFull(false);
+  }, [selectedSemester]);
   return (
     <>
       {user !== null && (
@@ -163,10 +205,10 @@ const Activity = () => {
           <Dropdown className="mb-3">
             <Dropdown.Toggle variant="success">Học Kỳ</Dropdown.Toggle>
             <Dropdown.Menu>
-              {semseter.map((s) => (
+              {semester.map((s) => (
                 <Dropdown.Item
                   key={s.id}
-                  onClick={() => updateFilter("semesterId", s.id)}
+                  onClick={() => setSelectedSemester(s.id)}
                 >
                   {s.semesterName}
                 </Dropdown.Item>
@@ -178,17 +220,16 @@ const Activity = () => {
             id="uncontrolled-tab-example"
             className="mb-3"
             onSelect={(k) => {
-              if (k === "default") setFilterActivities(activites);
+              if (k === "default") setFilterActivities(activities);
               else FilterActivities(k);
             }}
           >
             <Tab eventKey="default" title="Tất cả"></Tab>
-            <Tab eventKey="Điều 1" title="Điều 1"></Tab>
-            <Tab eventKey="Điều 2" title="Điều 2"></Tab>
-            <Tab eventKey="Điều 3" title="Điều 3"></Tab>
-            <Tab eventKey="Điều 4" title="Điều 4"></Tab>
-            <Tab eventKey="Điều 5" title="Điều 5"></Tab>
-            <Tab eventKey="Điều 6" title="Điều 6"></Tab>
+            {article &&
+              article.length > 0 &&
+              article.map((a) => (
+                <Tab key={a.id} eventKey={a.name} title={a.name}></Tab>
+              ))}
           </Tabs>
           <Table responsive="sm" striped bordered hover className="p-3a m-3">
             <thead>
@@ -265,6 +306,9 @@ const Activity = () => {
               ))}
             </tbody>
           </Table>
+          {!loadedFull && (
+            <LoadMore objName="hoạt động" handleLoadMore={loadMore} />
+          )}
           <MyModal
             Show={show}
             Close={Close}

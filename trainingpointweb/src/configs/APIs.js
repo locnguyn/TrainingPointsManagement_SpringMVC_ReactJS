@@ -1,7 +1,7 @@
 import axios from "axios";
 import cookie from "react-cookies";
-const BASE_URL = "http://localhost:8080/TrainingPointApp/";
-// const BASE_URL = "http://18.141.12.170:8080/TrainingPointApp-1.0-SNAPSHOT/";
+// const BASE_URL = "http://localhost:8080/TrainingPointApp/";
+const BASE_URL = "http://18.141.12.170:8080/TrainingPointApp-1.0-SNAPSHOT/";
 const PAY_PAL = "https://api-m.sandbox.paypal.com/";
 const CLIENT_ID =
   "AdUJsj4oizEC1GPXkuRs25s-024YionolowWse7xtfDPoeAZpKSk6LE7YUyO0-JKCRtSxn-89QMrKk-F";

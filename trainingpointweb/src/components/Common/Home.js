@@ -123,13 +123,6 @@ const Home = () => {
     load(page);
   }, [page]);
 
-  // const updateTotalPages = (newActivities) => {
-  //   const currentPageFull = newActivities.length === pageSize;
-  //   if (currentPageFull) {
-  //     setTotalPages((prevTotalPages) => prevTotalPages + 1);
-  //   }
-  // };
-
   return (
     <>
       <Container className="home-container">
