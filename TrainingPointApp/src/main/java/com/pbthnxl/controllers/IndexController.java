@@ -75,6 +75,9 @@ public class IndexController {
     @GetMapping("/")
     public String index(Model model,
             @RequestParam Map<String, String> params) {
+        if(!params.containsKey("page")){
+            params.put("page", "1");
+        }
         model.addAttribute("activities", this.activityService.findFilteredActivities(params));
         model.addAttribute("articles", this.articleService.getArticles());
         return "index";

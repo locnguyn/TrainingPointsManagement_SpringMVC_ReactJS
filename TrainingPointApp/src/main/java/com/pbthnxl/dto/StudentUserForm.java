@@ -23,6 +23,7 @@ public class StudentUserForm {
     @UniqueEmail(message = "{user.UniqueEmail.message}")
     @NotEmpty(message = "{user.email.nullErr}")
     @Email(message = "{user.email.invalid}")
+    @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="{user.email.invalid}")
     private String email;
 
     @NotEmpty(message = "{user.phoneNumber.emptyErr}")

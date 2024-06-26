@@ -18,6 +18,7 @@ import com.pbthnxl.services.UserService;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -85,7 +87,7 @@ public class AssistantController {
     }
 
     @GetMapping("/students")
-    public String studentList(Model model, Principal p) {
+    public String studentList(Model model, Principal p, @RequestParam Map<String, String> params) {
         if (p == null) {
             return "redirect:/";
         }
@@ -93,7 +95,11 @@ public class AssistantController {
         if (user == null || user.getUserRole().equals("ROLE_USER")) {
             return "redirect:/";
         }
-        model.addAttribute("students", studentService.getStudentList(user.getUserRole().equals("ROLE_ASSISTANT")?user.getStudent().getFacultyId().getId():0));
+        int page = 1;
+        if(params.containsKey("page")){
+            page = Integer.parseInt(params.get("page"));
+        }
+        model.addAttribute("students", studentService.getStudentList(user.getUserRole().equals("ROLE_ASSISTANT")?user.getStudent().getFacultyId().getId():0, page));
         return "students";
     }
 

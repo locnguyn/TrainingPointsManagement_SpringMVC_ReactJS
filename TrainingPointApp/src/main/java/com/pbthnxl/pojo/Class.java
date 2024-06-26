@@ -44,7 +44,7 @@ public class Class implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @NotNull
+    @NotNull(message = "{class.name.nullErr}")
     @Size(min = 1, max = 10)
     @Column(name = "name")
     @UniqueClassName(message = "{class.UniqueName.message}")

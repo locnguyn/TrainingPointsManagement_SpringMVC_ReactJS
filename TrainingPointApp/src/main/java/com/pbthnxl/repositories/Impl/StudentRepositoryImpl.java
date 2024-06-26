@@ -10,6 +10,8 @@ import java.util.List;
 import javax.persistence.Query;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional
+@PropertySource("classpath:configs.properties")
 public class StudentRepositoryImpl implements StudentRepository {
 
     @Autowired
     private LocalSessionFactoryBean factory;
+
+    @Autowired
+    private Environment env;
 
     @Override
     public boolean isExistingStudentCode(String studentCode) {
@@ -67,22 +73,35 @@ public class StudentRepositoryImpl implements StudentRepository {
     }
 
     @Override
-    public List<Student> getStudentList(int facultyId) {
+    public List<Student> getStudentList(int facultyId, int page) {
         Session s = this.factory.getObject().getCurrentSession();
-        if(facultyId == 0){
+        if (facultyId == 0) {
             Query query = s.createNamedQuery("Student.findAll", Student.class);
+            if (page != 0) {
+                int pageSize = Integer.parseInt(env.getProperty("student.pageSize").toString());
+                int start = (page - 1) * pageSize;
+                query.setFirstResult(start);
+                query.setMaxResults(pageSize);
+            }
             return query.getResultList();
         }
         String hql = "SELECT s FROM Student s WHERE s.facultyId.id = :facultyId";
         Query query = s.createQuery(hql, Student.class);
         query.setParameter("facultyId", facultyId);
+        if (page != 0) {
+            int pageSize = Integer.parseInt(env.getProperty("student.pageSize").toString());
+            int start = (page - 1) * pageSize;
+            System.out.println(start + "_________________" + pageSize);
+            query.setFirstResult(start);
+            query.setMaxResults(pageSize);
+        }
         return query.getResultList();
     }
 
     @Override
     public Student getStudentById(int id) {
         Session s = this.factory.getObject().getCurrentSession();
-        
+
         return s.get(Student.class, id);
     }
 

@@ -33,7 +33,6 @@ const Home = () => {
   const [faculty, setFaculty] = useState([]);
   const [article, setArticle] = useState([]);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [loadedFull, setLoadedFull] = useState(false);
   const nav = useNavigate();
 
@@ -57,7 +56,6 @@ const Home = () => {
 
   const updateTotalPages = (noMorePages) => {
     if (noMorePages) setLoadedFull(true);
-    setTotalPages((prevTotalPages) => (noMorePages ? prevTotalPages + 1 : prevTotalPages));
   }
 
   const loadFilterInfo = async () => {

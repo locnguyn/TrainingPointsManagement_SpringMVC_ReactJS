@@ -66,10 +66,7 @@ const Login = () => {
       );
       cookie.save("token", res.data);
       let u = await authApi().get(endpoints["current-user"]);
-      let a = await authApi().get(endpoints["user-registration"]);
-      let report = await authApi().get(endpoints["user-report"]);
-      console.log(a.data);
-      handleLoginFirebase(u.data.email, userInfo.password);
+      handleLoginFirebase(u.data.email, userInfo.password, u.data);
       dispatch({
         type: "login",
         payload: u.data,

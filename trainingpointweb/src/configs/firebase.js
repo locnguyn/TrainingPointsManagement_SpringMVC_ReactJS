@@ -218,6 +218,7 @@ export const setUserData = (userId, data) => {
 };
 
 export const updateUserData = (userId, data) => {
+    console.log(data);
     const userRef = ref(database, 'users/' + userId);
     update(userRef, { ...data });
 };
@@ -259,13 +260,18 @@ export const handleRegisterFirebase = async (email, password, role, firstName, l
     }
 };
 
-export const handleLoginFirebase = async (email, password) => {
+export const handleLoginFirebase = async (email, password, userInfo) => {
+    console.log(userInfo)
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         updateUserData(encodeEmail(user.email), {
             status: "online",
-            lastActive: new Date()
+            lastActive: new Date(),
+            avatar: userInfo.avatar,
+            firstName: userInfo.firstName,
+            lastName: userInfo.lastName,
+            user_role: userInfo.role,
         });
     } catch (e) {
         console.error(e);

@@ -46,7 +46,7 @@ public class Semester implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @NotNull
+    @NotNull(message = "{semester.name.nullErr}")
     @Column(name = "semester_name")
     @UniqueSemesterName(message = "{semester.UniqueName.message}")
     private int semesterName;

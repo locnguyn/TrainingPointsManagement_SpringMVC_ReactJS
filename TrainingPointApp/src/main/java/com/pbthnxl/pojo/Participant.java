@@ -42,9 +42,11 @@ public class Participant implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Size(max = 20)
+    @Basic(optional = false)
+    @Size(max = 20, message = "{participant.name.sizeErr}")
     @UniqueParticipantName(message = "{participant.UniqueName.message}")
     @Column(name = "name")
+    @NotNull(message = "{participant.name.nullErr}")
     private String name;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "participantId")
     private Set<Activity> activitySet;

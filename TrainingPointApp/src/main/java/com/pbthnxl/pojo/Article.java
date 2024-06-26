@@ -43,7 +43,7 @@ public class Article implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @NotNull
+    @NotNull(message = "{article.name.nullErr}")
     @Size(min = 1, max = 10)
     @Column(name = "name")
     private String name;

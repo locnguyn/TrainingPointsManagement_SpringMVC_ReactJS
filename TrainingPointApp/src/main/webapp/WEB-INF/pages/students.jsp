@@ -126,6 +126,50 @@
             <img class="modal-content" id="img01">
         </div>
 
+        <div class="d-flex justify-content-center">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" id="pre" aria-label="Previous" style="cursor: pointer" onclick="goPre()">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=" id="cur">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" id="next" aria-label="Next" style="cursor: pointer" onclick="goNext()">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <script>
+            function goNext() {
+                var curPage = parseInt(document.getElementById("cur").textContent, 10);
+                var nextPage = curPage + 1;
+                document.getElementById("cur").textContent = nextPage;
+                window.location.href = "?page=" + nextPage;
+            }
+
+            function goPre() {
+                var curPage = parseInt(document.getElementById("cur").textContent, 10);
+                if (curPage > 1) {
+                    var prevPage = curPage - 1;
+                    document.getElementById("cur").textContent = prevPage;
+                    window.location.href = "?page=" + prevPage;
+                }
+            }
+
+            // This part of the script makes sure the current page number is correctly reflected in the URL and element.
+            document.addEventListener("DOMContentLoaded", function () {
+                const urlParams = new URLSearchParams(window.location.search);
+                const page = urlParams.get('page') || 1;
+                document.getElementById("cur").textContent = page;
+            });
+        </script>
         <script>
             function filterTable() {
                 const searchInput = document.getElementById('searchInput');

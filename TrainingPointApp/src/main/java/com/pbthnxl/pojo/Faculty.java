@@ -44,7 +44,7 @@ public class Faculty implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @NotNull
+    @NotNull(message = "{faculty.name.nullErr}")
     @Size(min = 1, max = 100)
     @Column(name = "name")
     @UniqueFacultyName(message = "{faculty.UniqueName.message}")

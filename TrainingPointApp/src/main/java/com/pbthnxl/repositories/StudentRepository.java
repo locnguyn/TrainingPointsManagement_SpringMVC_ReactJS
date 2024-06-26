@@ -16,6 +16,6 @@ public interface StudentRepository {
     void saveStudent(Student student);
     List<Student> findAllAssistants();
     public Student findByStudentCode(String studentCode);
-    List<Student> getStudentList(int facultyId);
+    List<Student> getStudentList(int facultyId, int page);
     Student getStudentById(int id);
 }
