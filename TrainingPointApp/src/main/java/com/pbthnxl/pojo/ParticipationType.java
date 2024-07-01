@@ -4,6 +4,7 @@
  */
 package com.pbthnxl.pojo;
 
+import com.pbthnxl.validator.UniqueParticipationTypeName;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -42,9 +43,10 @@ public class ParticipationType implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 20)
+    @NotNull(message = "{participationType.name.nullErr}")
+    @Size(max = 20, message = "{participationType.name.sizeErr}")
     @Column(name = "name")
+    @UniqueParticipationTypeName(message = "{participationType.UniqueName.message}")
     private String name;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "participationTypeId")
     private Set<ActivityParticipationType> activityParticipationTypeSet;

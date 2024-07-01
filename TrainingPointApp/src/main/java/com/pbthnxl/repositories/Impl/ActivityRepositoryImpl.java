@@ -5,12 +5,19 @@
 package com.pbthnxl.repositories.Impl;
 
 import com.pbthnxl.pojo.Activity;
+import com.pbthnxl.pojo.Semester;
 import com.pbthnxl.repositories.ActivityRepository;
+import com.pbthnxl.repositories.SemesterRepository;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -35,6 +42,8 @@ public class ActivityRepositoryImpl implements ActivityRepository {
 
     @Autowired
     private LocalSessionFactoryBean factory;
+    @Autowired
+    private SemesterRepository semesterRepo;
 
     @Autowired
     private Environment env;
@@ -43,7 +52,8 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     public List<Activity> getActivities() {
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createNamedQuery("Activity.findAll");
-        return q.getResultList();
+        List<Activity> ac = q.getResultList();
+        return ac;
     }
 
     @Override
@@ -71,6 +81,11 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         q.select(r);
 
         List<Predicate> predicates = new ArrayList<>();
+
+        String kw = params.get("kw");
+        if (kw != null && !kw.isEmpty()) {
+            predicates.add(b.like(r.get("name"), String.format("%%%s%%", kw)));
+        }
 
         String facultyId = params.get("faculty");
         if (facultyId != null && !facultyId.isEmpty()) {
@@ -112,6 +127,32 @@ public class ActivityRepositoryImpl implements ActivityRepository {
             ));
         }
 
+        //kiem tra hoat dong nam trong hk nao
+        String date = params.get("currentDate");
+        if (date != null && !date.isEmpty()) {
+            List<Semester> semesters = this.semesterRepo.getSemesters();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+
+            Date currentDate;
+            try {
+                currentDate = formatter.parse(params.get("currentDate"));
+                System.out.println(currentDate);
+
+                for (Semester sem : semesters) {
+                    if (currentDate.after(sem.getStartDate()) && currentDate.before(sem.getEndDate())) {
+                        predicates.add(b.and(
+                                b.greaterThanOrEqualTo(r.get("startDateTime"), sem.getStartDate()),
+                                b.lessThanOrEqualTo(r.get("endDate"), sem.getEndDate())
+                        ));
+
+                    }
+                }
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+
+        }
+
         q.where(predicates.toArray(new Predicate[0]));
         q.orderBy(b.desc(r.get("startDateTime")));
 
@@ -127,5 +168,35 @@ public class ActivityRepositoryImpl implements ActivityRepository {
         }
 
         return query.getResultList();
+    }
+
+    @Override
+    public void deleteActivity(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        Activity activity = s.get(Activity.class, id);
+        if (activity != null) {
+            s.delete(activity);
+        }
+    }
+
+    @Override
+    public int countLikes(int activityId) {
+        Session session = this.factory.getObject().getCurrentSession();
+        org.hibernate.query.Query<Long> query = session.createNamedQuery("Activity.countInteractions", Long.class);
+        query.setParameter("activityId", activityId);
+
+        Long count = query.getSingleResult();
+        return count != null ? count.intValue() : 0;
+    }
+
+    @Override
+    public boolean isUserLikedActivity(Integer activityId, String username) {
+        Session s = this.factory.getObject().getCurrentSession();
+        String query = "SELECT COUNT(i) FROM Interaction i WHERE i.activityId.id = :activityId AND i.userId.username = :username";
+        Long count = s.createQuery(query, Long.class)
+                .setParameter("activityId", activityId)
+                .setParameter("username", username)
+                .getSingleResult();
+        return count > 0;
     }
 }

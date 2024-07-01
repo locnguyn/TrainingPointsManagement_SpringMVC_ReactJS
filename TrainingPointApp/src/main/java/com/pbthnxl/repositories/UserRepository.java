@@ -5,6 +5,7 @@
 package com.pbthnxl.repositories;
 
 import com.pbthnxl.pojo.User;
+import java.util.List;
 
 /**
  *
@@ -12,5 +13,11 @@ import com.pbthnxl.pojo.User;
  */
 public interface UserRepository {
     User getUserByUsername(String username);
+    User getUserByEmail(String email);
+    User getUserById(int id);
     int getIdByUsername(String username);
+    void saveUser(User user);
+    void updateUserRole(int userId, String role);
+    boolean authUser(String username, String password);
+    List<User> getAssistantList();
 }

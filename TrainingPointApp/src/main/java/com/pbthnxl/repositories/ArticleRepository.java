@@ -13,4 +13,8 @@ import java.util.List;
  */
 public interface ArticleRepository {
     List<Article> getArticles();
+    Article getArticleById(int id);
+    void addOrUpdate(Article c);
+    void delete(Article c);
+    Article findByName(String name);
 }

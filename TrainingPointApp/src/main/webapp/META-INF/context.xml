@@ -1,2 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/TrainingPointApp"/>
+<Context path="/TrainingPointApp">
+  <Resource auth="Container" driverClassName="com.mysql.cj.jdbc.Driver" maxActive="20" maxIdle="10" maxWait="-1" name="trainingpointdb" password="Admin@123" type="javax.sql.DataSource" url="jdbc:mysql://localhost:3306/mysql?zeroDateTimeBehavior=CONVERT_TO_NULL" username="root"/>
+  <Resource auth="Container" driverClassName="com.mysql.cj.jdbc.Driver" maxActive="20" maxIdle="10" maxWait="-1" name="trainingpointdb2" password="Admin@123" type="javax.sql.DataSource" url="jdbc:mysql://localhost:3306/trainingpointdb?zeroDateTimeBehavior=CONVERT_TO_NULL" username="root"/>
+</Context>

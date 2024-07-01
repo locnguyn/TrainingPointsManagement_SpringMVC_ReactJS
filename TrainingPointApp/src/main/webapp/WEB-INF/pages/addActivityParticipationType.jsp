@@ -8,14 +8,13 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <h1 class="text-center text-info m-4">QUẢN LÝ HOẠT ĐỘNG NGOẠI KHÓA</h1>
-<c:url value="/add-activity-participation-type" var="action" />
+<c:url value="/activity-participation-type/add" var="action" />
 <form:form method="post" action="${action}" modelAttribute="activityParticipationType" enctype="multipart/form-data">
-    <form:errors path="*" element="div" cssClass="text text-danger" />
     <div class="form-floating mb-3 mt-3">
-        <form:select class="form-select" id="acitivityId"  path="acitivityId">
+        <form:select class="form-select" id="activityId"  path="activityId">
             <c:forEach items="${activities}" var="a">
                 <c:choose>
-                    <c:when test="${a.id==activityParticipationType.acitivityId.id}">
+                    <c:when test="${a.id==activityParticipationType.activityId.id}">
                         <option value="${a.id}" selected>${a.name}</option>
                     </c:when>
                     <c:when test="${a.id==activityId}">
@@ -28,7 +27,7 @@
             </c:forEach>
         </form:select>
         <label for="categoryId" class="form-label">Chọn hoạt động</label>
-        <form:errors path="acitivityId" element="div" cssClass="text text-danger" />
+        <form:errors path="activityId" element="div" cssClass="text text-danger" />
     </div> 
     <div class="form-floating mb-3 mt-3">
         <form:select class="form-select" id="participationTypeId"  path="participationTypeId">

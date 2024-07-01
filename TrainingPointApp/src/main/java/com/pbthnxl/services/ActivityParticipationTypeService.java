@@ -4,8 +4,10 @@
  */
 package com.pbthnxl.services;
 
+import com.pbthnxl.dto.ActivityParticipationTypeDTO;
 import com.pbthnxl.pojo.ActivityParticipationType;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -16,4 +18,9 @@ public interface ActivityParticipationTypeService {
     List<ActivityParticipationType> getActivityParticipationTypesByActivityId(int activityId);
     void addOrUpdate(ActivityParticipationType activityParticipationType);
     ActivityParticipationType getActivityParticipationTypeById(int id);
+    boolean existsByActivityIdAndParticipationTypeId(int activityId, int participationTypeId);
+    ActivityParticipationType getActivityParticipationTypeByActivityIdAndParticipationTypeId(int activityId, int participationTypeId);
+    void deleteActivityParticipationType(int id);
+    List<ActivityParticipationTypeDTO> getActivityParticipationTypeDTOs();
+    ActivityParticipationTypeDTO convertToDTO(ActivityParticipationType type, Boolean isGetReport, int studentId);
 }

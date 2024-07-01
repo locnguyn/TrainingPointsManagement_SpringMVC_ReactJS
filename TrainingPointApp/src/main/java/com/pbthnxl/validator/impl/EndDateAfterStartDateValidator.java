@@ -1,6 +1,7 @@
-package com.pbthnxl.validator;
+package com.pbthnxl.validator.impl;
 
 import com.pbthnxl.pojo.Activity;
+import com.pbthnxl.validator.EndDateAfterStartDate;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

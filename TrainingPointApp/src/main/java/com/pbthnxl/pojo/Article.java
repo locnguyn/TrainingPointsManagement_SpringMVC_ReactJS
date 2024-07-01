@@ -4,6 +4,7 @@
  */
 package com.pbthnxl.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -42,11 +43,12 @@ public class Article implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @NotNull
+    @NotNull(message = "{article.name.nullErr}")
     @Size(min = 1, max = 10)
     @Column(name = "name")
     private String name;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "articleId")
+    @JsonIgnore
     private Set<Activity> activitySet;
 
     public Article() {

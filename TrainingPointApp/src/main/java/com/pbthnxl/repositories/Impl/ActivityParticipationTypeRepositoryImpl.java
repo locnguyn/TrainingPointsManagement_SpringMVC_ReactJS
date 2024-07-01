@@ -21,9 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public class ActivityParticipationTypeRepositoryImpl implements ActivityParticipationTypeRepository {
+
     @Autowired
     private LocalSessionFactoryBean factory;
-    
+
     @Override
     public List<ActivityParticipationType> getActivityParticipationType() {
         Session s = this.factory.getObject().getCurrentSession();
@@ -34,11 +35,19 @@ public class ActivityParticipationTypeRepositoryImpl implements ActivityParticip
     @Override
     public void addOrUpdate(ActivityParticipationType activityParticipationType) {
         Session s = this.factory.getObject().getCurrentSession();
-        if (activityParticipationType.getId() != null){
+
+        if (activityParticipationType.getId() != null) {
+            System.out.println("update");
             s.update(activityParticipationType);
-        }
-        else{
-            s.save(activityParticipationType); 
+        } else {
+            System.out.println("save");
+            try {
+                s.save(activityParticipationType);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                s.clear(); // Clear the session to avoid "don't flush the Session after an exception occurs"
+                throw e;
+            }
         }
     }
 
@@ -53,8 +62,40 @@ public class ActivityParticipationTypeRepositoryImpl implements ActivityParticip
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createNamedQuery("ActivityParticipationType.findByActivityId");
         q.setParameter("activityId", activityId);
-        
+
         return q.getResultList();
     }
-    
+
+    @Override
+    public boolean existsByActivityIdAndParticipationTypeId(int activityId, int participationTypeId) {
+        Session s = this.factory.getObject().getCurrentSession();
+        Query q = s.createQuery(
+                "SELECT COUNT(a) FROM ActivityParticipationType a WHERE a.activityId.id = :activityId AND a.participationTypeId.id = :participationTypeId"
+        );
+        q.setParameter("activityId", activityId);
+        q.setParameter("participationTypeId", participationTypeId);
+
+        long count = (long) q.getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    public ActivityParticipationType getActivityParticipationTypeByActivityIdAndParticipationTypeId(int activityId, int participationTypeId) {
+        Session s = this.factory.getObject().getCurrentSession();
+        Query q = s.createQuery("FROM ActivityParticipationType a WHERE a.activityId.id = :activityId AND a.participationTypeId.id = :participationTypeId");
+        q.setParameter("activityId", activityId);
+        q.setParameter("participationTypeId", participationTypeId);
+
+        List<ActivityParticipationType> result = q.getResultList();
+        return result.isEmpty() ? null : result.get(0);
+    }
+
+    @Override
+    public void deleteActivityParticipationType(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        ActivityParticipationType apt = s.get(ActivityParticipationType.class, id);
+        if (apt != null) {
+            s.delete(apt);
+        }
+    }
 }

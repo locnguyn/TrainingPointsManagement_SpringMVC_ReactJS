@@ -4,6 +4,7 @@
  */
 package com.pbthnxl.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -43,6 +44,7 @@ import com.pbthnxl.validator.EndDateAfterStartDate;
     @NamedQuery(name = "Activity.findByName", query = "SELECT a FROM Activity a WHERE a.name = :name"),
     @NamedQuery(name = "Activity.findByStartDateTime", query = "SELECT a FROM Activity a WHERE a.startDateTime = :startDateTime"),
     @NamedQuery(name = "Activity.findByEndDate", query = "SELECT a FROM Activity a WHERE a.endDate = :endDate"),
+    @NamedQuery(name = "Activity.countInteractions", query = "SELECT COUNT(i) FROM Interaction i WHERE i.activityId.id = :activityId"),
     @NamedQuery(name = "Activity.findByLocation", query = "SELECT a FROM Activity a WHERE a.location = :location")})
 public class Activity implements Serializable {
 
@@ -72,23 +74,28 @@ public class Activity implements Serializable {
     private String location;
     @JoinColumn(name = "article_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @JsonIgnore
     private Article articleId;
     @JoinColumn(name = "faculty_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @JsonIgnore
     private Faculty facultyId;
     @JoinColumn(name = "participant_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @JsonIgnore
     private Participant participantId;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @JsonIgnore
     private User userId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "activityId")
-    private Set<ReportMissing> reportMissingSet;
     @OneToMany(mappedBy = "activityId")
+    @JsonIgnore
     private Set<Interaction> interactionSet;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "acitivityId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "activityId")
+    @JsonIgnore
     private Set<ActivityParticipationType> activityParticipationTypeSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "activityId")
+    @JsonIgnore
     private Set<Comment> commentSet;
 
     public Activity() {
@@ -175,15 +182,6 @@ public class Activity implements Serializable {
 
     public void setUserId(User userId) {
         this.userId = userId;
-    }
-
-    @XmlTransient
-    public Set<ReportMissing> getReportMissingSet() {
-        return reportMissingSet;
-    }
-
-    public void setReportMissingSet(Set<ReportMissing> reportMissingSet) {
-        this.reportMissingSet = reportMissingSet;
     }
 
     @XmlTransient

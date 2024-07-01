@@ -4,6 +4,8 @@
  */
 package com.pbthnxl.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pbthnxl.validator.UniqueStudentCode;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -35,7 +37,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Student.findAll", query = "SELECT s FROM Student s"),
     @NamedQuery(name = "Student.findById", query = "SELECT s FROM Student s WHERE s.id = :id"),
-    @NamedQuery(name = "Student.findByStudentCode", query = "SELECT s FROM Student s WHERE s.studentCode = :studentCode")})
+    @NamedQuery(name = "Student.findByStudentCode", query = "SELECT s FROM Student s WHERE s.studentCode = :studentCode"),
+    @NamedQuery(name = "Student.findByFacultyId", query = "SELECT s FROM Student s WHERE s.facultyId = :facultyId")})
 public class Student implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -47,6 +50,7 @@ public class Student implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 15)
+//    @UniqueStudentCode(message = "{student.UniqueStudentCode.message}")
     @Column(name = "student_code")
     private String studentCode;
     @JoinColumn(name = "class_id", referencedColumnName = "id")
@@ -58,8 +62,10 @@ public class Student implements Serializable {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @OneToOne(optional = false)
     private User userId;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentId")
     private Set<ReportMissing> reportMissingSet;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentId")
     private Set<Registration> registrationSet;
 
@@ -155,7 +161,7 @@ public class Student implements Serializable {
 
     @Override
     public String toString() {
-        return "com.pbthnxl.pojo.Student[ id=" + id + " ]";
+        return String.format("%s %s %s %s %s", this.getStudentCode(), this.getUserId().getFirstName(), this.getUserId().getLastName(), this.getUserId().getEmail(), this.getUserId().getPhoneNumber());
     }
     
 }

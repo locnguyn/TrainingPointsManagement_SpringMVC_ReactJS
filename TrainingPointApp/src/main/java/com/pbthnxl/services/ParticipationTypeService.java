@@ -13,4 +13,8 @@ import java.util.List;
  */
 public interface ParticipationTypeService {
     List<ParticipationType> getParticipationTypes();
+    ParticipationType findByName(String name);
+    void addOrUpdate(ParticipationType p);
+    ParticipationType getParticipationTypeById(int id);
+    void delete(ParticipationType c);
 }

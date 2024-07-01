@@ -10,14 +10,16 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
  *
  * @author DELL
  */
-public class DispatcherServletInit extends AbstractAnnotationConfigDispatcherServletInitializer{
+public class DispatcherServletInit extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
         return new Class[]{
             HibernateConfigs.class,
             TilesConfig.class,
-            SpringSecurityConfig.class
+            SpringSecurityConfig.class,
+            CloudinaryConfig.class,
+            JwtSecurityConfig.class
         };
     }
 
@@ -30,7 +32,7 @@ public class DispatcherServletInit extends AbstractAnnotationConfigDispatcherSer
 
     @Override
     protected String[] getServletMappings() {
-        return new String[] {"/"};
+        return new String[]{"/"};
     }
     
 }

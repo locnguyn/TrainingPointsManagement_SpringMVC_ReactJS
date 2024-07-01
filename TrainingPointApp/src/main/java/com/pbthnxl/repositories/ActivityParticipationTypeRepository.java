@@ -16,4 +16,7 @@ public interface ActivityParticipationTypeRepository {
     List<ActivityParticipationType> getActivityParticipationTypesByActivityId(int activityId);
     void addOrUpdate(ActivityParticipationType activityParticipationType);
     ActivityParticipationType getActivityParticipationTypeById(int id);
+    boolean existsByActivityIdAndParticipationTypeId(int activityId, int participationTypeId);
+    ActivityParticipationType getActivityParticipationTypeByActivityIdAndParticipationTypeId(int activityId, int participationTypeId);
+    void deleteActivityParticipationType(int id);
 }

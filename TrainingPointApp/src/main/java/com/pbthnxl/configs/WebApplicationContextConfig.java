@@ -11,7 +11,9 @@ import com.pbthnxl.formatters.FacultyFormatter;
 import com.pbthnxl.formatters.ParticipantFormatter;
 import com.pbthnxl.formatters.ParticipationTypeFormatter;
 import com.pbthnxl.formatters.UserFormatter;
-import com.pbthnxl.validator.EndDateAfterStartDateValidator;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.fileupload.FileUploadBase;
+import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -26,8 +28,6 @@ import org.springframework.web.servlet.config.annotation.DefaultServletHandlerCo
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
 /**
  *
@@ -40,7 +40,8 @@ import org.springframework.web.servlet.view.JstlView;
     "com.pbthnxl.controllers",
     "com.pbthnxl.repositories",
     "com.pbthnxl.services",
-    "com.pbthnxl.validator"
+    "com.pbthnxl.validator",
+    "com.pbthnxl.components"
 })
 public class WebApplicationContextConfig implements WebMvcConfigurer {
 
@@ -48,10 +49,11 @@ public class WebApplicationContextConfig implements WebMvcConfigurer {
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
         configurer.enable();
     }
-    
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/javascript/**").addResourceLocations("/resources/javascript/");
+        registry.addResourceHandler("/css/**").addResourceLocations("/resources/css/");
     }
 //    @Bean
 //    public InternalResourceViewResolver internalResourceViewResolver(){
@@ -62,7 +64,8 @@ public class WebApplicationContextConfig implements WebMvcConfigurer {
 //        
 //        return r;
 //    }
-    
+
+
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource m = new ResourceBundleMessageSource();
@@ -84,13 +87,16 @@ public class WebApplicationContextConfig implements WebMvcConfigurer {
 
     @Bean
     public CommonsMultipartResolver multipartResolver() {
-        CommonsMultipartResolver resolver
-                = new CommonsMultipartResolver();
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver() {
+            @Override
+            public boolean isMultipart(HttpServletRequest request) {
+                return FileUploadBase.isMultipartContent(new ServletRequestContext(request));
+            }
+        };
         resolver.setDefaultEncoding("UTF-8");
         return resolver;
     }
-    
-    
+
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addFormatter(new ArticleFormatter());
@@ -101,5 +107,5 @@ public class WebApplicationContextConfig implements WebMvcConfigurer {
         registry.addFormatter(new ActivityFormatter());
         registry.addConverter(new DateConverter());
     }
-    
+
 }

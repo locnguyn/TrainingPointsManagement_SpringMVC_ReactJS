@@ -43,7 +43,7 @@
                 </c:choose>
             </c:forEach>
         </form:select>
-        <label for="categoryId" class="form-label">Chọn điều</label>
+        <label for="articleId" class="form-label">Chọn điều</label>
         <form:errors path="articleId" element="div" cssClass="text text-danger" />
     </div>
     <div class="form-floating mb-3 mt-3">
@@ -59,7 +59,7 @@
                 </c:choose>
             </c:forEach>
         </form:select>
-        <label for="categoryId" class="form-label">Chọn khoa</label>
+        <label for="facultyId" class="form-label">Chọn khoa</label>
         <form:errors path="facultyId" element="div" cssClass="text text-danger" />
     </div>
     <div class="form-floating mb-3 mt-3">
@@ -75,7 +75,7 @@
                 </c:choose>
             </c:forEach>
         </form:select>
-        <label for="categoryId" class="form-label">Chọn đối tượng tham gia</label>
+        <label for="participantId" class="form-label">Chọn đối tượng tham gia</label>
         <form:errors path="participantId" element="div" cssClass="text text-danger" />
     </div>
     
