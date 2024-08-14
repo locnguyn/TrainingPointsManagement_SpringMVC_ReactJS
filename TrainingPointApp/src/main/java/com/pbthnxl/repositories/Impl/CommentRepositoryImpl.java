@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional
-@PropertySource("classpath:configs.properties")
+@PropertySource("classpath:paginations.properties")
 public class CommentRepositoryImpl implements CommentRepository {
 
     @Autowired

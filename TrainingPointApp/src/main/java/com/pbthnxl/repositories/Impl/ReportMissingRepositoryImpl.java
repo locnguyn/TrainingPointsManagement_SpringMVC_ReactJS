@@ -30,7 +30,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 @Repository
 @Transactional
-@PropertySource("classpath:configs.properties")
+@PropertySource("classpath:paginations.properties")
 public class ReportMissingRepositoryImpl implements ReportMissingRepository {
 
     @Autowired

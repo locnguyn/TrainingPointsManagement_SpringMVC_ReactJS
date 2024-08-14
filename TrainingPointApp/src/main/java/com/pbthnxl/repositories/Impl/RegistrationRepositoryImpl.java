@@ -4,7 +4,6 @@
  */
 package com.pbthnxl.repositories.Impl;
 
-import com.pbthnxl.pojo.ActivityParticipationType;
 import com.pbthnxl.pojo.Registration;
 import com.pbthnxl.pojo.ReportMissing;
 import com.pbthnxl.pojo.Semester;
@@ -19,9 +18,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.persistence.NoResultException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.hibernate.Session;
@@ -51,7 +44,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Repository
 @Transactional
-@PropertySource("classpath:configs.properties")
+@PropertySource("classpath:paginations.properties")
 public class RegistrationRepositoryImpl implements RegistrationRepository {
 
     @Autowired

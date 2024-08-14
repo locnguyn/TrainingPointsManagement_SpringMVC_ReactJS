@@ -41,7 +41,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
     "com.pbthnxl.repositories",
     "com.pbthnxl.services",
     "com.pbthnxl.validator",
-    "com.pbthnxl.components"
+    "com.pbthnxl.components",
+    "com.pbthnxl.utils"
 })
 public class WebApplicationContextConfig implements WebMvcConfigurer {
 

@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
  *
  * @author hieu
  */
-@PropertySource("classpath:mail.properties")
+@PropertySource("classpath:env.properties")
 @Service
 public class OtpServiceImpl implements OtpService {
 

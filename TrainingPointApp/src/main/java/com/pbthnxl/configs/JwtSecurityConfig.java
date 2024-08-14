@@ -31,7 +31,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
     "com.pbthnxl.controllers",
     "com.pbthnxl.repositories",
     "com.pbthnxl.services",
-    "com.pbthnxl.components"
+    "com.pbthnxl.components",
+        "com.pbthnxl.utils"
 })
 @Order(1)
 public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {

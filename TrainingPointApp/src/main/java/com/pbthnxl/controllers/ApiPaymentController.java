@@ -8,17 +8,16 @@ package com.pbthnxl.controllers;
  *
  * @author DELL
  */
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pbthnxl.services.VNPayService;
 import com.pbthnxl.utils.PaypalIntent;
 import com.pbthnxl.utils.PaypalUserAction;
 import com.pbthnxl.utils.PaypalPaySource;
+import com.pbthnxl.utils.UrlUtils;
 import com.pbthnxl.vn.zalopay.crypto.HMACUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,10 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
-import java.util.logging.Logger;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
+
 import org.cloudinary.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -67,7 +63,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @CrossOrigin
 @RestController
 @RequestMapping("/api/payment")
-@PropertySource("classpath:configs.properties")
+@PropertySource("classpath:payments.properties")
 public class ApiPaymentController {
 
     @Autowired
@@ -76,8 +72,16 @@ public class ApiPaymentController {
     @Autowired
     private VNPayService vnPayService;
 
+    @Autowired
+    private UrlUtils urlUtils;
+
     private static final String ACCESS_KEY = "F8BBA842ECF85";
     private static final String SECRET_KEY = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
+
+    @GetMapping("/baseURL")
+    public String getBaseURL() {
+        return urlUtils.getBaseUrl() + "/test";
+    }
 
     //ZALOPAY Version 1
     @CrossOrigin
@@ -231,7 +235,7 @@ public class ApiPaymentController {
     @PostMapping("/paypal/create/")
     public ResponseEntity<String> paypalCreateOrder(@RequestParam Map<String, String> params) {
         if (params.containsKey("amount") && params.containsKey("access_token")) {
-            String url = "https://api-m.sandbox.paypal.com/v2/checkout/orders";
+            String url = env.getProperty("paypal.create_order");
             String return_url = env.getProperty("base_url") + env.getProperty("paypal.return_url");
             String cancel_url = env.getProperty("base_url") + env.getProperty("paypal.cancel_url");
             String currencyCode = "USD";

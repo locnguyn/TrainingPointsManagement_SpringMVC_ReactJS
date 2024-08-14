@@ -1,1 +1,73 @@
-*/target/**
+# Node.js (ReactJS)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Build directory (ReactJS)
+build/
+dist/
+
+# Local env files (ReactJS)
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env
+
+# Log files
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Spring Boot specific
+target/
+*.jar
+*.war
+*.ear
+
+# Maven specific
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+# Eclipse specific files
+*.classpath
+*.project
+*.settings/
+target/
+
+# IntelliJ IDEA specific files
+*.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# STS (Spring Tool Suite) specific
+.springBeans
+
+# Thư mục cache
+.cache/
+tmp/

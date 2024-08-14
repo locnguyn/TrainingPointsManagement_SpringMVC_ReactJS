@@ -17,7 +17,7 @@ import org.springframework.core.env.Environment;
  * @author DELL
  */
 @Configuration
-@PropertySource("classpath:configs.properties")
+@PropertySource("classpath:env.properties")
 public class CloudinaryConfig {
 
     @Autowired

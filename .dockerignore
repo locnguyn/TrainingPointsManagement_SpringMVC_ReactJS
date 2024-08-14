@@ -1,0 +1,70 @@
+# Ignore node_modules (ReactJS dependencies)
+node_modules/
+
+# Ignore local environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore build directories (ReactJS and Spring Boot)
+build/
+dist/
+target/
+
+# Ignore log files
+*.log
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Ignore Maven specific files
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+# Ignore Eclipse specific files
+.classpath
+.project
+.settings/
+
+# Ignore IntelliJ IDEA specific files
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Ignore STS (Spring Tool Suite) specific files
+.springBeans
+
+# Ignore cache and temporary files
+.cache/
+tmp/
+
+# Ignore Dockerfile and docker-compose.yml if not needed inside the image
+Dockerfile
+docker-compose.yml
+
+# Ignore git files
+.git/
+.gitignore

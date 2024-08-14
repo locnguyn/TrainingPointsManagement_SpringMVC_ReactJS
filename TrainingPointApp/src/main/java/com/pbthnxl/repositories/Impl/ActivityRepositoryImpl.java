@@ -10,14 +10,11 @@ import com.pbthnxl.repositories.ActivityRepository;
 import com.pbthnxl.repositories.SemesterRepository;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -37,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional
-@PropertySource("classpath:configs.properties")
+@PropertySource("classpath:paginations.properties")
 public class ActivityRepositoryImpl implements ActivityRepository {
 
     @Autowired

@@ -1,8 +1,7 @@
 package com.pbthnxl.utils;
 
 import static com.pbthnxl.utils.Helpers.getAppTransId;
-import java.io.InputStream;
-import java.net.http.HttpClient;
+
 import org.json.JSONObject;
 
 import java.util.Date;
