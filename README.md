@@ -201,6 +201,21 @@ Now you can access `localhost:5679` for user and
 ### Real-time Chat 
 <img src="./images/chat.png" width="50%"></img>
 # Deloyment
+![aws1](/images/aws1.svg)
+
+This is a simple aws architecture, only need one EC2 instance that run all in one docker compose system
+
+### Pros
+* Cost Optimization
+
+* Simple Deloyment
+### Cons
+* Unable to scale up/down
+
+* Not Fault Proof
+
+<b>Update...</b>
+
 # Docs
 * 🔗 [Spring MVC](https://spring.io/guides/gs/serving-web-content)
 
