@@ -52,7 +52,6 @@ The Student Conduct Points Management System is designed to manage and monitor t
  - [Database](#database)
  - [How To Setup](#how-to-setup)
  - [User Interface](#user-interface)
- - [Administration](#administration)
  - [Deloyment](#deloyment)
  - [Docs](#docs)
 # Features
@@ -159,7 +158,7 @@ git clone https://github.com/locnguyn/TrainingPointsManagement_SpringMVC_ReactJS
     REACT_APP_APP_ID=your_app_id_here
     REACT_APP_MEASUREMENT_ID=your_measurement_id_here
     ````
-    
+
 ## Run
 
 ````bash 
@@ -178,12 +177,29 @@ docker compose up -d
 docker compose down
 ````   
 
-# Interface
-### Admininstrator Dashboard
-### User Interface
-![user1](/images/user1.png)
-### Payments Screen
+Now you can access `localhost:5679` for user and 
+`localhost:8080/TrainingPoint/` for admin dashboard
+
+# User Interface
+### Admin Dashboard
+<img src="./images/admin1.png" width="30%"></img>
+<img src="./images/admin2.png" width="30%"></img>
+<img src="./images/admin3.png" width="30%"></img>
+<img src="./images/admin4.png" width="30%"></img>
+<img src="./images/admin5.png" width="30%"></img>
+
+### Student 
+<img src="./images/user1.png" width="30%"></img>
+<img src="./images/user2.png" width="30%"></img>
+<img src="./images/user3.png" width="30%"></img>
+<img src="./images/user4.png" width="30%"></img>
+<img src="./images/user5.png" width="30%"></img>
+
+### Payments
+<img src="./images/payment.png" width="50%"></img>
+
 ### Real-time Chat 
+<img src="./images/chat.png" width="50%"></img>
 # Deloyment
 # Docs
 * 🔗 [Spring MVC](https://spring.io/guides/gs/serving-web-content)
